@@ -1,0 +1,7 @@
+&tagging
+  
+   phigrad = 2.0E-02, 2.0E-02
+   max_phigrad_lev = 10
+   max_phierr_lev = 10
+
+/
