@@ -1,0 +1,59 @@
+Host Name: ironmontreal
+=== If no file names and line numbers are shown below, one can run
+            addr2line -Cpfie my_exefile my_line_address
+    to convert `my_line_address` (e.g., 0x4a6b) into file name and line number.
+    Or one can use amrex/Tools/Backtrace/parse_bt.py.
+
+=== Please note that the line number reported by addr2line may not be accurate.
+    One can use
+            readelf -wl my_exefile | grep my_line_address'
+    to find out the offset for that line.
+
+ 0: ./main1d.gnu.ex(+0x10df4d) [0x5615f07ddf4d]
+    amrex::BLBackTrace::print_backtrace_info(_IO_FILE*) at /usr/include/x86_64-linux-gnu/bits/unistd.h:354
+ (inlined by) amrex::BLBackTrace::print_backtrace_info(_IO_FILE*) at /home/afujinawa/amrexEuler/euler/Exec/UniformVelocity/../../../../amrex/Src/Base/AMReX_BLBackTrace.cpp:196
+
+ 1: ./main1d.gnu.ex(+0x10fe85) [0x5615f07dfe85]
+    amrex::BLBackTrace::handler(int) at /home/afujinawa/amrexEuler/euler/Exec/UniformVelocity/../../../../amrex/Src/Base/AMReX_BLBackTrace.cpp:96
+
+ 2: /lib/x86_64-linux-gnu/libc.so.6(+0x46210) [0x7fb52a7cf210]
+
+ 3: /lib/x86_64-linux-gnu/libpthread.so.0(write+0x17) [0x7fb52a98f297]
+    ?? ??:0
+
+ 4: /lib/x86_64-linux-gnu/libstdc++.so.6(_ZNSt12__basic_fileIcE6xsputnEPKcl+0x3e) [0x7fb52abd477e]
+    ?? ??:0
+
+ 5: /lib/x86_64-linux-gnu/libstdc++.so.6(_ZNSt13basic_filebufIcSt11char_traitsIcEE22_M_convert_to_externalEPcl+0x101) [0x7fb52ac13ea1]
+    ?? ??:0
+
+ 6: /lib/x86_64-linux-gnu/libstdc++.so.6(_ZNSt13basic_filebufIcSt11char_traitsIcEE8overflowEi+0xdc) [0x7fb52ac142fc]
+    ?? ??:0
+
+ 7: /lib/x86_64-linux-gnu/libstdc++.so.6(_ZNSt13basic_filebufIcSt11char_traitsIcEE4syncEv+0x1d) [0x7fb52ac1205d]
+    ?? ??:0
+
+ 8: /lib/x86_64-linux-gnu/libstdc++.so.6(_ZNSo5flushEv+0x23) [0x7fb52ac3a7a3]
+    ?? ??:0
+
+ 9: ./main1d.gnu.ex(+0x34642) [0x5615f0704642]
+    updateExact(int, double, int, std::basic_ofstream<char, std::char_traits<char> >&, amrex::Vector<amrex::Vector<double, std::allocator<double> >, std::allocator<amrex::Vector<double, std::allocator<double> > > >&) at /home/afujinawa/amrexEuler/euler/Exec/UniformVelocity/../../Source/exactFunc.cpp:61
+
+10: ./main1d.gnu.ex(+0x28404) [0x5615f06f8404]
+    std::basic_ofstream<char, std::char_traits<char> >::close() at /usr/include/c++/9/fstream:995
+ (inlined by) AmrLevelAdv::post_timestep(int) at /home/afujinawa/amrexReactiveNS/reactiveNS/Exec/UniformVelocity/../../Source/AmrLevelAdv.cpp:1274
+
+11: ./main1d.gnu.ex(+0x16443a) [0x5615f083443a]
+    amrex::Amr::timeStep(int, double, int, int, double) at /home/afujinawa/amrexEuler/euler/Exec/UniformVelocity/../../../../amrex/Src/Amr/AMReX_Amr.cpp:2076
+
+12: ./main1d.gnu.ex(+0x1588af) [0x5615f08288af]
+    amrex::Amr::coarseTimeStep(double) at /home/afujinawa/amrexEuler/euler/Exec/UniformVelocity/../../../../amrex/Src/Amr/AMReX_Amr.cpp:2127
+
+13: ./main1d.gnu.ex(+0x2072d) [0x5615f06f072d]
+    main at /home/afujinawa/amrexEuler/euler/Exec/UniformVelocity/../../Source/main.cpp:89
+
+14: /lib/x86_64-linux-gnu/libc.so.6(__libc_start_main+0xf3) [0x7fb52a7b00b3]
+
+15: ./main1d.gnu.ex(+0x2491e) [0x5615f06f491e]
+    ?? ??:0
+
