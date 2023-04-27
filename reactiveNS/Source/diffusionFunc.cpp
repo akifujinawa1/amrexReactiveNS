@@ -1,7 +1,11 @@
 #include "eulerFunc.H"
 #include "diffusionFunc.H"
 #include "AMReX_Vector.H"
+#include "AMReX_Array.H"
 #include "AMReX_REAL.H"
+#include <AMReX_MultiFab.H>
+#include <AMReX_FArrayBox.H>
+#include <AMReX_MFIter.H>
 
 #include <math.h>
 #include <iostream>
@@ -10,10 +14,132 @@
 extern int enIC;
 extern double Gamma;
 extern int NUM_STATE;
+extern const int spacedim;
 
 using namespace amrex;
 
 // Use this file to write functions required for diffusive flux calculations
+
+void updateViscous(MultiFab& Sborder, Array<MultiFab, SpaceDim>& fluxes, Vector<double> &qL, Vector<double> &qR, \
+                   Vector<double> &qLlo, Vector<double> &qRlo, Vector<double> &qLhi, Vector<double> &qRhi, \
+                   Vector<double> &viscSlice, Vector<double> &fluxvals, const int &d, const double &dt, \
+                   const double& dx, const double& dy, const int& SpaceDim, const int &viscous){
+    switch (viscous)
+    {
+        case 0: 
+        {}
+        case 1: // Use central
+        {
+            const int iOffset = ( d == 0 ? 1 : 0);
+            const int jOffset = ( d == 1 ? 1 : 0);
+            const int kOffset = ( d == 2 ? 1 : 0);
+
+            for (MFIter mfi(Sborder, true); mfi.isValid(); ++mfi)
+            {
+                const Box& bx = mfi.tilebox();
+                const Dim3 lo = lbound(bx);
+                const Dim3 hi = ubound(bx);
+
+                // Indexable arrays for the data, and the directional flux
+                // Based on the vertex-centred definition of the flux array, the
+                // data array runs from e.g. [0,N] and the flux array from [0,N+1]
+                const auto& arr = Sborder.array(mfi);
+                const auto& fluxArrVisc = fluxes[d].array(mfi);
+                const auto& fluxArrViscY = fluxes[d].array(mfi);
+
+                // If slopelimiting has been enabled in the settings file, we run through the following set of loops
+                // to compute boundary-reconstructed values -2023W2
+                if (d == 0)
+                {
+                    for(int k = lo.z; k <= hi.z; k++)
+                    {
+                        for(int j = lo.y; j <= hi.y; j++)
+                        {
+                            for(int i = lo.x; i <= hi.x+iOffset; i++) // at each i we calculate the left interface flux 
+                            {           
+                                for(int h = 0; h < NUM_STATE; h++)
+                                {
+                                    qL[h]   = arr(i-1,j,k,h);   // cell to the left of cell i
+                                    qR[h]   = arr(i  ,j,k,h);   // cell i 
+                                    if (amrex::SpaceDim > 1)
+                                    {
+                                        qLlo[h] = arr(i-1,j-1,k,h);   // cell to the left lower diagonal of cell i
+                                        qRlo[h] = arr(i  ,j-1,k,h);   // cell to the right lower diagonal of cell i 
+                                        qLhi[h] = arr(i-1,j+1,k,h);   // cell to the left higher diagonal of cell i
+                                        qRhi[h] = arr(i  ,j+1,k,h);   // cell to the right higher diagonal of cell i 
+                                    }
+                                }
+
+                                if (amrex::SpaceDim == 1){ // x-direction viscous flux calculation in 1-D
+                                    getViscFlux1D(viscSlice,qL,qR,dx);
+                                    for(int h = 0; h < NUM_STATE; h++)
+                                    {
+                                    fluxArrVisc(i,j,k,h) = viscSlice[h]; // this is the viscous flux function for the left interface of cell i
+                                    }
+                                }
+                                else { // x-direction viscous flux calculation if domain is 2-D
+                                    getViscFlux2D(viscSlice,qL,qR,qLlo,qRlo,qLhi,qRhi,d,dx,dy);
+                                    for(int h = 0; h < NUM_STATE; h++) {
+                                    fluxArrVisc(i,j,k,h) = viscSlice[h];
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+                else // if solving for y-direction viscous fluxes (only applicable to 2-D)
+                { 
+                    for(int k = lo.z; k <= hi.z; k++)
+                    {
+                        for(int i = lo.x; i <= hi.x; i++)
+                        {
+                            for(int j = lo.y; j <= hi.y+jOffset; j++)
+                            {           
+                                for(int h = 0; h < NUM_STATE; h++)
+                                {
+                                    qL[h]   = arr(i,j-1,k,h);   // cell below cell i,j
+                                    qR[h]   = arr(i,j  ,k,h);   // cell i,j 
+                                    qLlo[h] = arr(i-1,j-1,k,h);   // cell to the left lower diagonal of cell i
+                                    qRlo[h] = arr(i-1,j  ,k,h);   // cell to the right lower diagonal of cell i 
+                                    qLhi[h] = arr(i+1,j-1,k,h);   // cell to the left higher diagonal of cell i
+                                    qRhi[h] = arr(i+1,j  ,k,h);   // cell to the right higher diagonal of cell i 
+                                }
+                                getViscFlux2D(viscSlice,qL,qR,qLlo,qRlo,qLhi,qRhi,d,dx,dy);
+                                for(int h = 0; h < NUM_STATE; h++) {
+                                    fluxArrViscY(i,j,k,h) = viscSlice[h];
+                                }
+                            }
+                        }
+                    }
+                }
+                for(int k = lo.z; k <= hi.z; k++)
+                {
+                    for(int j = lo.y; j <= hi.y; j++)
+                    {
+                        for(int i = lo.x; i <= hi.x; i++)
+                        {
+                            // Conservative update formula
+                            if (d == 0){ // x-direction update
+                                for(int h = 0; h < NUM_STATE; h++)
+                                {
+                                    arr(i,j,k,h) = arr(i,j,k,h) + (dt / dx) * (fluxArrVisc(i+iOffset, j, k,h) - fluxArrVisc(i,j,k,h));
+                                }
+                            }
+                            else { // y=direction update
+                                for(int h = 0; h < NUM_STATE; h++)
+                                {
+                                    arr(i,j,k,h) = arr(i,j,k,h) + (dt / dy) * (fluxArrViscY(i, j+jOffset, k,h) - fluxArrViscY(i,j,k,h));
+                                }
+                            }
+                           
+                        }
+                    }
+                }
+            } // close loop for patches
+        } // close case 1 central
+    } // close viscous switch case    
+
+}
 
 void getViscFlux1D(Vector<double>& viscSlice, const Vector<double>& qL,\
                    const Vector<double>& qR, const double& dx){

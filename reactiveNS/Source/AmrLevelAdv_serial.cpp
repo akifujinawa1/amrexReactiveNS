@@ -14,7 +14,7 @@
 #include <iostream>
 #include <algorithm> 
 
-// using namespace amrex;
+using namespace amrex;
 
 // import global variables defined in main.cpp, mostly derived from inputs to the settings file -2023W2
 extern   Real      stop_time;
@@ -34,7 +34,6 @@ int      AmrLevelAdv::NUM_STATE       = 4;  // set this to 4 to store vector of 
 int      AmrLevelAdv::NUM_GROW        = 2;  // number of ghost cells, set gCells from main.cpp file. -2023W2
 int      n_cell;
 int      max_level;
-const int      spacedim               = amrex::SpaceDim;
 double   Gamma                        = 1.4;   // initialize gamma = 1.4 as global variable -2023W2
 int      NUM_STATE                    = AmrLevelAdv::NUM_STATE;
 
@@ -46,12 +45,12 @@ Vector<double> qRlo(NUM_STATE);
 Vector<double> qLhi(NUM_STATE);
 Vector<double> qRhi(NUM_STATE);
 Vector<double> fluxvals(NUM_STATE);
-// Vector <Vector<double> > u0; 
-// Vector <double> slopeCells(3);
-// Vector <double> boundLslice(NUM_STATE);
-// Vector <double> boundRslice(NUM_STATE);
-// Vector <double> boundLsliceOld(NUM_STATE);
-// Vector <double> boundRsliceOld(NUM_STATE);
+Vector <Vector<double> > u0; 
+Vector <double> slopeCells(3);
+Vector <double> boundLslice(NUM_STATE);
+Vector <double> boundRslice(NUM_STATE);
+Vector <double> boundLsliceOld(NUM_STATE);
+Vector <double> boundRsliceOld(NUM_STATE);
 Vector <double> viscSlice(NUM_STATE);
 
 //
@@ -336,7 +335,7 @@ AmrLevelAdv::initData ()
   }
 
   // A few vector quantities are resized here, only once in the code
-  
+  u0.resize(3, Vector<double> (NUM_STATE));
 
   if (verbose) {
     amrex::Print() << "Done initializing the level " << level 
@@ -474,8 +473,7 @@ AmrLevelAdv::advance (Real time,
   }
 
   // Set up a dimensional multifab that will contain the fluxes
-  // MultiFab fluxes[amrex::SpaceDim];
-  Array<MultiFab, AMREX_SPACEDIM> fluxes;
+  MultiFab fluxes[amrex::SpaceDim];
 
   // Define the appropriate size for the flux MultiFab.
   // Fluxes are defined at cell faces - this is taken care of by the
@@ -528,6 +526,7 @@ AmrLevelAdv::advance (Real time,
     }
   }
 
+
   // Fill periodic boundaries where they exist.  More accurately, the
   // FillBoundary call will fill overlapping boundaries (with periodic
   // domains effectively being overlapping).  It also takes care of
@@ -542,25 +541,389 @@ AmrLevelAdv::advance (Real time,
   // The following section of the code calculates the conservative fluxes, and updates the
   // new cell-centred values. 
   
+  // // A few vector quantities are defined here to be used in the slope reconstruction / flux calculations
+
   // This loops through all spatial dimensions. We use this variable 'd' to track 
   // which direction we are computing fluxes along. -2023W2
-
-  // We update the cell-centred values in a dimensionally-split manner, using an inviscid-viscous-source splitting 
-
-  // ____ EULER ____ //
-
   for (int d = 0; d < amrex::SpaceDim ; d++)   
   {
     const int iOffset = ( d == 0 ? 1 : 0);
     const int jOffset = ( d == 1 ? 1 : 0);
     const int kOffset = ( d == 2 ? 1 : 0);
 
-    updateEuler(Sborder, fluxes, qL, qR, fluxvals, d, dt, dx[0], dx[1], euler);
-
-    Sborder.FillBoundary(geom.periodicity());
-    FillDomainBoundary(Sborder,geom,BCVec);   // use this to fill cell-centred data outside domain (AMReX_BCUtil.H) -2023W2
+    // loop through all patches here
     
-    // Flux scaling for reflux. By the size of the boundary through which the flux passes, e.g. the x-flux needs scaling by the dy, dz and dt
+    // case separate none, hllc and muscl
+    // euler
+      // hllc 
+      // MUSCL -> use dt as function input to facilitate Strang splitting
+
+    switch (euler)
+    {
+      case 0: 
+      {}
+      case 1: // Use HLLC
+      {
+
+      }
+      case 2: // Use MUSCL
+      {
+
+      }
+    }
+
+    switch (viscous)
+    {
+      case 0: 
+      {}
+      case 1: // Use central
+      {
+
+      }
+    }
+
+    switch (source)
+    {
+      case 0: 
+      {}
+      case 1: // Use central
+      {
+
+      }
+    }
+    
+
+
+    // case separate none, central
+    // diffusion
+      // central
+
+    // case separate none, source
+    // source terms
+
+    // Loop over all the patches at this level
+    for (MFIter mfi(Sborder, true); mfi.isValid(); ++mfi)
+    {
+      const Box& bx = mfi.tilebox();
+      const Dim3 lo = lbound(bx);
+      const Dim3 hi = ubound(bx);
+
+      // Indexable arrays for the data, and the directional flux
+      // Based on the vertex-centred definition of the flux array, the
+      // data array runs from e.g. [0,N] and the flux array from [0,N+1]
+      const auto& arr = Sborder.array(mfi);
+      const auto& fluxArr = fluxes[d].array(mfi);
+      const auto& fluxArrY = fluxes[d].array(mfi);
+
+      // In addition, we will define several data containers to store boundary reconstructed values,
+      // as well as face-centered gradients for viscous flux calculations
+      // const auto& boundLx = Sborder.array(mfi);
+      // const auto& boundRx = Sborder.array(mfi);
+      // const auto& boundLy = Sborder.array(mfi);
+      // const auto& boundRy = Sborder.array(mfi);
+      const auto& fluxArrVisc = fluxes[d].array(mfi);
+      const auto& fluxArrViscY = fluxes[d].array(mfi);
+
+
+      // If slopelimiting has been enabled in the settings file, we run through the following set of loops
+      // to compute boundary-reconstructed values -2023W2
+
+      switch (euler)
+      {
+        case 1: // USE HLLC
+        {
+          for(int k = lo.z; k <= hi.z+kOffset; k++)
+          {
+            for(int j = lo.y; j <= hi.y+jOffset; j++)
+            {
+              for(int i = lo.x; i <= hi.x+iOffset; i++)
+              {
+                // std::cout << "y index is j = " << j << std::endl;
+                // Conservative flux using HLLC scheme -2023W2
+                for(int h = 0; h < NUM_STATE; h++)
+                {
+                  if (d == 0){ // get left and right states along the x-direction
+                    qL[h] = arr(i-iOffset,j,k,h);
+                    qR[h] = arr(i,j,k,h);
+                  }
+                  else { // get left and right states along the y-direction
+                    qL[h] = arr(i,j-jOffset,k,h);
+                    qR[h] = arr(i,j,k,h);
+                  }
+                }
+                // Call HLLCflux using the left and right states, qL and qR, and the flux direction
+                // tracked by the for loop variable 'd' to compute the correct fluxes. d=0 corresponds 
+                // to the x-direction, and d=1 corresponds to the y-direction. -2023W2
+                fluxvals = HLLCflux(qL,qR,d);
+                
+                for(int h = 0; h < NUM_STATE; h++)
+                {
+                  fluxArr(i,j,k,h) = fluxvals[h];
+                }
+                
+              }
+            }
+          }
+          break;
+        }
+        
+        case 2: // USE MUSCL-HANCOCK
+        {        
+          if (d==0) // reconstruction and flux calculation procedure in the x-direction
+          {
+            for(int k = lo.z; k <= hi.z; k++)
+            {
+              for(int j = lo.y; j <= hi.y; j++)
+              {
+                for(int i = lo.x; i <= hi.x+gCells; i++)
+                {
+                  // std::cout << "y index is j = " << j << std::endl;
+                  // Take values of energy in i, i+1, i+2 to compute the slope ratio for cell i+1.
+                  // Use this slope ratio to reconstruct the left and right boundary
+                  // states for cell i+1. Store this information in boundL and boundR
+                  // starting with entry i+1. -2023W2
+
+                  slopeCells = {arr(i-gCells,j,k,3),arr(i-gCells+1,j,k,3),arr(i-gCells+2,j,k,3)};
+
+                  for(int h = 0; h < NUM_STATE; h++) // fill matrix u0 with values from arr to calculate slope ratio. -2023W2
+                  {
+                    u0[0][h] = arr(i-gCells,j,k,h);
+                    u0[1][h] = arr(i-gCells+1,j,k,h);
+                    u0[2][h] = arr(i-gCells+2,j,k,h);
+                  }
+
+                  double w = 0;
+                  reconstruct(boundLslice,boundRslice,slopeCells,u0,w,dx[d],dt,d);
+
+                  // if i>0, i.e., the first value has been computed already, we can proceed with the
+                  // flux calculation within the same for loops
+
+                  if ((i>lo.x) && (i<=hi.x+gCells))
+                  {
+                    // Conservative flux using HLLC scheme -2023W2
+                    for(int h = 0; h < NUM_STATE; h++)
+                    {
+                      qL[h] = boundRsliceOld[h];
+                      qR[h] = boundLslice[h];
+                    }
+                    // Call HLLCflux using the left and right states, qL and qR, and the flux direction
+                    // tracked by the for loop variable 'd' to compute the correct fluxes. d=0 corresponds 
+                    // to the x-direction, and d=1 corresponds to the y-direction.  -2023W2
+                    fluxvals = HLLCflux(qL,qR,d);
+                    
+                    for(int h = 0; h < NUM_STATE; h++)
+                    {
+                      fluxArr(i-1,j,k,h) = fluxvals[h];
+                    }
+                  }
+
+                  // The boundary values of the previous cell are stored to be used in the flux calculations.
+                  // The boundary values of the entire domain are not kept while sweeping the domain as we are
+                  // only looking to calculate fluxes, which we do store. -2023W2
+                  boundLsliceOld = boundLslice;
+                  boundRsliceOld = boundRslice;
+                }
+              }
+            }
+          }
+
+          else // reconstruction and flux calculation procedure in the y-direction
+          // Note that the order of variables to loop through are changed - we start at a given x-coordinate, and
+          // sweep in the y-direction (hence the j loop contained within the i loop), in order to calculate fluxes
+          // in the y-direction. -2023W2
+          {
+            for(int k = lo.z; k <= hi.z; k++)
+            {
+              for(int i = lo.x; i <= hi.x; i++)
+              {
+                for(int j = lo.y; j <= hi.y+gCells; j++)
+                {
+                  // std::cout << "cell number " << i << " array value " << arr(i-gCells,j,k,0) << std::endl;
+                  // Take values of energy in i, i+1, i+2 to compute the slope ratio for cell i+1.
+                  // Use this slope ratio to reconstruct the left and right boundary
+                  // states for cell i+1. Store this information in boundL and boundR
+                  // starting with entry i+1
+
+                  slopeCells = {arr(i,j-gCells,k,3),arr(i,j-gCells+1,k,3),arr(i,j-gCells+2,k,3)};
+                  // std::cout << "Y entry i,j " << i << "," << j << " " << slopeCells[0] << slopeCells[1] << slopeCells[2] << std::endl;
+
+                  for(int h = 0; h < NUM_STATE; h++) // fill matrix u0 with values from arr to calculate slope ratio
+                  {
+                    u0[0][h] = arr(i,j-gCells,k,h);
+                    u0[1][h] = arr(i,j-gCells+1,k,h);
+                    u0[2][h] = arr(i,j-gCells+2,k,h);
+                  }
+
+                  double w = 0;
+                  reconstruct(boundLslice,boundRslice,slopeCells,u0,w,dx[d],dt,d);
+
+
+                  // if j>0, i.e., the first value has been computed already, we can proceed with the
+                  // flux calculation within the same for loops
+
+                  if ((j>lo.y) && (j<=hi.y+gCells))
+                  {
+                    // Conservative flux using HLLC scheme -2023W2
+                    for(int h = 0; h < NUM_STATE; h++)
+                    {
+                      qL[h] = boundRsliceOld[h];
+                      qR[h] = boundLslice[h];
+                    }
+                    // Call HLLCflux using the left and right states, qL and qR, and the flux direction
+                    // tracked by the for loop variable 'd' to compute the correct fluxes. d=0 corresponds 
+                    // to the x-direction, and d=1 corresponds to the y-direction.  -2023W2
+                    fluxvals = HLLCflux(qL,qR,d);
+                    
+                    for(int h = 0; h < NUM_STATE; h++)
+                    {
+                      fluxArrY(i,j-1,k,h) = fluxvals[h];
+                    }
+                  }
+                  boundLsliceOld = boundLslice;
+                  boundRsliceOld = boundRslice;
+
+
+                }
+              }
+            }
+          }
+          break;
+        }
+      } // closes switch case between HLLC and MUSCL-Hancock flux calculation
+
+
+      // Update arr here with conservative fluxes
+      
+
+      for(int k = lo.z; k <= hi.z; k++)
+      {
+        for(int j = lo.y; j <= hi.y; j++)
+        {
+          for(int i = lo.x; i <= hi.x; i++)
+          {
+            // Conservative update formula
+            if (d == 0){ // x-direction update
+              for(int h = 0; h < NUM_STATE; h++)
+              {
+                arr(i,j,k,h) = arr(i,j,k,h) - (dt / dx[d]) * (fluxArr(i+iOffset, j, k,h) - fluxArr(i,j,k,h));
+              }
+            }
+            else { // y=direction update
+              for(int h = 0; h < NUM_STATE; h++)
+              {
+                arr(i,j,k,h) = arr(i,j,k,h) - (dt / dx[d]) * (fluxArrY(i, j+jOffset, k,h) - fluxArrY(i,j,k,h));
+              }
+            }
+            // std::cout << "field updated till i = " << i << std::endl;
+            
+          }
+        }
+      }
+
+      // At this point, the Euler fluxes have been resolved via a dimensionally-split approach.
+      // We now wish to introduce the viscous fluxes. To calculate the viscous terms to second-order
+      // accuracy, we first need to calculate gradients at left and right (top and bottom for y-direction)
+      // cell boundary gradients, for x-velocity, y-velocity (for both parallel and transverse), temperature,
+      // and species mass fraction.
+
+      if (d == 0)
+      {
+        for(int k = lo.z; k <= hi.z; k++)
+        {
+          for(int j = lo.y; j <= hi.y; j++)
+          {
+            for(int i = lo.x; i <= hi.x+iOffset; i++) // at each i we calculate the left interface flux 
+            {           
+              for(int h = 0; h < NUM_STATE; h++)
+              {
+                qL[h]   = arr(i-1,j,k,h);   // cell to the left of cell i
+                qR[h]   = arr(i  ,j,k,h);   // cell i 
+                if (amrex::SpaceDim > 1){
+                  qLlo[h] = arr(i-1,j-1,k,h);   // cell to the left lower diagonal of cell i
+                  qRlo[h] = arr(i  ,j-1,k,h);   // cell to the right lower diagonal of cell i 
+                  qLhi[h] = arr(i-1,j+1,k,h);   // cell to the left higher diagonal of cell i
+                  qRhi[h] = arr(i  ,j+1,k,h);   // cell to the right higher diagonal of cell i 
+                }
+              }
+
+              if (amrex::SpaceDim == 1){ // x-direction viscous flux calculation in 1-D
+                getViscFlux1D(viscSlice,qL,qR,dx[0]);
+                for(int h = 0; h < NUM_STATE; h++)
+                {
+                  fluxArrVisc(i,j,k,h) = viscSlice[h]; // this is the viscous flux function for the left interface of cell i
+                }
+              }
+              else {
+                getViscFlux2D(viscSlice,qL,qR,qLlo,qRlo,qLhi,qRhi,d,dx[0],dx[1]);
+                for(int h = 0; h < NUM_STATE; h++) {
+                  fluxArrVisc(i,j,k,h) = viscSlice[h];
+                }
+              }
+            }
+          }
+        }
+      }
+      else { // if solving for y-direction viscous fluxes (only applicable to 2-D)
+        for(int k = lo.z; k <= hi.z; k++)
+        {
+          for(int i = lo.x; i <= hi.x; i++)
+          {
+            for(int j = lo.y; j <= hi.y+jOffset; j++)
+            {           
+              for(int h = 0; h < NUM_STATE; h++)
+              {
+                qL[h]   = arr(i,j-1,k,h);   // cell below cell i,j
+                qR[h]   = arr(i,j  ,k,h);   // cell i,j 
+                qLlo[h] = arr(i-1,j-1,k,h);   // cell to the left lower diagonal of cell i
+                qRlo[h] = arr(i-1,j  ,k,h);   // cell to the right lower diagonal of cell i 
+                qLhi[h] = arr(i+1,j-1,k,h);   // cell to the left higher diagonal of cell i
+                qRhi[h] = arr(i+1,j  ,k,h);   // cell to the right higher diagonal of cell i 
+              }
+              getViscFlux2D(viscSlice,qL,qR,qLlo,qRlo,qLhi,qRhi,d,dx[0],dx[1]);
+              for(int h = 0; h < NUM_STATE; h++) {
+                fluxArrViscY(i,j,k,h) = viscSlice[h];
+              }
+            }
+          }
+        }
+      }
+      for(int k = lo.z; k <= hi.z; k++)
+      {
+        for(int j = lo.y; j <= hi.y; j++)
+        {
+          for(int i = lo.x; i <= hi.x; i++)
+          {
+            // Conservative update formula
+            if (d == 0){ // x-direction update
+              for(int h = 0; h < NUM_STATE; h++)
+              {
+                arr(i,j,k,h) = arr(i,j,k,h) + (dt / dx[d]) * (fluxArrVisc(i+iOffset, j, k,h) - fluxArrVisc(i,j,k,h));
+              }
+            }
+            else { // y=direction update
+              for(int h = 0; h < NUM_STATE; h++)
+              {
+                arr(i,j,k,h) = arr(i,j,k,h) + (dt / dx[d]) * (fluxArrViscY(i, j+jOffset, k,h) - fluxArrViscY(i,j,k,h));
+              }
+            }
+            // std::cout << "field updated till i = " << i << std::endl;
+            
+          }
+        }
+      }
+      
+    }
+
+    // We need to compute boundary conditions again after each update
+    Sborder.FillBoundary(geom.periodicity());
+    
+    // We need to fill the domain boundary using FillDomainBoundary
+    // in order to fill cell-centered data outside the physical domain, following
+    // instructions on AMReX_BCUtil.H -2023W2
+    FillDomainBoundary(Sborder,geom,BCVec);
+
+    // The fluxes now need scaling for the reflux command.
+    // This scaling is by the size of the boundary through which the flux passes, e.g. the x-flux needs scaling by the dy, dz and dt
     if(do_reflux)
     {
       Real scaleFactor = dt;
@@ -573,37 +936,13 @@ AmrLevelAdv::advance (Real time,
         }
         scaleFactor *= dx[scaledir];
       }
+      // The mult function automatically multiplies entries in a multifab by a scalar
+      // scaleFactor: The scalar to multiply by
+      // 0: The first data index in the multifab to multiply
+      // NUM_STATE:  The total number of data indices that will be multiplied
       fluxes[d].mult(scaleFactor, 0, NUM_STATE);
     }
-  } //this closes the d=0 to d=spacedim loop for the EULER update
-
-
-  // ____ VISCOUS ____ //
-
-  for (int d = 0; d < amrex::SpaceDim ; d++)   
-  {
-    updateViscous(Sborder, fluxes, qL, qR, qLlo, qRlo, qLhi, qRhi, viscSlice, fluxvals, \
-                  d, dt, dx[0], dx[1], amrex::SpaceDim, viscous);
-
-    Sborder.FillBoundary(geom.periodicity());
-    FillDomainBoundary(Sborder,geom,BCVec);   // use this to fill cell-centred data outside domain (AMReX_BCUtil.H) -2023W2
-    
-    // Flux scaling for reflux. By the size of the boundary through which the flux passes, e.g. the x-flux needs scaling by the dy, dz and dt
-    if(do_reflux)
-    {
-      Real scaleFactor = dt;
-      for(int scaledir = 0; scaledir < amrex::SpaceDim; ++scaledir)
-      {
-        // Fluxes don't need scaling by dx[d]
-        if(scaledir == d)
-        {
-          continue;
-        }
-        scaleFactor *= dx[scaledir];
-      }
-      fluxes[d].mult(scaleFactor, 0, NUM_STATE);
-    }
-  } //this closes the d=0 to d=spacedim loop for the EULER update
+  } //this closes the d=0 to d=spacedim loop
 
   // The updated data is now copied to the S_new multifab.  This means
   // it is now accessible through the get_new_data command, and AMReX

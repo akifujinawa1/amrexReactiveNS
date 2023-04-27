@@ -3,25 +3,38 @@
 
 #include "AMReX_Vector.H"
 #include "AMReX_REAL.H"
+#include "AMReX_Array.H"
+
+#include <AMReX_MultiFab.H>
 
 #include <vector>
 #include <array>
 #include <fstream> 
 
 
-amrex::Vector<double> getEulerFlux(const amrex::Vector<double>& q, const int& dir);
-amrex::Vector<double> getPrim(const amrex::Vector<double>& q);
-amrex::Vector<double> getCons(const amrex::Vector<double>& prim);
-amrex::Vector<double> setIC(const int dim);
-amrex::Vector<double> HLLCflux(const amrex::Vector<double>& qL, const amrex::Vector<double>& qR, const int& dir);
-amrex::Vector<double> HLLCstarFlux(const amrex::Vector<double>& f, const amrex::Vector<double>& q,\
+using namespace amrex;
+
+extern const int spacedim;
+
+
+void updateEuler(MultiFab& Sborder, Array<MultiFab, SpaceDim>& fluxes, Vector<double> &qL, Vector<double> &qR, \
+                 Vector<double> &fluxvals, const int &SpaceDim, const double &dt, \
+                 const double& dx, const double& dy, const int &euler);
+
+Vector<double> getEulerFlux(const Vector<double>& q, const int& dir);
+Vector<double> getPrim(const Vector<double>& q);
+Vector<double> getCons(const Vector<double>& prim);
+Vector<double> setIC(const int dim);
+Vector<double> HLLCflux(const Vector<double>& qL, const Vector<double>& qR, const int& dir);
+Vector<double> HLLCstarFlux(const Vector<double>& f, const Vector<double>& q,\
                                  const double& s, const double& sStar, const int& dir);
 
-void wavespeedEstimate(const amrex::Vector<double>& qL, const amrex::Vector<double>& qR,\
+void wavespeedEstimate(const Vector<double>& qL, const Vector<double>& qR,\
                        double& sL, double& sR, double& sStar, const int dir);
 void getStopTime(int enIC, amrex::Real& stop_time);
 
-//double timeStepRP(const amrex::Vector<double>& qL, const amrex::Vector<double>& qR, const int& counter);
+
+//double timeStepRP(const Vector<double>& qL, const Vector<double>& qR, const int& counter);
 double soundSpeed(const double& p, const double& rho);
 double energy(double rho, double vx, double vy, double p);
 double pressure(double rho, double vx, double vy, double energy);

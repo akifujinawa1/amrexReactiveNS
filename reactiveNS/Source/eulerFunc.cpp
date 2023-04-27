@@ -1,6 +1,12 @@
 #include "eulerFunc.H"
+#include "recon.H"
 #include "AMReX_Vector.H"
+#include "AMReX_Array.H"
 #include "AMReX_REAL.H"
+#include <AMReX_MultiFab.H>
+#include <AMReX_FArrayBox.H> //
+#include <AMReX_MFIter.H>
+
 
 #include <math.h>
 #include <iostream>
@@ -9,12 +15,299 @@
 extern int enIC;
 extern double Gamma;
 extern int NUM_STATE;
+extern int gCells;
+extern const int spacedim;
 
-amrex::Vector<double> setIC(const int dim) {
+using namespace amrex;
+
+void updateEuler(MultiFab& Sborder, Array<MultiFab, SpaceDim>& fluxes, Vector<double> &qL, Vector<double> &qR, \
+                 Vector<double> &fluxvals, const int &d, const double &dt, \
+                 const double& dx, const double& dy, const int &euler){
+    switch (euler)
+    {
+        case 0: 
+        {}
+        case 1: // Use HLLC
+        {
+            const int iOffset = ( d == 0 ? 1 : 0);
+            const int jOffset = ( d == 1 ? 1 : 0);
+            const int kOffset = ( d == 2 ? 1 : 0);
+
+            for (MFIter mfi(Sborder, true); mfi.isValid(); ++mfi)
+            {
+                const Box& bx = mfi.tilebox();
+                const Dim3 lo = lbound(bx);
+                const Dim3 hi = ubound(bx);
+
+                // Indexable arrays for the data, and the directional flux
+                // Based on the vertex-centred definition of the flux array, the
+                // data array runs from e.g. [0,N] and the flux array from [0,N+1]
+                const auto& arr = Sborder.array(mfi);
+                const auto& fluxArr = fluxes[d].array(mfi);
+                const auto& fluxArrY = fluxes[d].array(mfi);
+
+                // If slopelimiting has been enabled in the settings file, we run through the following set of loops
+                // to compute boundary-reconstructed values -2023W2
+                if (d == 0) // x-direction flux calculation using HLLC
+                {
+                    for(int k = lo.z; k <= hi.z+kOffset; k++)
+                    {
+                        for(int j = lo.y; j <= hi.y+jOffset; j++)
+                        {
+                            for(int i = lo.x; i <= hi.x+iOffset; i++)
+                            {
+                                // Conservative flux using HLLC scheme -2023W2
+                                for(int h = 0; h < NUM_STATE; h++)
+                                {
+                                    qL[h] = arr(i-iOffset,j,k,h);
+                                    qR[h] = arr(i,j,k,h);
+                                }
+                                // Call HLLCflux using the left and right states, qL and qR, and the flux direction
+                                // tracked by the for loop variable 'd' to compute the correct fluxes. d=0 corresponds 
+                                // to the x-direction, and d=1 corresponds to the y-direction. -2023W2
+                                fluxvals = HLLCflux(qL,qR,d);
+                                
+                                for(int h = 0; h < NUM_STATE; h++)
+                                {
+                                    fluxArr(i,j,k,h) = fluxvals[h];
+                                }
+                                
+                            }
+                        }
+                    }  
+                }
+                else // y-direction flux calculation using HLLC
+                {
+                    for(int k = lo.z; k <= hi.z+kOffset; k++)
+                    {
+                        for(int i = lo.x; i <= hi.x+iOffset; i++)
+                        {
+                            for(int j = lo.y; j <= hi.y+jOffset; j++)
+                            {
+                                // Conservative flux using HLLC scheme -2023W2
+                                for(int h = 0; h < NUM_STATE; h++)
+                                {
+                                    qL[h] = arr(i,j-jOffset,k,h);
+                                    qR[h] = arr(i,j,k,h);
+                                }
+                                // Call HLLCflux using the left and right states, qL and qR, and the flux direction
+                                // tracked by the for loop variable 'd' to compute the correct fluxes. d=0 corresponds 
+                                // to the x-direction, and d=1 corresponds to the y-direction. -2023W2
+                                fluxvals = HLLCflux(qL,qR,d);
+                                
+                                for(int h = 0; h < NUM_STATE; h++)
+                                {
+                                    fluxArrY(i,j,k,h) = fluxvals[h];
+                                }
+                                
+                            }
+                        }
+                    }  
+                } // close y-direction flux calculation
+
+                for(int k = lo.z; k <= hi.z; k++)
+                {
+                    for(int j = lo.y; j <= hi.y; j++)
+                    {
+                        for(int i = lo.x; i <= hi.x; i++)
+                        {
+                            // Conservative update formula
+                            if (d == 0){ // x-direction update
+                                for(int h = 0; h < NUM_STATE; h++)
+                                {
+                                    arr(i,j,k,h) = arr(i,j,k,h) - (dt / dx) * (fluxArr(i+iOffset, j, k,h) - fluxArr(i,j,k,h));
+                                }
+                            }
+                            else { // y=direction update
+                                for(int h = 0; h < NUM_STATE; h++)
+                                {
+                                    arr(i,j,k,h) = arr(i,j,k,h) - (dt / dy) * (fluxArrY(i, j+jOffset, k,h) - fluxArrY(i,j,k,h));
+                                }
+                            }
+                            
+                        }
+                    }
+                } // close loop to update cell-centred values
+            }
+        } // close case 1 HLLC
+        case 2: // Use MUSCL
+        {
+            const int iOffset = ( d == 0 ? 1 : 0);
+            const int jOffset = ( d == 1 ? 1 : 0);
+            const int kOffset = ( d == 2 ? 1 : 0);
+
+            Vector <Vector<double> > u0; 
+            u0.resize(3, Vector<double> (NUM_STATE));
+            Vector <double> slopeCells(3);
+            Vector <double> boundLslice(NUM_STATE);
+            Vector <double> boundRslice(NUM_STATE);
+            Vector <double> boundLsliceOld(NUM_STATE);
+            Vector <double> boundRsliceOld(NUM_STATE);
+            
+            for (MFIter mfi(Sborder, true); mfi.isValid(); ++mfi)
+            {
+                const Box& bx = mfi.tilebox();
+                const Dim3 lo = lbound(bx);
+                const Dim3 hi = ubound(bx);
+
+                // Indexable arrays for the data, and the directional flux
+                // Based on the vertex-centred definition of the flux array, the
+                // data array runs from e.g. [0,N] and the flux array from [0,N+1]
+                const auto& arr = Sborder.array(mfi);
+                const auto& fluxArr = fluxes[d].array(mfi);
+                const auto& fluxArrY = fluxes[d].array(mfi);
+
+                if (d==0) // reconstruction and flux calculation procedure in the x-direction
+                {
+                    for(int k = lo.z; k <= hi.z; k++)
+                    {
+                        for(int j = lo.y; j <= hi.y; j++)
+                        {
+                            for(int i = lo.x; i <= hi.x+gCells; i++)
+                            {
+                            // std::cout << "y index is j = " << j << std::endl;
+                            // Take values of energy in i, i+1, i+2 to compute the slope ratio for cell i+1.
+                            // Use this slope ratio to reconstruct the left and right boundary
+                            // states for cell i+1. Store this information in boundL and boundR
+                            // starting with entry i+1. -2023W2
+
+                                slopeCells = {arr(i-gCells,j,k,3),arr(i-gCells+1,j,k,3),arr(i-gCells+2,j,k,3)};
+
+                                for(int h = 0; h < NUM_STATE; h++) // fill matrix u0 with values from arr to calculate slope ratio. -2023W2
+                                {
+                                    u0[0][h] = arr(i-gCells,j,k,h);
+                                    u0[1][h] = arr(i-gCells+1,j,k,h);
+                                    u0[2][h] = arr(i-gCells+2,j,k,h);
+                                }
+
+                                double w = 0;
+                                reconstruct(boundLslice,boundRslice,slopeCells,u0,w,dx,dt,d);
+
+                                // if i>0, i.e., the first value has been computed already, we can proceed with the
+                                // flux calculation within the same for loops
+
+                                if ((i>lo.x) && (i<=hi.x+gCells))
+                                {
+                                    // Conservative flux using HLLC scheme -2023W2
+                                    for(int h = 0; h < NUM_STATE; h++)
+                                    {
+                                        qL[h] = boundRsliceOld[h];
+                                        qR[h] = boundLslice[h];
+                                    }
+                                    // Call HLLCflux using the left and right states, qL and qR, and the flux direction
+                                    // tracked by the for loop variable 'd' to compute the correct fluxes. d=0 corresponds 
+                                    // to the x-direction, and d=1 corresponds to the y-direction.  -2023W2
+                                    fluxvals = HLLCflux(qL,qR,d);
+                                    
+                                    for(int h = 0; h < NUM_STATE; h++)
+                                    {
+                                        fluxArr(i-1,j,k,h) = fluxvals[h];
+                                    }
+                                }
+
+                                // The boundary values of the previous cell are stored to be used in the flux calculations.
+                                // The boundary values of the entire domain are not kept while sweeping the domain as we are
+                                // only looking to calculate fluxes, which we do store. -2023W2
+                                boundLsliceOld = boundLslice;
+                                boundRsliceOld = boundRslice;
+                            }
+                        }
+                    }
+                } // close d=0 (x-direction flux calculations)
+
+                else // reconstruction and flux calculation procedure in the y-direction
+                    // Note that the order of variables to loop through are changed - we start at a given x-coordinate, and
+                    // sweep in the y-direction (hence the j loop contained within the i loop), in order to calculate fluxes
+                    // in the y-direction. -2023W2
+                {
+                    for(int k = lo.z; k <= hi.z; k++)
+                    {
+                        for(int i = lo.x; i <= hi.x; i++)
+                        {
+                            for(int j = lo.y; j <= hi.y+gCells; j++)
+                            {
+                                // std::cout << "cell number " << i << " array value " << arr(i-gCells,j,k,0) << std::endl;
+                                // Take values of energy in i, i+1, i+2 to compute the slope ratio for cell i+1.
+                                // Use this slope ratio to reconstruct the left and right boundary
+                                // states for cell i+1. Store this information in boundL and boundR
+                                // starting with entry i+1
+
+                                slopeCells = {arr(i,j-gCells,k,3),arr(i,j-gCells+1,k,3),arr(i,j-gCells+2,k,3)};
+                                // std::cout << "Y entry i,j " << i << "," << j << " " << slopeCells[0] << slopeCells[1] << slopeCells[2] << std::endl;
+
+                                for(int h = 0; h < NUM_STATE; h++) // fill matrix u0 with values from arr to calculate slope ratio
+                                {
+                                    u0[0][h] = arr(i,j-gCells,k,h);
+                                    u0[1][h] = arr(i,j-gCells+1,k,h);
+                                    u0[2][h] = arr(i,j-gCells+2,k,h);
+                                }
+
+                                double w = 0;
+                                reconstruct(boundLslice,boundRslice,slopeCells,u0,w,dy,dt,d);
+
+
+                                // if j>0, i.e., the first value has been computed already, we can proceed with the
+                                // flux calculation within the same for loops
+
+                                if ((j>lo.y) && (j<=hi.y+gCells))
+                                {
+                                    // Conservative flux using HLLC scheme -2023W2
+                                    for(int h = 0; h < NUM_STATE; h++)
+                                    {
+                                        qL[h] = boundRsliceOld[h];
+                                        qR[h] = boundLslice[h];
+                                    }
+                                    // Call HLLCflux using the left and right states, qL and qR, and the flux direction
+                                    // tracked by the for loop variable 'd' to compute the correct fluxes. d=0 corresponds 
+                                    // to the x-direction, and d=1 corresponds to the y-direction.  -2023W2
+                                    fluxvals = HLLCflux(qL,qR,d);
+                                    
+                                    for(int h = 0; h < NUM_STATE; h++)
+                                    {
+                                        fluxArrY(i,j-1,k,h) = fluxvals[h];
+                                    }
+                                }
+                                boundLsliceOld = boundLslice;
+                                boundRsliceOld = boundRslice;
+                            }
+                        }
+                    }
+                } // close y-direction flux calculations
+
+                for(int k = lo.z; k <= hi.z; k++)
+                {
+                    for(int j = lo.y; j <= hi.y; j++)
+                    {
+                        for(int i = lo.x; i <= hi.x; i++)
+                        {
+                            // Conservative update formula
+                            if (d == 0){ // x-direction update
+                                for(int h = 0; h < NUM_STATE; h++)
+                                {
+                                    arr(i,j,k,h) = arr(i,j,k,h) - (dt / dx) * (fluxArr(i+iOffset, j, k,h) - fluxArr(i,j,k,h));
+                                }
+                            }
+                            else { // y=direction update
+                                for(int h = 0; h < NUM_STATE; h++)
+                                {
+                                    arr(i,j,k,h) = arr(i,j,k,h) - (dt / dy) * (fluxArrY(i, j+jOffset, k,h) - fluxArrY(i,j,k,h));
+                                }
+                            }
+                            
+                        }
+                    }
+                } // close loop to update cell-centred values
+            } // close loop through patches
+        } // close MUSCL
+    } // close euler switch case    
+
+}
+
+Vector<double> setIC(const int dim) {
 
     double rhoL, vxL, vyL, pL, rhoR, vxR, vyR, pR;
     double x0,xEnd,xDisc,tEnd;
-    amrex::Vector<double> RPLeftRight(12);
+    Vector<double> RPLeftRight(12);
 
     if (dim==1) {
         vyL = 0;
@@ -143,7 +436,7 @@ amrex::Vector<double> setIC(const int dim) {
     return RPLeftRight;    
 }
 
-void getStopTime(int enIC, amrex::Real& stop_time){
+void getStopTime(int enIC, Real& stop_time){
     switch (enIC) {
         case 1: //toro test 1
         {
@@ -189,15 +482,15 @@ double soundSpeed(const double& p, const double& rho){
     return a;
 }
 
-void wavespeedEstimate(const amrex::Vector<double>& qL, const amrex::Vector<double>& qR,\
+void wavespeedEstimate(const Vector<double>& qL, const Vector<double>& qR,\
                        double& sL, double& sR, double& sStar, const int dir){
 
     // This function computes wavespeed estimates for the HLLC solver, retrieved via pass by reference variables sL, sR, and sStar.
 
     double pL,pR,rhoL,rhoR,vxL,vxR,vyL,vyR,vL,vR,aL,aR;
     double rhobar, abar, pPVRS, pStar, qqL, qqR;    
-    amrex::Vector<double> primL(NUM_STATE);
-    amrex::Vector<double> primR(NUM_STATE);
+    Vector<double> primL(NUM_STATE);
+    Vector<double> primR(NUM_STATE);
 
     primL = getPrim(qL);
     primR = getPrim(qR);
@@ -252,16 +545,16 @@ void wavespeedEstimate(const amrex::Vector<double>& qL, const amrex::Vector<doub
 
 }
 
-amrex::Vector<double> HLLCflux(const amrex::Vector<double>& qL, const amrex::Vector<double>& qR, const int& dir){
+Vector<double> HLLCflux(const Vector<double>& qL, const Vector<double>& qR, const int& dir){
 
     // This function calculates the HLLC flux based on left and right states, qL and qR, respectively
     
     double sL,sR,sStar;
-    amrex::Vector<double> fL(NUM_STATE);
-    amrex::Vector<double> fR(NUM_STATE);
-    amrex::Vector<double> fLstar(NUM_STATE);
-    amrex::Vector<double> fRstar(NUM_STATE);
-    amrex::Vector<double> fluxvals(NUM_STATE);
+    Vector<double> fL(NUM_STATE);
+    Vector<double> fR(NUM_STATE);
+    Vector<double> fLstar(NUM_STATE);
+    Vector<double> fRstar(NUM_STATE);
+    Vector<double> fluxvals(NUM_STATE);
 
     wavespeedEstimate(qL,qR,sL,sR,sStar,dir);
 
@@ -302,14 +595,14 @@ amrex::Vector<double> HLLCflux(const amrex::Vector<double>& qL, const amrex::Vec
 
 }
 
-amrex::Vector<double> HLLCstarFlux(const amrex::Vector<double>& f, const amrex::Vector<double>& q,\
+Vector<double> HLLCstarFlux(const Vector<double>& f, const Vector<double>& q,\
                                  const double& s, const double& sStar, const int& dir){
 
     // Calculates HLLC star-state flux for HLLC approximate Riemann solver.
 
 	double rho,vx,vy,p,ener,temp;
-    amrex::Vector<double> starFlux(NUM_STATE);
-	amrex::Vector<double> prim(NUM_STATE);
+    Vector<double> starFlux(NUM_STATE);
+	Vector<double> prim(NUM_STATE);
 	
 	prim = getPrim(q);
 	
@@ -340,13 +633,13 @@ amrex::Vector<double> HLLCstarFlux(const amrex::Vector<double>& f, const amrex::
 	
 }
 
-amrex::Vector<double> getEulerFlux(const amrex::Vector<double>& q, const int& dir){
+Vector<double> getEulerFlux(const Vector<double>& q, const int& dir){
 
     // Takes in conservative variable vector and directional input, returns conservative flux vector
     // based on conservation form of Euler equations.
     
-    amrex::Vector<double> EulerFlux(NUM_STATE);
-    amrex::Vector<double> prim(NUM_STATE);
+    Vector<double> EulerFlux(NUM_STATE);
+    Vector<double> prim(NUM_STATE);
     prim = getPrim(q);
 
     double rho  = prim[0];
@@ -373,11 +666,11 @@ amrex::Vector<double> getEulerFlux(const amrex::Vector<double>& q, const int& di
 
 }
 
-amrex::Vector<double> getPrim(const amrex::Vector<double>& q){
+Vector<double> getPrim(const Vector<double>& q){
 
     // Convert conserved -> primitive variables
     
-    amrex::Vector<double> prim(NUM_STATE);
+    Vector<double> prim(NUM_STATE);
 
     double rho   = q[0];
     double rhovx = q[1];
@@ -393,11 +686,11 @@ amrex::Vector<double> getPrim(const amrex::Vector<double>& q){
 
 }
 
-amrex::Vector<double> getCons(const amrex::Vector<double>& prim){
+Vector<double> getCons(const Vector<double>& prim){
 
     // Convert primitive -> conserved variables
     
-    amrex::Vector<double> q(NUM_STATE);
+    Vector<double> q(NUM_STATE);
 
     double rho = prim[0];
     double vx  = prim[1];
