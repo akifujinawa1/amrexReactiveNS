@@ -15,6 +15,9 @@ extern int enIC;
 extern double Gamma;
 extern int NUM_STATE;
 extern const int spacedim;
+extern double R;
+extern double M;
+extern double Pr;
 
 using namespace amrex;
 
@@ -22,7 +25,7 @@ using namespace amrex;
 
 void updateViscous(MultiFab& Sborder, Array<MultiFab, SpaceDim>& fluxes, Vector<double> &qL, Vector<double> &qR, \
                    Vector<double> &qLlo, Vector<double> &qRlo, Vector<double> &qLhi, Vector<double> &qRhi, \
-                   Vector<double> &viscSlice, Vector<double> &fluxvals, const int &d, const double &dt, \
+                   Vector<double> &viscSlice, const int &d, const double &dt, \
                    const double& dx, const double& dy, const int& SpaceDim, const int &viscous){
     switch (viscous)
     {
@@ -97,8 +100,8 @@ void updateViscous(MultiFab& Sborder, Array<MultiFab, SpaceDim>& fluxes, Vector<
                             {           
                                 for(int h = 0; h < NUM_STATE; h++)
                                 {
-                                    qL[h]   = arr(i,j-1,k,h);   // cell below cell i,j
-                                    qR[h]   = arr(i,j  ,k,h);   // cell i,j 
+                                    qL[h]   = arr(i,  j-1,k,h);   // cell below cell i,j
+                                    qR[h]   = arr(i,  j  ,k,h);   // cell i,j 
                                     qLlo[h] = arr(i-1,j-1,k,h);   // cell to the left lower diagonal of cell i
                                     qRlo[h] = arr(i-1,j  ,k,h);   // cell to the right lower diagonal of cell i 
                                     qLhi[h] = arr(i+1,j-1,k,h);   // cell to the left higher diagonal of cell i
@@ -145,12 +148,10 @@ void getViscFlux1D(Vector<double>& viscSlice, const Vector<double>& qL,\
                    const Vector<double>& qR, const double& dx){
 
     double cV = 3.5*287;
-    double rhoL, uL, enerL, epsL, TL, rhoR, uR, enerR, epsR, TR;
-    double dudx, dTdx, uAvg, TAvg;
-    double mu_avg, k_avg;
-    // double mu = 3e-5;
-    // double k  = 1.4;
-    // double mu, k;
+    double rhoL, uL, enerL, epsL, TL, YL, pL, rhoR, uR, enerR, epsR, TR, YR, pR;
+    double dudx, dTdx, dYdx, uAvg, TAvg, rhoAvg;
+    double mu_avg, k_avg, D_avg;
+    
 
     Vector<double> primL;
     Vector<double> primR;
@@ -161,27 +162,35 @@ void getViscFlux1D(Vector<double>& viscSlice, const Vector<double>& qL,\
     
     rhoL  = primL[0];
     uL    = primL[1];
-    enerL = primL[3];
+    enerL = qL[3];
+    pL    = primL[3];
     epsL  = specIntEner(rhoL, uL, 0, enerL);
-    TL    = epsL/cV;
+    TL    = pL/((R/M)*rhoL);
+    YL    = primL[4];
     
     rhoR  = primR[0];
     uR    = primR[1];
-    enerR = primR[3];
+    enerR = qR[3];
+    pR    = primR[3];
     epsR  = specIntEner(rhoR, uR, 0, enerR);
-    TR    = epsR/cV;
+    TL    = pR/((R/M)*rhoR);
+    YR    = primR[4];
 
     dudx = (uR-uL)/dx;
     dTdx = (TR-TL)/dx;
+    dYdx = (YR-YL)/dx;
     uAvg = (uR+uL)/2.0;
     TAvg = (TR+TL)/2.0;
-    mu_avg = mu(TAvg);
-    k_avg  = k(TAvg);
+    rhoAvg = (rhoR+rhoL)/2.0;
+    mu_avg = mu(TAvg,rhoAvg);
+    k_avg  = k(TAvg,rhoAvg);
+    D_avg  = D(TAvg,rhoAvg);
 
     viscSlice[0] = 0;
     viscSlice[1] = (4.0/3.0)*mu_avg*dudx;
     viscSlice[2] = 0;
     viscSlice[3] = uAvg*viscSlice[1] + k_avg*dTdx;
+    viscSlice[4] = rhoAvg*D_avg*dYdx;
 
 }
 
@@ -190,13 +199,13 @@ void getViscFlux2D(Vector<double>& viscSlice, const Vector<double>& qL, const Ve
                    const Vector<double>& qRhi, const int& d, const double& dx, const double& dy){
 
     double cV = 3.5*287;
-    double rhoL, uL, vL, enerL, epsL, TL, rhoR, uR, vR, enerR, epsR, TR;
-    double rhoLlo, uLlo, vLlo, enerLlo, epsLlo, TLlo, rhoRlo, uRlo, vRlo, enerRlo, epsRlo, TRlo;
-    double rhoLhi, uLhi, vLhi, enerLhi, epsLhi, TLhi, rhoRhi, uRhi, vRhi, enerRhi, epsRhi, TRhi;
-    double dudx, dudy, dvdx, dvdy, dTdx, dTdy, uAvg, vAvg, TAvg;
+    double rhoL, uL, vL, enerL, epsL, TL, pL, YL, rhoR, uR, vR, enerR, epsR, TR, pR, YR;
+    double rhoLlo, uLlo, vLlo, enerLlo, epsLlo, TLlo, pLlo, YLlo, rhoRlo, uRlo, vRlo, enerRlo, epsRlo, TRlo, pRlo, YRlo;
+    double rhoLhi, uLhi, vLhi, enerLhi, epsLhi, TLhi, pLhi, YLhi, rhoRhi, uRhi, vRhi, enerRhi, epsRhi, TRhi, pRhi, YRhi;
+    double dudx, dudy, dvdx, dvdy, dTdx, dTdy, dYdx, dYdy, uAvg, vAvg, TAvg, rhoAvg;
     // double mu = 3e-5;
     // double k  = 1.4;
-    double mu_avg, k_avg;
+    double mu_avg, k_avg, D_avg;
 
     Vector<double> primL;
     Vector<double> primR;
@@ -214,57 +223,74 @@ void getViscFlux2D(Vector<double>& viscSlice, const Vector<double>& qL, const Ve
     
     rhoL  = primL[0];
     uL    = primL[1];
-    enerL = primL[3];
+    enerL = qL[3];
+    pL    = primL[3];
     epsL  = specIntEner(rhoL, uL, 0, enerL);
-    TL    = epsL/cV;
+    TL    = pL/((R/M)*rhoL);
+    YL    = primL[4];
     
     rhoR  = primR[0];
     uR    = primR[1];
-    enerR = primR[3];
+    enerR = qR[3];
+    pR    = primR[3];
     epsR  = specIntEner(rhoR, uR, 0, enerR);
-    TR    = epsR/cV;
+    TL    = pR/((R/M)*rhoR);
+    YR    = primR[4];
 
     rhoLlo  = primLlo[0];
     uLlo    = primLlo[1];
-    enerLlo = primLlo[3];
+    enerLlo = qLlo[3];
+    pLlo    = primLlo[3];
     epsLlo  = specIntEner(rhoLlo, uLlo, 0, enerLlo);
-    TLlo    = epsLlo/cV;
+    TLlo    = pLlo/((R/M)*rhoLlo);
+    YLlo    = primLlo[4];
     
     rhoRlo  = primRlo[0];
     uRlo    = primRlo[1];
-    enerRlo = primRlo[3];
+    enerRlo = qRlo[3];
+    pRlo    = primRlo[3];
     epsRlo  = specIntEner(rhoRlo, uRlo, 0, enerRlo);
-    TRlo    = epsRlo/cV;
+    TLlo    = pRlo/((R/M)*rhoRlo);
+    YRlo    = primRlo[4];
 
     rhoLhi  = primLhi[0];
     uLhi    = primLhi[1];
-    enerLhi = primLhi[3];
+    enerLhi = qLhi[3];
+    pLhi    = primLhi[3];
     epsLhi  = specIntEner(rhoLhi, uLhi, 0, enerLhi);
-    TLhi    = epsLhi/cV;
+    TLhi    = pLhi/((R/M)*rhoLhi);
+    YLhi    = primLhi[4];
     
     rhoRhi  = primRhi[0];
     uRhi    = primRhi[1];
-    enerRhi = primRhi[3];
+    enerRhi = qRhi[3];
+    pRhi    = primRhi[3];
     epsRhi  = specIntEner(rhoRhi, uRhi, 0, enerRhi);
-    TRhi    = epsRhi/cV;
+    TLhi    = pRhi/((R/M)*rhoRhi);
+    YRhi    = primRhi[4];
+
 
     if (d == 0) { // finding viscous fluxes for x-direction update
 
         dudx = (uR-uL)/dx;
         dvdx = (uR-uL)/dx;
         dTdx = (TR-TL)/dx;
+        dYdx = (YR-YL)/dx;
         dudy = 0.5*((uRhi-uRlo)/(2*dy)+(uLhi-uLlo)/(2*dy));
         dvdy = 0.5*((vRhi-vRlo)/(2*dy)+(vLhi-vLlo)/(2*dy));
         uAvg = (uR+uL)/2.0;
         vAvg = (uR+uL)/2.0;
         TAvg = (TR+TL)/2.0;
-        mu_avg = mu(TAvg);
-        k_avg  = k(TAvg);
+        rhoAvg = (rhoR+rhoL)/2.0;
+        mu_avg = mu(TAvg,rhoAvg);
+        k_avg  = k(TAvg,rhoAvg);
+        D_avg  = D(TAvg,rhoAvg);
 
         viscSlice[0] = 0;
         viscSlice[1] = 2.0*mu_avg*dudx - (2.0/3.0)*mu_avg*(dudx+dvdy);
         viscSlice[2] = mu_avg*(dvdx+dudy);
         viscSlice[3] = uAvg*viscSlice[1] + vAvg*viscSlice[2] + k_avg*dTdx;
+        viscSlice[4] = rhoAvg*D_avg*dYdx;
 
     }
 
@@ -273,40 +299,91 @@ void getViscFlux2D(Vector<double>& viscSlice, const Vector<double>& qL, const Ve
         dudy = (uR-uL)/dy;
         dvdy = (vR-vL)/dy;
         dTdy = (TR-TL)/dy;
+        dYdy = (YR-YL)/dy;
         dudx = 0.5*((uRhi-uRlo)/(2*dx)+(uLhi-uLlo)/(2*dx));
         dvdx = 0.5*((vRhi-vRlo)/(2*dx)+(vLhi-vLlo)/(2*dx));
         uAvg = (uR+uL)/2.0;
         vAvg = (uR+uL)/2.0;
         TAvg = (TR+TL)/2.0;
-        mu_avg = mu(TAvg);
-        k_avg  = k(TAvg);
+        rhoAvg = (rhoR+rhoL)/2.0;
+        mu_avg = mu(TAvg,rhoAvg);
+        k_avg  = k(TAvg,rhoAvg);
+        D_avg  = D(TAvg,rhoAvg);
 
         viscSlice[0] = 0;
         viscSlice[1] = mu_avg*(dvdx+dudy);
         viscSlice[2] = 2.0*mu_avg*dvdy - (2.0/3.0)*mu_avg*(dudx+dvdy);
         viscSlice[3] = uAvg*viscSlice[1] + vAvg*viscSlice[2] + k_avg*dTdy;
+        viscSlice[4] = rhoAvg*D_avg*dYdy;
+
 
     }
     
 }
 
 
+double diffusiveSpeed(const Vector<double>& qL, const Vector<double>& qR){
+
+    double rhoL, uL, enerL, epsL, TL, YL, pL, rhoR, uR, enerR, epsR, TR, YR, pR;
+    double dudx, dTdx, dYdx, uAvg, TAvg, rhoAvg;
+    double mu_avg, k_avg, D_avg;
+    double maxLeft, maxRight;
+    
+    Vector<double> primL;
+    Vector<double> primR;
+
+    primL   = getPrim(qL);
+    primR   = getPrim(qR);
+    
+    rhoL  = primL[0];
+    uL    = primL[1];
+    enerL = qL[3];
+    pL    = primL[3];
+    TL    = pL/((R/M)*rhoL);
+
+    // std::cout << "temp: " << TL << std::endl;
+    
+    rhoR  = primR[0];
+    uR    = primR[1];
+    enerR = qR[3];
+    pR    = primR[3];
+    TL    = pR/((R/M)*rhoR);
+
+    mu_avg = mu(TL,rhoL);
+    k_avg  = k(TL,rhoL);
+    D_avg  = D(TL,rhoL);
+
+    maxLeft = 2*std::max(mu_avg/rhoL,mu_avg/(rhoL*Pr));
+
+    mu_avg = mu(TR,rhoR);
+    k_avg  = k(TR,rhoR);
+    D_avg  = D(TR,rhoR);
+
+    maxRight = 2*std::max(mu_avg/rhoR,mu_avg/(rhoR*Pr));
+
+    // std::cout << "mu: " << mu_avg << ", max speed" << maxRight << std::endl;
+
+    double maxSpeed = std::max(maxLeft,maxRight);
+    return maxSpeed;
+
+}
+
+
 // functions to calculate transport properties via temperature fits go here
 
-double mu(const double& T){
-    double mu_val = 3e-5;
+double mu(const double& T, const double& rho){
+    double mu_val = (2.9*1e-4/rho)*pow(T,0.7);
+    // std::cout << "mu: " << mu_val << std::endl;
     return mu_val;
 }
 
-double k(const double& T){
-    double k_val = 1.4;
+double k(const double& T, const double& rho){
+    double k_val = (2.9*1e-4/rho)*pow(T,0.7);
     return k_val;
 }
 
-// double mu = 3e-5;
-    // double k  = 1.4;
+double D(const double& T, const double& rho){
+    double D_val = (2.9*1e-4/rho)*pow(T,0.7);
+    return D_val;
+}
 
-// primLlo = getPrim(qLlo);
-    // primRlo = getPrim(qRlo);
-    // primLhi = getPrim(qLhi);
-    // primRhi = getPrim(qRhi);

@@ -28,7 +28,10 @@ Vector<double> setIC(const int dim);
 Vector<double> HLLCflux(const Vector<double>& qL, const Vector<double>& qR, const int& dir);
 Vector<double> HLLCstarFlux(const Vector<double>& f, const Vector<double>& q,\
                                  const double& s, const double& sStar, const int& dir);
-
+Vector<double> HLLflux(const Vector<double>& qL, const Vector<double>& qR, const int& dir);
+Vector<double> HLLstarFlux(const Vector<double>& fL, const Vector<double>& fR, const Vector<double>& qL,\
+                           const Vector<double>& qR, const double& sL, const double& sR, const int& dir);
+                           
 void wavespeedEstimate(const Vector<double>& qL, const Vector<double>& qR,\
                        double& sL, double& sR, double& sStar, const int dir);
 void getStopTime(int enIC, amrex::Real& stop_time);

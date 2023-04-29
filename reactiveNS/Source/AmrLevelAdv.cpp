@@ -10,6 +10,7 @@
 #include <exactFunc.H>
 #include <recon.H>
 #include <diffusionFunc.H>
+#include <constants.H>
 #include <math.h>
 #include <iostream>
 #include <algorithm> 
@@ -25,18 +26,24 @@ extern   int       source;
 extern   int       enLimiter;
 extern   int       gCells;
 extern   int       conv; 
+extern   double       Gamma;
+extern   double       R;
+extern   double       one_atm_Pa;
 
 // define the remaining global variables here. NUM_GROW should be defined based on the value of slope limiting.
 int      AmrLevelAdv::verbose         = 0;
 Real     AmrLevelAdv::cfl             = 0.9; // Default value - can be overwritten in settings file
 int      AmrLevelAdv::do_reflux       = 1;  
-int      AmrLevelAdv::NUM_STATE       = 4;  // set this to 4 to store vector of conserved variables for the Euler eqns. -2023W2
+int      AmrLevelAdv::NUM_STATE       = 5;  // set this to 5 for one-step reactive NS. -2023W2
 int      AmrLevelAdv::NUM_GROW        = 2;  // number of ghost cells, set gCells from main.cpp file. -2023W2
 int      n_cell;
 int      max_level;
 const int      spacedim               = amrex::SpaceDim;
-double   Gamma                        = 1.4;   // initialize gamma = 1.4 as global variable -2023W2
 int      NUM_STATE                    = AmrLevelAdv::NUM_STATE;
+double   M                            = 21; // molecular mass
+int      pfrequency                   = 10;
+int      iter                         = 1;
+int      printIter                    = 0;
 
 // A few vector quantities are defined here to be used in the slope reconstruction / flux calculations
 Vector<double> qL(NUM_STATE);
@@ -46,6 +53,7 @@ Vector<double> qRlo(NUM_STATE);
 Vector<double> qLhi(NUM_STATE);
 Vector<double> qRhi(NUM_STATE);
 Vector<double> fluxvals(NUM_STATE);
+Vector <double> printCount(pfrequency);
 // Vector <Vector<double> > u0; 
 // Vector <double> slopeCells(3);
 // Vector <double> boundLslice(NUM_STATE);
@@ -199,6 +207,8 @@ AmrLevelAdv::variableSetUp ()
 			                  StateDescriptor::BndryFunc(nullfill));
   desc_lst.setComponent(Phi_Type, 3, "energy", bc, 
 			                  StateDescriptor::BndryFunc(nullfill));
+  desc_lst.setComponent(Phi_Type, 4, "rhoY", bc, 
+			                  StateDescriptor::BndryFunc(nullfill));
 }
 
 //
@@ -231,6 +241,12 @@ AmrLevelAdv::initData ()
     amrex::Print() << "Initializing the data at level " << level << std::endl;
   }
 
+  // Set Gamma to required value based on initial condition here
+
+  if (enIC == 8){
+    Gamma = 1.17;
+  }
+
   // Slightly messy way to ensure uninitialised data is not used.
   // AMReX has an XDim3 object, but a function needs to be written to
   // convert Real* to XDim3
@@ -241,9 +257,9 @@ AmrLevelAdv::initData ()
   const Real probLoY = (amrex::SpaceDim > 1 ? prob_lo[1] : 0.0);
   
   // Initialize vector to store left and right state for Riemann problem
-  Vector<double> RPLeftRight(12);
+  Vector<double> RPLeftRight(14);
   RPLeftRight = setIC(amrex::SpaceDim);
-  double xDisc = RPLeftRight[8];
+  double xDisc = RPLeftRight[10];
 
   // Loop over all the patches at this level
   for (MFIter mfi(S_new); mfi.isValid(); ++mfi)
@@ -269,18 +285,45 @@ AmrLevelAdv::initData ()
           {
             // Implement new initial conditions here, take IC from FV_func.cpp,
             // which are converted to conserved variables, apply to arr(i,j,k,NUM_STATES) -2023W2
-            
-            if (x<xDisc){
-              arr(i,j,k,0) = RPLeftRight[0];
-              arr(i,j,k,1) = RPLeftRight[1];
-              arr(i,j,k,2) = RPLeftRight[2];
-              arr(i,j,k,3) = RPLeftRight[3];
+            if (enIC == 8){
+              double xDomain = RPLeftRight[12]-RPLeftRight[11];
+              double Tstar   = 1500.0;
+              double T0      = 300.0;
+              double L       = (3.0/4.0)*xDomain;
+              double T       = std::max(T0,Tstar - (Tstar - T0)*(x/L));
+              
+              // density
+              arr(i,j,k,0) = one_atm_Pa/((R/M)*T);
+
+              // x-momentum
+              arr(i,j,k,1) = 0.0;
+
+              // y-momentum
+              arr(i,j,k,2) = 0.0;
+
+              // energy
+              arr(i,j,k,3) = energy(arr(i,j,k,0),0.0,0.0,one_atm_Pa);
+
+              // density*unburned fuel mass fraction
+              arr(i,j,k,4) = arr(i,j,k,0)*1.0;
+
+              // std::cout << "x: " << x << "Density: " << arr(i,j,k,0) << " Temperature: " << T << " Energy: " << arr(i,j,k,3) << std::endl; 
             }
             else {
-              arr(i,j,k,0) = RPLeftRight[4];
-              arr(i,j,k,1) = RPLeftRight[5];
-              arr(i,j,k,2) = RPLeftRight[6];
-              arr(i,j,k,3) = RPLeftRight[7];
+              if (x<xDisc){
+                arr(i,j,k,0) = RPLeftRight[0];
+                arr(i,j,k,1) = RPLeftRight[1];
+                arr(i,j,k,2) = RPLeftRight[2];
+                arr(i,j,k,3) = RPLeftRight[3];
+                arr(i,j,k,4) = RPLeftRight[4];
+              }
+              else {
+                arr(i,j,k,0) = RPLeftRight[5];
+                arr(i,j,k,1) = RPLeftRight[6];
+                arr(i,j,k,2) = RPLeftRight[7];
+                arr(i,j,k,3) = RPLeftRight[8];
+                arr(i,j,k,4) = RPLeftRight[9];
+              }
             }
           }
           else // for 2-D tests:
@@ -291,12 +334,14 @@ AmrLevelAdv::initData ()
                 arr(i,j,k,1) = RPLeftRight[1];
                 arr(i,j,k,2) = RPLeftRight[2];
                 arr(i,j,k,3) = RPLeftRight[3];
+                arr(i,j,k,4) = RPLeftRight[4];
               }
               else {
-                arr(i,j,k,0) = RPLeftRight[4];
-                arr(i,j,k,1) = RPLeftRight[5];
-                arr(i,j,k,2) = RPLeftRight[6];
-                arr(i,j,k,3) = RPLeftRight[7];
+                arr(i,j,k,0) = RPLeftRight[5];
+                arr(i,j,k,1) = RPLeftRight[6];
+                arr(i,j,k,2) = RPLeftRight[7];
+                arr(i,j,k,3) = RPLeftRight[8];
+                arr(i,j,k,4) = RPLeftRight[9];
               }
             }
             else if (enIC == 6){  //cylindrical explosion
@@ -305,12 +350,14 @@ AmrLevelAdv::initData ()
                 arr(i,j,k,1) = RPLeftRight[1];
                 arr(i,j,k,2) = RPLeftRight[2];
                 arr(i,j,k,3) = RPLeftRight[3];
+                arr(i,j,k,4) = RPLeftRight[4];
               }
               else {
-                arr(i,j,k,0) = RPLeftRight[4];
-                arr(i,j,k,1) = RPLeftRight[5];
-                arr(i,j,k,2) = RPLeftRight[6];
-                arr(i,j,k,3) = RPLeftRight[7];
+                arr(i,j,k,0) = RPLeftRight[5];
+                arr(i,j,k,1) = RPLeftRight[6];
+                arr(i,j,k,2) = RPLeftRight[7];
+                arr(i,j,k,3) = RPLeftRight[8];
+                arr(i,j,k,4) = RPLeftRight[9];
               }
               //std::cout << "x,y=" << x << "," << y << ", rho=" << arr(i,j,k,0) << std::endl;
             }
@@ -320,12 +367,14 @@ AmrLevelAdv::initData ()
                 arr(i,j,k,1) = RPLeftRight[1];
                 arr(i,j,k,2) = RPLeftRight[2];
                 arr(i,j,k,3) = RPLeftRight[3];
+                arr(i,j,k,4) = RPLeftRight[4];
               }
               else {
-                arr(i,j,k,0) = RPLeftRight[4];
-                arr(i,j,k,1) = RPLeftRight[5];
-                arr(i,j,k,2) = RPLeftRight[6];
-                arr(i,j,k,3) = RPLeftRight[7];
+                arr(i,j,k,0) = RPLeftRight[5];
+                arr(i,j,k,1) = RPLeftRight[6];
+                arr(i,j,k,2) = RPLeftRight[7];
+                arr(i,j,k,3) = RPLeftRight[8];
+                arr(i,j,k,4) = RPLeftRight[9];
               }
             }
             
@@ -341,8 +390,7 @@ AmrLevelAdv::initData ()
   if (verbose) {
     amrex::Print() << "Done initializing the level " << level 
 		   << " data " << std::endl;
-  }
-  
+  }  
   
 }
 
@@ -521,12 +569,30 @@ AmrLevelAdv::advance (Real time,
   //                      ? bc_dom[sc].hi(dir) : BCType::int_dir ));
   // This is now adapted to our code using BCType::foextrap -2023W2
 
-  for (int nVar = 0; nVar < NUM_STATE; nVar++){
-    for (int nDim = 0; nDim < amrex::SpaceDim; nDim++){
-      BCVec[nVar].setLo(nDim,BCType::foextrap);
-      BCVec[nVar].setHi(nDim,BCType::foextrap);
+  // if (enIC < 8) // For the Euler equation tests, use transmissive BCs everywhere
+  // {
+    for (int nVar = 0; nVar < NUM_STATE; nVar++){
+      for (int nDim = 0; nDim < amrex::SpaceDim; nDim++){
+        BCVec[nVar].setLo(nDim,BCType::foextrap);
+        BCVec[nVar].setHi(nDim,BCType::foextrap);
+      }
     }
-  }
+  // }
+  // else // For the shock-induced igntion problem, use the reflective BC at the left wall
+  // {
+  //   for (int nVar = 0; nVar < NUM_STATE; nVar++){
+  //     for (int nDim = 0; nDim < amrex::SpaceDim; nDim++){
+  //       if ((nVar == 1)){
+  //         BCVec[nVar].setLo(nDim,BCType::reflect_odd);
+  //         BCVec[nVar].setHi(nDim,BCType::foextrap);
+  //       }
+  //       else{
+  //         BCVec[nVar].setLo(nDim,BCType::reflect_even);
+  //         BCVec[nVar].setHi(nDim,BCType::foextrap);
+  //       }
+  //     }
+  //   }
+  // }
 
   // Fill periodic boundaries where they exist.  More accurately, the
   // FillBoundary call will fill overlapping boundaries (with periodic
@@ -545,17 +611,18 @@ AmrLevelAdv::advance (Real time,
   // This loops through all spatial dimensions. We use this variable 'd' to track 
   // which direction we are computing fluxes along. -2023W2
 
+  double dX = dx[0], dY;
+  if (amrex::SpaceDim == 1){
+    dY = dx[0];
+  }
+
   // We update the cell-centred values in a dimensionally-split manner, using an inviscid-viscous-source splitting 
 
   // ____ EULER ____ //
 
   for (int d = 0; d < amrex::SpaceDim ; d++)   
   {
-    const int iOffset = ( d == 0 ? 1 : 0);
-    const int jOffset = ( d == 1 ? 1 : 0);
-    const int kOffset = ( d == 2 ? 1 : 0);
-
-    updateEuler(Sborder, fluxes, qL, qR, fluxvals, d, dt, dx[0], dx[1], euler);
+    updateEuler(Sborder, fluxes, qL, qR, fluxvals, d, dt, dX, dY, euler);
 
     Sborder.FillBoundary(geom.periodicity());
     FillDomainBoundary(Sborder,geom,BCVec);   // use this to fill cell-centred data outside domain (AMReX_BCUtil.H) -2023W2
@@ -582,8 +649,8 @@ AmrLevelAdv::advance (Real time,
 
   for (int d = 0; d < amrex::SpaceDim ; d++)   
   {
-    updateViscous(Sborder, fluxes, qL, qR, qLlo, qRlo, qLhi, qRhi, viscSlice, fluxvals, \
-                  d, dt, dx[0], dx[1], amrex::SpaceDim, viscous);
+    updateViscous(Sborder, fluxes, qL, qR, qLlo, qRlo, qLhi, qRhi, viscSlice, \
+                  d, dt, dX, dY, amrex::SpaceDim, viscous);
 
     Sborder.FillBoundary(geom.periodicity());
     FillDomainBoundary(Sborder,geom,BCVec);   // use this to fill cell-centred data outside domain (AMReX_BCUtil.H) -2023W2
@@ -604,6 +671,9 @@ AmrLevelAdv::advance (Real time,
       fluxes[d].mult(scaleFactor, 0, NUM_STATE);
     }
   } //this closes the d=0 to d=spacedim loop for the EULER update
+
+  // ____ SOURCE ____ //
+
 
   // The updated data is now copied to the S_new multifab.  This means
   // it is now accessible through the get_new_data command, and AMReX
@@ -662,7 +732,7 @@ AmrLevelAdv::estTimeStep (Real)
   const Real* prob_lo = geom.ProbLo();
   const Real cur_time = state[Phi_Type].curTime();
   const MultiFab& S_new = get_new_data(Phi_Type);
-  double sL=0.0,sR=0.0,sStar=0.0,sMax = 0.0;
+  double sL=0.0,sR=0.0,sStar=0.0,sMax = 0.0,sDiff = 0.0,sMaxDiff=0.0;
   Vector<double> qL(NUM_STATE);
   Vector<double> qR(NUM_STATE);
 
@@ -693,7 +763,12 @@ AmrLevelAdv::estTimeStep (Real)
               qR[h] = arr(i+1,j,k,h);
             }
             wavespeedEstimate(qL,qR,sL,sR,sStar,dir);
-            sMax = std::max(sMax,std::max(std::abs(sL),std::abs(sR)));            
+            sDiff = diffusiveSpeed(qL,qR);
+            sMaxDiff = std::max(sMaxDiff,sDiff);
+            sMax = std::max(sMax,std::max(std::abs(sL),std::abs(sR)));
+
+            // std::cout << "Wavespeed: " << sMax << ", Diffusive speed: " << sMaxDiff << std::endl;
+                   
             i++; // we skip a cell each iteration in the for loop as we use two cells to compute the max wavespeed -2023W2
           }
         }
@@ -703,13 +778,18 @@ AmrLevelAdv::estTimeStep (Real)
   //const Real velMag = sqrt(2.);
   for(unsigned int d = 0; d < amrex::SpaceDim; ++d)
   {
-    dt_est = std::min(dt_est, dx[d]/sMax);
+    dt_est = std::min(dt_est, cfl*dx[d]/sMax);
+    if (viscous == 1){
+      dt_est = std::min(dt_est, dx[d]*dx[d]/sMaxDiff);
+    }
+    
   }
   
   // Ensure that we really do have the minimum across all processors
   ParallelDescriptor::ReduceRealMin(dt_est);
-  dt_est *= cfl;
+  // dt_est *= cfl;
 
+    
   if (verbose) {
     amrex::Print() << "AmrLevelAdv::estTimeStep at level " << level 
 		   << ":  dt_est = " << dt_est << std::endl;
@@ -893,6 +973,8 @@ AmrLevelAdv::post_timestep (int iteration)
   const Real cur_time = state[Phi_Type].curTime();
   const MultiFab& S_plot = get_new_data(Phi_Type);
 
+if (enIC < 8){
+
   if (cur_time == stop_time){
 
     std::string method;
@@ -1034,13 +1116,16 @@ AmrLevelAdv::post_timestep (int iteration)
               double xmomentum = arr(i,j,k,1);
               double ymomentum = arr(i,j,k,2);
               double energy    = arr(i,j,k,3);
+              double rhoY      = arr(i,j,k,4);
 
               double vx  = xmomentum/rho;
               double vy  = ymomentum/rho;
               double p   = pressure(rho,vx,vy,energy);
               double eps = specIntEner(rho,vx,vy,energy);
+              double Y   = rhoY/rho;
+              double T   = p/((R/M)*rho);
 
-              approx << x << " " << rho << " " << vx << " " << p << " " << eps << std::endl;
+              approx << x << " " << rho << " " << vx << " " << p << " " << eps << " " << Y << " " << T << std::endl;
 
             }
           }
@@ -1051,6 +1136,99 @@ AmrLevelAdv::post_timestep (int iteration)
     approx.close();
 
   }
+}
+
+else {
+    // print pressure 'pfrequency' times as specified at the start of the program
+    // double val = cur_time/stop_time;
+    // double fraction = 1/pfrequency;
+
+    // for (int iter = 0; iter < (pfrequency+1); iter++)
+    // {
+    //   if (val >= iter*fraction)
+    //   {
+    //     printCount[iter-1]+=1;
+    //   }
+    // }
+
+    // if (std::count(printCount.begin(), printCount.end(), 1))
+    // {
+    // iter += 1;
+    double val = cur_time/stop_time;
+
+    if (val > 0.1*(iter-1)){
+      
+      
+      const Real dX = dx[0];
+      const Real dY = (amrex::SpaceDim > 1 ? dx[1] : 0.0);
+
+      const Real probLoX = prob_lo[0];
+      const Real probLoY = (amrex::SpaceDim > 1 ? prob_lo[1] : 0.0);
+
+
+      std::string method;
+
+      if (euler==0){
+        method = "HLLC";
+      }
+      else {
+        method = "MUSCL";
+      }
+
+      std::string resolution = std::to_string(n_cell);
+      std::string dimension  = std::to_string(amrex::SpaceDim);
+      std::string test       = std::to_string(enIC);
+      std::string iteration  = std::to_string(iter);
+
+      std::ofstream approx;
+      approx.open("output/txt/test8/"+dimension+method+resolution+"time"+iteration+".txt",std::ofstream::app);
+      //std::ofstream::out | std::ofstream::trunc
+
+      for (MFIter mfi(S_plot); mfi.isValid(); ++mfi)
+      {
+        Box bx = mfi.tilebox();
+        const Dim3 lo = lbound(bx);
+        const Dim3 hi = ubound(bx);
+        const auto& arr = S_plot.array(mfi);
+        
+        for(int k = lo.z; k <= hi.z; k++)
+        {
+          for(int j = lo.y; j <= hi.y; j++)
+          {
+            const Real y     = probLoY + (double(j)+0.5) * dY;
+            for(int i = lo.x; i <= hi.x; i++)
+            {
+              const Real x     = probLoX + (double(i)+0.5) * dX;
+
+              double rho       = arr(i,j,k,0);
+              double xmomentum = arr(i,j,k,1);
+              double ymomentum = arr(i,j,k,2);
+              double ener      = arr(i,j,k,3);
+              double rholambda = arr(i,j,k,4);
+
+              double vx  = xmomentum/rho;
+              double vy  = ymomentum/rho;
+              double lambda = rholambda/rho;
+              double p   = pressure(rho,vx,vy,ener);
+              // ener = energy(rho,vx,0,p);
+              double T = p/(rho*R/M);
+              double eps = specIntEner(rho,vx,vy,ener);
+
+              AllPrint(approx) << x << " " << rho << " " << vx << " " << p << " " << eps << " " << lambda << " " << T << std::endl;
+
+            }
+          }
+        }
+      }
+      std::cout << "wrote output data to text file" << std::endl;
+      approx.close();
+
+      iter+=1;
+  
+
+    }
+  } 
+
   
 }
 

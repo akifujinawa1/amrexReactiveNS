@@ -148,7 +148,7 @@ tmp_build_dir/o/1d.gnu.MPI.EXE/AmrLevelAdv.o: \
  ../../../../amrex/Src/Base/AMReX_ParmParse.H \
  ../../../../amrex/Src/Base/AMReX_BCUtil.H ../../Source/eulerFunc.H \
  ../../Source/exactFunc.H ../../Source/recon.H \
- ../../Source/diffusionFunc.H
+ ../../Source/diffusionFunc.H ../../Source/constants.H
 
 ../../Source/AmrLevelAdv.H:
 
@@ -455,3 +455,5 @@ tmp_build_dir/s/1d.gnu.MPI.EXE/AMReX_Config.H:
 ../../Source/recon.H:
 
 ../../Source/diffusionFunc.H:
+
+../../Source/constants.H:

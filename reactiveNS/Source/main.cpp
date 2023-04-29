@@ -65,9 +65,9 @@ main (int   argc,
         gCells = 1;
     }
 
-    if (enIC < 1 || enIC > 7) {
-        amrex::Abort("MUST SPECIFY a valid initial condition"); 
-    } 
+    // if (enIC < 1 || enIC > 7) {
+    //     amrex::Abort("MUST SPECIFY a valid initial condition"); 
+    // } 
     
     if (euler < 0 || euler > 2) {
         amrex::Abort("MUST SPECIFY a valid boolean value"); 
@@ -81,9 +81,9 @@ main (int   argc,
         amrex::Abort("MUST SPECIFY a non-negative strt_time");
     }
 
-    if (max_step < 0 && stop_time < 0.0) {
-	    amrex::Abort("Exiting because neither max_step nor stop_time is non-negative.");
-    }
+    // if (max_step < 0 && stop_time < 0.0) {
+	//     amrex::Abort("Exiting because neither max_step nor stop_time is non-negative.");
+    // }
 
     {
         Amr amr(getLevelBld());

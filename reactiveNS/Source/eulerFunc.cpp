@@ -65,11 +65,12 @@ void updateEuler(MultiFab& Sborder, Array<MultiFab, SpaceDim>& fluxes, Vector<do
                                 // Call HLLCflux using the left and right states, qL and qR, and the flux direction
                                 // tracked by the for loop variable 'd' to compute the correct fluxes. d=0 corresponds 
                                 // to the x-direction, and d=1 corresponds to the y-direction. -2023W2
-                                fluxvals = HLLCflux(qL,qR,d);
+                                fluxvals = HLLCflux(qL,qR,d);                        
                                 
                                 for(int h = 0; h < NUM_STATE; h++)
                                 {
                                     fluxArr(i,j,k,h) = fluxvals[h];
+                                    std::cout << "flux val " << fluxvals[h] << std::endl;
                                 }
                                 
                             }
@@ -197,11 +198,12 @@ void updateEuler(MultiFab& Sborder, Array<MultiFab, SpaceDim>& fluxes, Vector<do
                                     // Call HLLCflux using the left and right states, qL and qR, and the flux direction
                                     // tracked by the for loop variable 'd' to compute the correct fluxes. d=0 corresponds 
                                     // to the x-direction, and d=1 corresponds to the y-direction.  -2023W2
-                                    fluxvals = HLLCflux(qL,qR,d);
+                                    fluxvals = HLLflux(qL,qR,d);
                                     
                                     for(int h = 0; h < NUM_STATE; h++)
                                     {
                                         fluxArr(i-1,j,k,h) = fluxvals[h];
+                                        // std::cout << "flux val " << fluxvals[h] << std::endl;
                                     }
                                 }
 
@@ -285,6 +287,7 @@ void updateEuler(MultiFab& Sborder, Array<MultiFab, SpaceDim>& fluxes, Vector<do
                                 for(int h = 0; h < NUM_STATE; h++)
                                 {
                                     arr(i,j,k,h) = arr(i,j,k,h) - (dt / dx) * (fluxArr(i+iOffset, j, k,h) - fluxArr(i,j,k,h));
+                                    // std::cout << "arr val " << arr(i,j,k,h) << std::endl;
                                 }
                             }
                             else { // y=direction update
@@ -305,9 +308,9 @@ void updateEuler(MultiFab& Sborder, Array<MultiFab, SpaceDim>& fluxes, Vector<do
 
 Vector<double> setIC(const int dim) {
 
-    double rhoL, vxL, vyL, pL, rhoR, vxR, vyR, pR;
+    double rhoL, vxL, vyL, pL, YL, rhoR, vxR, vyR, pR, YR;
     double x0,xEnd,xDisc,tEnd;
-    Vector<double> RPLeftRight(12);
+    Vector<double> RPLeftRight(14);
 
     if (dim==1) {
         vyL = 0;
@@ -360,6 +363,13 @@ Vector<double> setIC(const int dim) {
                 x0  = 0; xEnd = 1; xDisc = 0.4; tEnd=0.25;
                 rhoL = 1; vxL = 0;  pL = 1;      
                 rhoR = 0.125; vxR = 0; pR = 0.1;
+                break;
+            }
+            case 8: //one step ns Detonation
+            {
+                x0  = 0; xEnd = 1; xDisc = 0.5; tEnd=0.25;
+                rhoL = 8.7345e-4; vxL = 0.0; pL = 1.0; YL = 1;
+                rhoR = 8.7345e-4; vxR = 0.0; pR = 1.0; YR = 1;
                 break;
             }
         }
@@ -420,18 +430,22 @@ Vector<double> setIC(const int dim) {
         }
     }
 
+    YL = 1; YR = 1; 
+
     RPLeftRight[0] = rhoL;
     RPLeftRight[1] = rhoL*vxL;
     RPLeftRight[2] = rhoL*vyL;
     RPLeftRight[3] = energy(rhoL,vxL,vyL,pL);
-    RPLeftRight[4] = rhoR;
-    RPLeftRight[5] = rhoR*vxR;
-    RPLeftRight[6] = rhoR*vyR;
-    RPLeftRight[7] = energy(rhoR,vxR,vyR,pR);
-    RPLeftRight[8] = xDisc;
-    RPLeftRight[9] = x0;
-    RPLeftRight[10] = xEnd;
-    RPLeftRight[11] = tEnd;
+    RPLeftRight[4] = rhoL*YL;
+    RPLeftRight[5] = rhoR;
+    RPLeftRight[6] = rhoR*vxR;
+    RPLeftRight[7] = rhoR*vyR;
+    RPLeftRight[8] = energy(rhoR,vxR,vyR,pR);
+    RPLeftRight[9] = rhoR*YR;
+    RPLeftRight[10] = xDisc;
+    RPLeftRight[11] = x0;
+    RPLeftRight[12] = xEnd;
+    RPLeftRight[13] = tEnd;
 
     return RPLeftRight;    
 }
@@ -440,7 +454,7 @@ void getStopTime(int enIC, Real& stop_time){
     switch (enIC) {
         case 1: //toro test 1
         {
-            stop_time=0.45;
+            stop_time=0.05;
             break;
         }
         case 2: //toro test 2
@@ -471,6 +485,11 @@ void getStopTime(int enIC, Real& stop_time){
         case 7: //offset for 2-D, revert to toro1
         {
             stop_time=0.25;
+            break;
+        }
+        case 8: //offset for 2-D, revert to toro1
+        {
+            stop_time=0.05;
             break;
         }
     }
@@ -517,29 +536,37 @@ void wavespeedEstimate(const Vector<double>& qL, const Vector<double>& qR,\
     aL = soundSpeed(pL,rhoL);
     aR = soundSpeed(pR,rhoR);
 
-    // Here, we use a pressure-based wave speed estimate proposed by Toro et al. (1994, Shock Waves)
-    // The star-region pressure estimate follows the form of the PVRS approximate Riemann solver by Toro (1991, Proc. Roy. Soc. London)
+    // // Here, we use a pressure-based wave speed estimate proposed by Toro et al. (1994, Shock Waves)
+    // // The star-region pressure estimate follows the form of the PVRS approximate Riemann solver by Toro (1991, Proc. Roy. Soc. London)
 
-    rhobar = 0.5*(rhoL+rhoR);
-    abar   = 0.5*(aL+aR);
-    pPVRS  = 0.5*(pL+pR)-0.5*(vR-vL)*rhobar*abar;  
-    pStar  = std::max(0.0,pPVRS);
+    // rhobar = 0.5*(rhoL+rhoR);
+    // abar   = 0.5*(aL+aR);
+    // pPVRS  = 0.5*(pL+pR)-0.5*(vR-vL)*rhobar*abar;  
+    // pStar  = std::max(0.0,pPVRS);
 
-    if (pStar <= pL){
-        qqL = 1;
-    }
-    else {
-        qqL = sqrt(std::abs(1+((Gamma+1)/(2*Gamma))*((pStar/pL) - 1)));
-    }
-    if (pStar <= pR){
-        qqR = 1;
-    }
-    else {
-        qqR = sqrt(std::abs(1+((Gamma+1)/(2*Gamma))*((pStar/pR) - 1)));
-    }
+    // if (pStar <= pL){
+    //     qqL = 1;
+    // }
+    // else {
+    //     qqL = sqrt(std::abs(1+((Gamma+1)/(2*Gamma))*((pStar/pL) - 1)));
+    // }
+    // if (pStar <= pR){
+    //     qqR = 1;
+    // }
+    // else {
+    //     qqR = sqrt(std::abs(1+((Gamma+1)/(2*Gamma))*((pStar/pR) - 1)));
+    // }
 
-    sL = vL - aL*qqL;
-    sR = vR + aR*qqR;
+    // sL = vL - aL*qqL;
+    // sR = vR + aR*qqR;
+    // sStar = (pR-pL+rhoL*vL*(sL-vL)-rhoR*vR*(sR-vR))/(rhoL*(sL-vL)-rhoR*(sR-vR));
+
+    // Here, we use the wavespeed estimate proposed by Davis in "Simplified second-order godunov-type methods,
+    // SIAM Journal on Scientific and Statistical Computing  (1988)
+
+    double splus = std::max(std::max(fabs(vL-aL),fabs(vR-aR)),std::max(fabs(vL+aL),fabs(vR+aR)));
+    sL    = -splus;
+    sR    = splus;
     sStar = (pR-pL+rhoL*vL*(sL-vL)-rhoR*vR*(sR-vR))/(rhoL*(sL-vL)-rhoR*(sR-vR));
 
 
@@ -600,7 +627,7 @@ Vector<double> HLLCstarFlux(const Vector<double>& f, const Vector<double>& q,\
 
     // Calculates HLLC star-state flux for HLLC approximate Riemann solver.
 
-	double rho,vx,vy,p,ener,temp;
+	double rho,vx,vy,p,ener,Y,temp;
     Vector<double> starFlux(NUM_STATE);
 	Vector<double> prim(NUM_STATE);
 	
@@ -610,6 +637,7 @@ Vector<double> HLLCstarFlux(const Vector<double>& f, const Vector<double>& q,\
 	vx   = prim[1];
     vy   = prim[2];
 	p    = prim[3];
+    Y    = prim[4];
     ener = q[3];
 	
     if (dir == 0){  // x-direction flux
@@ -618,6 +646,7 @@ Vector<double> HLLCstarFlux(const Vector<double>& f, const Vector<double>& q,\
         starFlux[1] = f[1]+s*(sStar*temp-q[1]);
         starFlux[2] = f[2]+s*(vy*temp-q[2]);
         starFlux[3] = f[3]+s*(temp*((ener/rho)+(sStar-vx)*(sStar+p/(rho*(s-vx))))-q[3]);
+        starFlux[4] = f[4]+s*(temp*Y-q[4]);
     }
     else {  // y-direction flux
         temp = rho*(s-vy)/(s-sStar);
@@ -625,9 +654,72 @@ Vector<double> HLLCstarFlux(const Vector<double>& f, const Vector<double>& q,\
         starFlux[1] = f[1]+s*(vx*temp-q[1]);
         starFlux[2] = f[2]+s*(sStar*temp-q[2]);
         starFlux[3] = f[3]+s*(temp*((ener/rho)+(sStar-vy)*(sStar+p/(rho*(s-vy))))-q[3]);
+        starFlux[4] = f[4]+s*(temp*Y-q[4]);
     }
 	
 	
+	
+	return starFlux;
+	
+}
+
+Vector<double> HLLflux(const Vector<double>& qL, const Vector<double>& qR, const int& dir){
+
+    // This function calculates the HLLC flux based on left and right states, qL and qR, respectively
+    // Although this function is not used, it was initially implemented to test the functionality of
+    // the approximate Riemann solvers.
+
+    double sL,sR,sStar;
+    Vector<double> fL(NUM_STATE);
+    Vector<double> fR(NUM_STATE);
+    Vector<double> fstar(NUM_STATE);
+    Vector<double> fluxvals(NUM_STATE);
+
+    wavespeedEstimate(qL,qR,sL,sR,sStar,dir);
+
+    fL = getEulerFlux(qL,dir);
+    fR = getEulerFlux(qR,dir);
+    fstar = HLLstarFlux(fL,fR,qL,qR,sL,sR,dir);
+    
+
+    if(sL > 0)
+    {	
+        fluxvals = fL;
+    }
+
+    else if((sL <= 0)&&(sR > 0))
+    {
+        fluxvals = fstar;
+    }
+    
+    else //(sR < 0)
+    {	
+        fluxvals = fR;
+    }
+
+    return fluxvals;
+
+}
+
+Vector<double> HLLstarFlux(const Vector<double>& fL, const Vector<double>& fR, const Vector<double>& qL,\
+                           const Vector<double>& qR, const double& sL, const double& sR, const int& dir){
+
+    // Calculates star-state flux for HLL approximate Riemann solver
+
+    Vector<double> starFlux(NUM_STATE);
+	
+    if (dir == 0){  // x-direction flux
+        for (int h=0; h<NUM_STATE; h++)
+        {
+            starFlux[h] = (sR*fL[h]-sL*fR[h]+sL*sR*(qR[h]-qL[h]))/(sR-sL);
+        }
+    }
+    else {  // y-direction flux
+        for (int h=0; h<NUM_STATE; h++)
+        {
+            starFlux[h] = (sR*fL[h]-sL*fR[h]+sL*sR*(qR[h]-qL[h]))/(sR-sL);
+        }
+    }
 	
 	return starFlux;
 	
@@ -646,6 +738,7 @@ Vector<double> getEulerFlux(const Vector<double>& q, const int& dir){
     double vx   = prim[1];
     double vy   = prim[2];
     double p    = prim[3];
+    double Y    = prim[4];
     double ener = q[3];
 
     
@@ -654,12 +747,14 @@ Vector<double> getEulerFlux(const Vector<double>& q, const int& dir){
         EulerFlux[1] = rho*vx*vx+p;
         EulerFlux[2] = rho*vx*vy;
         EulerFlux[3] = (ener+p)*vx;
+        EulerFlux[4] = rho*Y*vx;
     }
     else {
         EulerFlux[0] = rho*vy;
         EulerFlux[1] = rho*vx*vy;
         EulerFlux[2] = rho*vy*vy+p;
         EulerFlux[3] = (ener+p)*vy;
+        EulerFlux[4] = rho*Y*vy;
     }
     
     return EulerFlux;
@@ -676,11 +771,13 @@ Vector<double> getPrim(const Vector<double>& q){
     double rhovx = q[1];
     double rhovy = q[2];
     double ener  = q[3];
+    double rhoY  = q[4];
 
     prim[0] = rho;
     prim[1] = rhovx/rho;
     prim[2] = rhovy/rho;
     prim[3] = pressure(rho,rhovx/rho,rhovy/rho,ener);
+    prim[4] = rhoY/rho;
 
     return prim;
 
@@ -689,6 +786,7 @@ Vector<double> getPrim(const Vector<double>& q){
 Vector<double> getCons(const Vector<double>& prim){
 
     // Convert primitive -> conserved variables
+
     
     Vector<double> q(NUM_STATE);
 
@@ -696,11 +794,13 @@ Vector<double> getCons(const Vector<double>& prim){
     double vx  = prim[1];
     double vy  = prim[2];
     double p   = prim[3];
+    double Y   = prim[4];
 
     q[0] = rho;
     q[1] = rho*vx;
     q[2] = rho*vy;
     q[3] = energy(rho,vx,vy,p);
+    q[4] = rho*Y;
 
     return q;
 

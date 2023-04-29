@@ -1,6 +1,7 @@
 // This file contains various functions that are used to compute the linear boundary
 // reconstructed values for the MUSCL-Hancock method.
 
+
 // include header files here
 
 #include "eulerFunc.H"
@@ -33,12 +34,12 @@ void reconstruct(Vector<double>& boundL, Vector<double>& boundR, const Vector<do
 
 void getBoundsSLOPE(Vector<double>& boundL, Vector<double>& boundR, const Vector<double>& slopeCells,\
                     const Vector<Vector<double> >& u0, double w, const int d){
-
+    
     // Using the 'slopeCells', which are the energy values that surround a cell whose boundary values 
     // we wish to reconstruct, we slope-limit on the conserved variables, extracted from the vector of vector
     // 'u0'. The limiter choice is made in the inputs file.
 
-    double delta, r;                
+    double delta, r;
     r = rval(slopeCells[0],slopeCells[1],slopeCells[2]);
     for (int h=0; h<NUM_STATE; h++){
         delta = 0.5*(1+w)*(u0[1][h]-u0[0][h])+0.5*(1-w)*(u0[2][h]-u0[1][h]);
@@ -52,14 +53,14 @@ void localUpdate(Vector<double>& boundL, Vector<double>& boundR,\
                  double dx, double dt, const int d){
     
     // Perform local half time-step update to achieve second-order in time accuracy.
-
+    
     Vector<double> qL(NUM_STATE);
     Vector<double> qR(NUM_STATE);
     Vector<double> fL(NUM_STATE);
     Vector<double> fR(NUM_STATE);
 
-    qL = {boundL[0],boundL[1],boundL[2],boundL[3]};
-    qR = {boundR[0],boundR[1],boundR[2],boundR[3]};
+    qL = {boundL[0],boundL[1],boundL[2],boundL[3],boundL[4]};
+    qR = {boundR[0],boundR[1],boundR[2],boundR[3],boundR[4]};
     fL = getEulerFlux(qL,d);
     fR = getEulerFlux(qR,d);
     for (int h=0; h<NUM_STATE; h++){
@@ -89,7 +90,7 @@ double getLimiter(double r, double rR){
             if ((r<rR)&&(r<2)){
                 return r;
             }
-            else if ((rR<r)&&(rR<2)){
+            else if ((rR<=r)&&(rR<2)){
                 return rR;
             }
             else{
@@ -155,7 +156,7 @@ double rval(double left, double center, double right){
     double num, denom;
     num = center - left;
     denom = right - center;
-
+    
     // In case a division involving zero occurs, we assign arbitrarily 
     // small values to the numerator and denominator.
 
@@ -175,7 +176,6 @@ double rval(double left, double center, double right){
             denom = 1e-12;
         }
     }
-
     return num/denom;
 }
 
