@@ -4,7 +4,7 @@
 #include "AMReX_Array.H"
 #include "AMReX_REAL.H"
 #include <AMReX_MultiFab.H>
-#include <AMReX_FArrayBox.H> //
+#include <AMReX_FArrayBox.H>
 #include <AMReX_MFIter.H>
 
 
@@ -70,7 +70,6 @@ void updateEuler(MultiFab& Sborder, Array<MultiFab, SpaceDim>& fluxes, Vector<do
                                 for(int h = 0; h < NUM_STATE; h++)
                                 {
                                     fluxArr(i,j,k,h) = fluxvals[h];
-                                    std::cout << "flux val " << fluxvals[h] << std::endl;
                                 }
                                 
                             }
@@ -367,7 +366,7 @@ Vector<double> setIC(const int dim) {
             }
             case 8: //one step ns Detonation
             {
-                x0  = 0; xEnd = 1; xDisc = 0.5; tEnd=0.25;
+                x0  = 0; xEnd = 4.0; xDisc = 0.5; tEnd=0.25;
                 rhoL = 8.7345e-4; vxL = 0.0; pL = 1.0; YL = 1;
                 rhoR = 8.7345e-4; vxR = 0.0; pR = 1.0; YR = 1;
                 break;
@@ -489,7 +488,7 @@ void getStopTime(int enIC, Real& stop_time){
         }
         case 8: //offset for 2-D, revert to toro1
         {
-            stop_time=0.05;
+            stop_time=6e-4;
             break;
         }
     }

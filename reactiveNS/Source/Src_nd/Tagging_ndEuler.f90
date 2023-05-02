@@ -39,7 +39,7 @@ subroutine state_error(tag,tag_lo,tag_hi, &
   double precision :: problo(3),dx(3),time
   integer          :: level,set,clear
 
-  double precision :: ax, ay, az
+  double precision :: ax, ay, az, left, right, center
   integer          :: i, j, k, h, dim
 
   if (state_lo(2) .eq. state_hi(2)) then
@@ -55,7 +55,7 @@ subroutine state_error(tag,tag_lo,tag_hi, &
      do          k = lo(3), hi(3)
         do       j = lo(2), hi(2)
            do    i = lo(1), hi(1)
-                  h = 1   ! Tag on refinement criterion based on density gradient, hence, h=1  - 2023W2
+                  h = 5   ! Tag on refinement criterion based on density gradient, hence, h=1  - 2023W2
 
                   ! The gradients are calculated via first order differences at the boundary, while for all other points
                   ! in the domain, the left and right gradient is calculated, and the maximum is taken for a given cell.
@@ -64,13 +64,17 @@ subroutine state_error(tag,tag_lo,tag_hi, &
 
                   if (dim .eq. 1) then    
 
+                     left   = state(i-1,j,k,h)/state(i-1,j,k,1)
+                     center = state(i,j,k,h)/state(i,j,k,1)
+                     right  = state(i+1,j,k,h)/state(i+1,j,k,1)
+
                      if (i .eq. lo(1)) then
-                        ax = abs(state(i,j,k,h)-state(i+1,j,k,h))
+                        ax = abs(center-right)
                      else if (i .eq. hi(1)) then
-                        ax = abs(state(i-1,j,k,h)-state(i,j,k,h))
+                        ax = abs(left-center)
                      else
-                        ax = abs(state(i-1,j,k,h)-state(i,j,k,h))
-                        ax = max(ax, abs(state(i,j,k,h)-state(i+1,j,k,h)))
+                        ax = abs(left-center)
+                        ax = max(ax, abs(center-right))
                      end if
 
                      ay = 0.d0

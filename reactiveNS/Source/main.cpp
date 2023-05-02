@@ -24,6 +24,7 @@ int enLimiter;        // choice of limiter
 int gCells;           // # of ghost cells
 int timing;           // whether to run timing exercise or not
 int conv;             // whether to run convergence study or not
+int Da;               // Damkohler number, ratio of chemical to flow timescale
 
 int
 main (int   argc,
@@ -53,6 +54,7 @@ main (int   argc,
         pp.query("enLimiter",enLimiter);
         pp.query("timing",timing);
         pp.query("conv",conv);
+        pp.query("Da",Da);
         
         // Call getStopTime in eulerFunc.cpp to set correct final time based on initial condition -2023W2
         getStopTime(enIC,stop_time);
@@ -81,9 +83,9 @@ main (int   argc,
         amrex::Abort("MUST SPECIFY a non-negative strt_time");
     }
 
-    // if (max_step < 0 && stop_time < 0.0) {
-	//     amrex::Abort("Exiting because neither max_step nor stop_time is non-negative.");
-    // }
+    if (max_step < 0 && stop_time < 0.0) {
+	    amrex::Abort("Exiting because neither max_step nor stop_time is non-negative.");
+    }
 
     {
         Amr amr(getLevelBld());

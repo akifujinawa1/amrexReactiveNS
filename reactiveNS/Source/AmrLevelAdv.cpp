@@ -10,6 +10,7 @@
 #include <exactFunc.H>
 #include <recon.H>
 #include <diffusionFunc.H>
+#include <source.H>
 #include <constants.H>
 #include <math.h>
 #include <iostream>
@@ -26,9 +27,12 @@ extern   int       source;
 extern   int       enLimiter;
 extern   int       gCells;
 extern   int       conv; 
+extern   int       Da;
 extern   double       Gamma;
 extern   double       R;
 extern   double       one_atm_Pa;
+extern   double       M;
+extern   double       T0;
 
 // define the remaining global variables here. NUM_GROW should be defined based on the value of slope limiting.
 int      AmrLevelAdv::verbose         = 0;
@@ -40,10 +44,9 @@ int      n_cell;
 int      max_level;
 const int      spacedim               = amrex::SpaceDim;
 int      NUM_STATE                    = AmrLevelAdv::NUM_STATE;
-double   M                            = 21; // molecular mass
-int      pfrequency                   = 10;
-int      iter                         = 1;
-int      printIter                    = 0;
+int      pfrequency                   = 20;
+int      iter                         = 0;
+int      printlevel                   = 0;
 
 // A few vector quantities are defined here to be used in the slope reconstruction / flux calculations
 Vector<double> qL(NUM_STATE);
@@ -136,13 +139,94 @@ AmrLevelAdv::checkPoint (const std::string& dir,
 //
 //Write a plotfile to specified directory - format is handled automatically by AMReX.
 //
+
 void
 AmrLevelAdv::writePlotFile (const std::string& dir,
-	 	            std::ostream&      os,
+	 	                        std::ostream&      os,
                             VisMF::How         how)
 {
-  AmrLevel::writePlotFile (dir,os,how);
+  // AmrLevel::writePlotFile (dir,os,how);
   
+  int finest_level = parent->finestLevel();
+  
+  if (do_reflux && level < finest_level)
+    reflux();
+  
+  if (level < finest_level)
+    avgDown();
+  
+//   // If final time, loop through all patches here.
+  const Real* dx = geom.CellSize();
+  const Real* prob_lo = geom.ProbLo();
+  const Real* prob_hi = geom.ProbHi();
+  const Real cur_time = state[Phi_Type].curTime();
+  const MultiFab& S_plot = get_new_data(Phi_Type);
+
+  int rank, size;
+  MPI_Comm_rank(MPI_COMM_WORLD, &rank);
+
+  if ((level == 0)&&(rank == 0)){
+    iter += 1;
+  }
+
+  std::cout << "Printing data on AMR level: " << level << std::endl;
+  
+  const Real dX = dx[0];
+  const Real dY = (amrex::SpaceDim > 1 ? dx[1] : 0.0);
+
+  const Real probLoX = prob_lo[0];
+  const Real probLoY = (amrex::SpaceDim > 1 ? prob_lo[1] : 0.0);
+
+
+  std::string method;
+
+  std::string resolution = std::to_string(n_cell);
+  std::string dimension  = std::to_string(amrex::SpaceDim);
+  std::string test       = std::to_string(enIC);
+  std::string iteration  = std::to_string(iter);
+
+  std::ofstream approx;
+
+  approx.open("output/txt/test8/time"+iteration+".txt",std::ofstream::app);
+
+  for (MFIter mfi(S_plot); mfi.isValid(); ++mfi)
+  {
+    Box bx = mfi.tilebox();
+    const Dim3 lo = lbound(bx);
+    const Dim3 hi = ubound(bx);
+    const auto& arr = S_plot.array(mfi);
+    
+    for(int k = lo.z; k <= hi.z; k++)
+    {
+      for(int j = lo.y; j <= hi.y; j++)
+      {
+        const Real y     = probLoY + (double(j)+0.5) * dY;
+        for(int i = lo.x; i <= hi.x; i++)
+        {
+          const Real x     = probLoX + (double(i)+0.5) * dX;
+
+          double rho       = arr(i,j,k,0);
+          double xmomentum = arr(i,j,k,1);
+          double ymomentum = arr(i,j,k,2);
+          double ener      = arr(i,j,k,3);
+          double rholambda = arr(i,j,k,4);
+
+          double vx  = xmomentum/rho;
+          double vy  = ymomentum/rho;
+          double lambda = rholambda/rho;
+          double p   = pressure(rho,vx,vy,ener);  //print in bar
+          double T = p/(rho*R/M);
+          double eps = specIntEner(rho,vx,vy,ener);
+
+          approx << x << " " << rho << " " << vx << " " << p/101325 << " " << eps << " " << lambda << " " << T << std::endl;
+
+        }
+      }
+    }
+  }
+  std::cout << "wrote output data to text file" << std::endl;
+  approx.close();
+
 }
 
 //
@@ -232,6 +316,7 @@ AmrLevelAdv::initData ()
   const Real* dx  = geom.CellSize();
   // Position of the bottom left corner of the domain
   const Real* prob_lo = geom.ProbLo();
+  const Real* prob_hi = geom.ProbHi();
   // Create a multifab which can store the initial data
   MultiFab& S_new = get_new_data(Phi_Type);
   Real cur_time   = state[Phi_Type].curTime();
@@ -243,9 +328,6 @@ AmrLevelAdv::initData ()
 
   // Set Gamma to required value based on initial condition here
 
-  if (enIC == 8){
-    Gamma = 1.17;
-  }
 
   // Slightly messy way to ensure uninitialised data is not used.
   // AMReX has an XDim3 object, but a function needs to be written to
@@ -286,9 +368,8 @@ AmrLevelAdv::initData ()
             // Implement new initial conditions here, take IC from FV_func.cpp,
             // which are converted to conserved variables, apply to arr(i,j,k,NUM_STATES) -2023W2
             if (enIC == 8){
-              double xDomain = RPLeftRight[12]-RPLeftRight[11];
+              double xDomain = prob_hi-prob_lo;
               double Tstar   = 1500.0;
-              double T0      = 300.0;
               double L       = (3.0/4.0)*xDomain;
               double T       = std::max(T0,Tstar - (Tstar - T0)*(x/L));
               
@@ -571,27 +652,27 @@ AmrLevelAdv::advance (Real time,
 
   // if (enIC < 8) // For the Euler equation tests, use transmissive BCs everywhere
   // {
-    for (int nVar = 0; nVar < NUM_STATE; nVar++){
-      for (int nDim = 0; nDim < amrex::SpaceDim; nDim++){
-        BCVec[nVar].setLo(nDim,BCType::foextrap);
-        BCVec[nVar].setHi(nDim,BCType::foextrap);
-      }
-    }
+    // for (int nVar = 0; nVar < NUM_STATE; nVar++){
+    //   for (int nDim = 0; nDim < amrex::SpaceDim; nDim++){
+    //     BCVec[nVar].setLo(nDim,BCType::foextrap);
+    //     BCVec[nVar].setHi(nDim,BCType::foextrap);
+    //   }
+    // }
   // }
   // else // For the shock-induced igntion problem, use the reflective BC at the left wall
   // {
-  //   for (int nVar = 0; nVar < NUM_STATE; nVar++){
-  //     for (int nDim = 0; nDim < amrex::SpaceDim; nDim++){
-  //       if ((nVar == 1)){
-  //         BCVec[nVar].setLo(nDim,BCType::reflect_odd);
-  //         BCVec[nVar].setHi(nDim,BCType::foextrap);
-  //       }
-  //       else{
-  //         BCVec[nVar].setLo(nDim,BCType::reflect_even);
-  //         BCVec[nVar].setHi(nDim,BCType::foextrap);
-  //       }
-  //     }
-  //   }
+    for (int nVar = 0; nVar < NUM_STATE; nVar++){
+      for (int nDim = 0; nDim < amrex::SpaceDim; nDim++){
+        if ((nVar == 1)){
+          BCVec[nVar].setLo(nDim,BCType::reflect_odd);
+          BCVec[nVar].setHi(nDim,BCType::foextrap);
+        }
+        else{
+          BCVec[nVar].setLo(nDim,BCType::reflect_even);
+          BCVec[nVar].setHi(nDim,BCType::foextrap);
+        }
+      }
+    }
   // }
 
   // Fill periodic boundaries where they exist.  More accurately, the
@@ -615,6 +696,7 @@ AmrLevelAdv::advance (Real time,
   if (amrex::SpaceDim == 1){
     dY = dx[0];
   }
+
 
   // We update the cell-centred values in a dimensionally-split manner, using an inviscid-viscous-source splitting 
 
@@ -674,6 +756,14 @@ AmrLevelAdv::advance (Real time,
 
   // ____ SOURCE ____ //
 
+  if ((source == 1)||(source == 2))
+  {
+    double dtSource = dt/Da;
+    for (int i = 0; i < Da; i++)
+    {
+      updateSource(Sborder, qL, fluxvals, dtSource, source);
+    }
+  }
 
   // The updated data is now copied to the S_new multifab.  This means
   // it is now accessible through the get_new_data command, and AMReX
@@ -794,7 +884,7 @@ AmrLevelAdv::estTimeStep (Real)
     amrex::Print() << "AmrLevelAdv::estTimeStep at level " << level 
 		   << ":  dt_est = " << dt_est << std::endl;
   }
-  
+
   return dt_est;
 }
 
@@ -952,7 +1042,7 @@ AmrLevelAdv::post_timestep (int iteration)
   // Integration cycle on fine level grids is complete
   // do post_timestep stuff here.
   //
-  std::cout << "level is " << level << std::endl;
+  // std::cout << "level is " << level << std::endl;
   // To validate the test cases against exact Riemann solutions, we wish to output only the final time-step information
   // in 1-D. Initialize the step-size, lower bound of the domain, current time of simulation, and a new set of patch data,
   // S_plot. We follow the same convention as was used in the time-step and flux calculation loops. -2023W2
@@ -966,268 +1056,267 @@ AmrLevelAdv::post_timestep (int iteration)
   if (level < finest_level)
     avgDown();
   
-  // If final time, loop through all patches here.
+//   // If final time, loop through all patches here.
   const Real* dx = geom.CellSize();
   const Real* prob_lo = geom.ProbLo();
   const Real* prob_hi = geom.ProbHi();
   const Real cur_time = state[Phi_Type].curTime();
   const MultiFab& S_plot = get_new_data(Phi_Type);
 
-if (enIC < 8){
+// if (enIC < 8){
 
-  if (cur_time == stop_time){
+//   if (cur_time == stop_time){
 
-    std::string method;
+//     std::string method;
 
-    if (euler==1){
-      method = "HLLC";
-    }
-    else if (euler==2) {
-      method = "MUSCL";
-    }
+//     if (euler==1){
+//       method = "HLLC";
+//     }
+//     else if (euler==2) {
+//       method = "MUSCL";
+//     }
 
-    std::cout << enIC << std::endl;
+//     std::cout << enIC << std::endl;
 
-    std::string resolution = std::to_string(n_cell);
-    std::string dimension  = std::to_string(amrex::SpaceDim);
-    std::string test       = std::to_string(enIC);
-    std::string AMR;
+//     std::string resolution = std::to_string(n_cell);
+//     std::string dimension  = std::to_string(amrex::SpaceDim);
+//     std::string test       = std::to_string(enIC);
+//     std::string AMR;
 
-    std::ofstream approx;
+//     std::ofstream approx;
 
-    if (conv == 0) // if we are not testing for convergence, i.e., just outputting spatial distributions to plot
-    {
-      if (max_level == 0)
-      {
-        AMR = "noAMR";
-        approx.open("output/txt/test"+test+"/field"+dimension+method+resolution+AMR+".txt",std::ofstream::out | std::ofstream::trunc);
-      }
-      else
-      {
-        AMR = "AMR";
-        if (level == 1)
-        {
-          approx.open("output/txt/test"+test+"/field"+dimension+method+resolution+AMR+".txt",std::ofstream::out | std::ofstream::trunc);
-        }
-        else
-        {
-          approx.open("output/txt/test"+test+"/field"+dimension+method+resolution+AMR+".txt",std::ofstream::app);
-        }
-      }
-    }
-    else // if we are testing for convergence, i.e., running for various resolutions and calculating error via post processing
-    {
-      if (max_level == 0)
-      {
-        AMR = "noAMR";
-        approx.open("output/txt/conv/field"+dimension+method+resolution+AMR+test+".txt",std::ofstream::out | std::ofstream::trunc);
-      }
-      else
-      {
-        AMR = "AMR";
-        if (level == 1)
-        {
-          approx.open("output/txt/conv/field"+dimension+method+resolution+AMR+test+".txt",std::ofstream::out | std::ofstream::trunc);
-        }
-        else
-        {
-          approx.open("output/txt/conv/field"+dimension+method+resolution+AMR+test+".txt",std::ofstream::app);
-        }
-      }
-    }
+//     if (conv == 0) // if we are not testing for convergence, i.e., just outputting spatial distributions to plot
+//     {
+//       if (max_level == 0)
+//       {
+//         AMR = "noAMR";
+//         approx.open("output/txt/test"+test+"/field"+dimension+method+resolution+AMR+".txt",std::ofstream::out | std::ofstream::trunc);
+//       }
+//       else
+//       {
+//         AMR = "AMR";
+//         if (level == 1)
+//         {
+//           approx.open("output/txt/test"+test+"/field"+dimension+method+resolution+AMR+".txt",std::ofstream::out | std::ofstream::trunc);
+//         }
+//         else
+//         {
+//           approx.open("output/txt/test"+test+"/field"+dimension+method+resolution+AMR+".txt",std::ofstream::app);
+//         }
+//       }
+//     }
+//     else // if we are testing for convergence, i.e., running for various resolutions and calculating error via post processing
+//     {
+//       if (max_level == 0)
+//       {
+//         AMR = "noAMR";
+//         approx.open("output/txt/conv/field"+dimension+method+resolution+AMR+test+".txt",std::ofstream::out | std::ofstream::trunc);
+//       }
+//       else
+//       {
+//         AMR = "AMR";
+//         if (level == 1)
+//         {
+//           approx.open("output/txt/conv/field"+dimension+method+resolution+AMR+test+".txt",std::ofstream::out | std::ofstream::trunc);
+//         }
+//         else
+//         {
+//           approx.open("output/txt/conv/field"+dimension+method+resolution+AMR+test+".txt",std::ofstream::app);
+//         }
+//       }
+//     }
     
     
-    const Real dX = dx[0];
-    const Real dY = (amrex::SpaceDim > 1 ? dx[1] : 0.0);
+//     const Real dX = dx[0];
+//     const Real dY = (amrex::SpaceDim > 1 ? dx[1] : 0.0);
 
-    const Real probLoX = prob_lo[0];
-    const Real probLoY = (amrex::SpaceDim > 1 ? prob_lo[1] : 0.0);
+//     const Real probLoX = prob_lo[0];
+//     const Real probLoY = (amrex::SpaceDim > 1 ? prob_lo[1] : 0.0);
 
 
-    // After AMReX computations are completed, solve for the exact solution using the exact Riemann solver 
-    // contained within the exactFunc.cpp file, where headers are located in exactFunc.H
-    // The exact solver is only run if the test is 1D.
+//     // After AMReX computations are completed, solve for the exact solution using the exact Riemann solver 
+//     // contained within the exactFunc.cpp file, where headers are located in exactFunc.H
+//     // The exact solver is only run if the test is 1D.
 
-    if (amrex::SpaceDim == 1)
-    {
-      std::ofstream exact;
-      if (conv == 0)
-      {
-        exact.open("output/txt/test"+test+"/field"+dimension+method+"exact.txt",std::ofstream::out | std::ofstream::trunc);
-      }
-      else 
-      {
-        exact.open("output/txt/conv/field"+dimension+method+test+"exact.txt",std::ofstream::out | std::ofstream::trunc);
-      }
+//     if (amrex::SpaceDim == 1)
+//     {
+//       std::ofstream exact;
+//       if (conv == 0)
+//       {
+//         exact.open("output/txt/test"+test+"/field"+dimension+method+"exact.txt",std::ofstream::out | std::ofstream::trunc);
+//       }
+//       else 
+//       {
+//         exact.open("output/txt/conv/field"+dimension+method+test+"exact.txt",std::ofstream::out | std::ofstream::trunc);
+//       }
       
-      Vector <Vector<double> > arrExact; 
-      int n_exact = pow(2,12);
+//       Vector <Vector<double> > arrExact; 
+//       int n_exact = pow(2,12);
       
-      double dXexact = (prob_hi[0]-prob_lo[0])/n_exact;
-      arrExact.resize(n_exact, Vector<double> (NUM_STATE));
-      updateExact(n_exact, dXexact, amrex::SpaceDim, exact, arrExact);
-      exact.close();
-    }
+//       double dXexact = (prob_hi[0]-prob_lo[0])/n_exact;
+//       arrExact.resize(n_exact, Vector<double> (NUM_STATE));
+//       updateExact(n_exact, dXexact, amrex::SpaceDim, exact, arrExact);
+//       exact.close();
+//     }
     
 
-    int uppery;
-    int lowery;
+//     int uppery;
+//     int lowery;
 
-    std::cout << "start data collection for output here" << std::endl;
+//     std::cout << "start data collection for output here" << std::endl;
 
-    for (MFIter mfi(S_plot); mfi.isValid(); ++mfi)
-    {
-      Box bx = mfi.tilebox();
-      const Dim3 lo = lbound(bx);
-      const Dim3 hi = ubound(bx);
-      const auto& arr = S_plot.array(mfi);
+//     for (MFIter mfi(S_plot); mfi.isValid(); ++mfi)
+//     {
+//       Box bx = mfi.tilebox();
+//       const Dim3 lo = lbound(bx);
+//       const Dim3 hi = ubound(bx);
+//       const auto& arr = S_plot.array(mfi);
 
-      if (amrex::SpaceDim == 1)
-      {
-        lowery = lo.y;
-        uppery = hi.y;
-      }
-      else
-      {
-        if (enIC == 6)  // if cyl expl
-        {
-          lowery = (n_cell/2)-1;
-          uppery = lowery;
-        }
-        else
-        {
-          if (lo.y > 4) // only print if in patches along bottom boundary
-          {
-            continue;
-          }
-          lowery = lo.y;
-          uppery = lo.y; // take 1-D slice at lower boundary
-        }
-      }
+//       if (amrex::SpaceDim == 1)
+//       {
+//         lowery = lo.y;
+//         uppery = hi.y;
+//       }
+//       else
+//       {
+//         if (enIC == 6)  // if cyl expl
+//         {
+//           lowery = (n_cell/2)-1;
+//           uppery = lowery;
+//         }
+//         else
+//         {
+//           if (lo.y > 4) // only print if in patches along bottom boundary
+//           {
+//             continue;
+//           }
+//           lowery = lo.y;
+//           uppery = lo.y; // take 1-D slice at lower boundary
+//         }
+//       }
       
-      for(int k = lo.z; k <= hi.z; k++)
-      { 
-        for(int j = lowery; j <= uppery; j++)
-          {
-            for(int i = lo.x; i <= hi.x; i++)
-            {
-              const Real x     = probLoX + (double(i)+0.5) * dX;
-              double rho       = arr(i,j,k,0);
-              double xmomentum = arr(i,j,k,1);
-              double ymomentum = arr(i,j,k,2);
-              double energy    = arr(i,j,k,3);
-              double rhoY      = arr(i,j,k,4);
+//       for(int k = lo.z; k <= hi.z; k++)
+//       { 
+//         for(int j = lowery; j <= uppery; j++)
+//           {
+//             for(int i = lo.x; i <= hi.x; i++)
+//             {
+//               const Real x     = probLoX + (double(i)+0.5) * dX;
+//               double rho       = arr(i,j,k,0);
+//               double xmomentum = arr(i,j,k,1);
+//               double ymomentum = arr(i,j,k,2);
+//               double energy    = arr(i,j,k,3);
+//               double rhoY      = arr(i,j,k,4);
 
-              double vx  = xmomentum/rho;
-              double vy  = ymomentum/rho;
-              double p   = pressure(rho,vx,vy,energy);
-              double eps = specIntEner(rho,vx,vy,energy);
-              double Y   = rhoY/rho;
-              double T   = p/((R/M)*rho);
+//               double vx  = xmomentum/rho;
+//               double vy  = ymomentum/rho;
+//               double p   = pressure(rho,vx,vy,energy);
+//               double eps = specIntEner(rho,vx,vy,energy);
+//               double Y   = rhoY/rho;
+//               double T   = p/((R/M)*rho);
 
-              approx << x << " " << rho << " " << vx << " " << p << " " << eps << " " << Y << " " << T << std::endl;
+//               approx << x << " " << rho << " " << vx << " " << p << " " << eps << " " << Y << " " << T << std::endl;
 
-            }
-          }
-      }
-    }
+//             }
+//           }
+//       }
+//     }
  
-    std::cout << "wrote output data to text file" << std::endl;
-    approx.close();
+//     std::cout << "wrote output data to text file" << std::endl;
+//     approx.close();
 
-  }
-}
+//   }
+// }
 
-else {
-    // print pressure 'pfrequency' times as specified at the start of the program
-    // double val = cur_time/stop_time;
-    // double fraction = 1/pfrequency;
+// // else {
+// //     double val = cur_time/stop_time;
 
-    // for (int iter = 0; iter < (pfrequency+1); iter++)
-    // {
-    //   if (val >= iter*fraction)
-    //   {
-    //     printCount[iter-1]+=1;
-    //   }
-    // }
+// //     if (val > (1.0/pfrequency)*(iter-1)){
 
-    // if (std::count(printCount.begin(), printCount.end(), 1))
-    // {
-    // iter += 1;
-    double val = cur_time/stop_time;
-
-    if (val > 0.1*(iter-1)){
+// //       if (level == 1){
+// //         printIter += 1;
+// //       }
       
+// //       std::cout << "Printing data on AMR level: " << level << std::endl;
       
-      const Real dX = dx[0];
-      const Real dY = (amrex::SpaceDim > 1 ? dx[1] : 0.0);
+// //       const Real dX = dx[0];
+// //       const Real dY = (amrex::SpaceDim > 1 ? dx[1] : 0.0);
 
-      const Real probLoX = prob_lo[0];
-      const Real probLoY = (amrex::SpaceDim > 1 ? prob_lo[1] : 0.0);
+// //       const Real probLoX = prob_lo[0];
+// //       const Real probLoY = (amrex::SpaceDim > 1 ? prob_lo[1] : 0.0);
 
 
-      std::string method;
+// //       std::string method;
 
-      if (euler==0){
-        method = "HLLC";
-      }
-      else {
-        method = "MUSCL";
-      }
+// //       if (euler==0){
+// //         method = "HLLC";
+// //       }
+// //       else {
+// //         method = "MUSCL";
+// //       }
 
-      std::string resolution = std::to_string(n_cell);
-      std::string dimension  = std::to_string(amrex::SpaceDim);
-      std::string test       = std::to_string(enIC);
-      std::string iteration  = std::to_string(iter);
+// //       std::string resolution = std::to_string(n_cell);
+// //       std::string dimension  = std::to_string(amrex::SpaceDim);
+// //       std::string test       = std::to_string(enIC);
+// //       std::string iteration  = std::to_string(iter);
 
-      std::ofstream approx;
-      approx.open("output/txt/test8/"+dimension+method+resolution+"time"+iteration+".txt",std::ofstream::app);
-      //std::ofstream::out | std::ofstream::trunc
+// //       std::ofstream approx;
 
-      for (MFIter mfi(S_plot); mfi.isValid(); ++mfi)
-      {
-        Box bx = mfi.tilebox();
-        const Dim3 lo = lbound(bx);
-        const Dim3 hi = ubound(bx);
-        const auto& arr = S_plot.array(mfi);
+// //       // if (level == 0){
+// //       //   approx.open("output/txt/test8/time"+iteration+".txt",std::ofstream::out | std::ofstream::trunc);
+// //       // }
+// //       // else{
+// //         approx.open("output/txt/test8/time"+iteration+".txt",std::ofstream::app);
+// //       // }
+
+// //       // approx.open("output/txt/test8/time"+iteration+".txt",std::ofstream::app);
+// //       //std::ofstream::out | std::ofstream::trunc
+
+// //       for (MFIter mfi(S_plot); mfi.isValid(); ++mfi)
+// //       {
+// //         Box bx = mfi.tilebox();
+// //         const Dim3 lo = lbound(bx);
+// //         const Dim3 hi = ubound(bx);
+// //         const auto& arr = S_plot.array(mfi);
         
-        for(int k = lo.z; k <= hi.z; k++)
-        {
-          for(int j = lo.y; j <= hi.y; j++)
-          {
-            const Real y     = probLoY + (double(j)+0.5) * dY;
-            for(int i = lo.x; i <= hi.x; i++)
-            {
-              const Real x     = probLoX + (double(i)+0.5) * dX;
+// //         for(int k = lo.z; k <= hi.z; k++)
+// //         {
+// //           for(int j = lo.y; j <= hi.y; j++)
+// //           {
+// //             const Real y     = probLoY + (double(j)+0.5) * dY;
+// //             for(int i = lo.x; i <= hi.x; i++)
+// //             {
+// //               const Real x     = probLoX + (double(i)+0.5) * dX;
 
-              double rho       = arr(i,j,k,0);
-              double xmomentum = arr(i,j,k,1);
-              double ymomentum = arr(i,j,k,2);
-              double ener      = arr(i,j,k,3);
-              double rholambda = arr(i,j,k,4);
+// //               double rho       = arr(i,j,k,0);
+// //               double xmomentum = arr(i,j,k,1);
+// //               double ymomentum = arr(i,j,k,2);
+// //               double ener      = arr(i,j,k,3);
+// //               double rholambda = arr(i,j,k,4);
 
-              double vx  = xmomentum/rho;
-              double vy  = ymomentum/rho;
-              double lambda = rholambda/rho;
-              double p   = pressure(rho,vx,vy,ener);
-              // ener = energy(rho,vx,0,p);
-              double T = p/(rho*R/M);
-              double eps = specIntEner(rho,vx,vy,ener);
+// //               double vx  = xmomentum/rho;
+// //               double vy  = ymomentum/rho;
+// //               double lambda = rholambda/rho;
+// //               double p   = pressure(rho,vx,vy,ener);  //print in bar
+// //               double T = p/(rho*R/M);
+// //               double eps = specIntEner(rho,vx,vy,ener);
 
-              AllPrint(approx) << x << " " << rho << " " << vx << " " << p << " " << eps << " " << lambda << " " << T << std::endl;
+// //               approx << x << " " << rho << " " << vx << " " << p/101325 << " " << eps << " " << lambda << " " << T << std::endl;
 
-            }
-          }
-        }
-      }
-      std::cout << "wrote output data to text file" << std::endl;
-      approx.close();
+// //             }
+// //           }
+// //         }
+// //       }
+// //       std::cout << "wrote output data to text file" << std::endl;
+// //       approx.close();
 
-      iter+=1;
-  
+// //       if (level == 0){
+// //         iter+=1;
+// //       }
+      
 
-    }
-  } 
+// //     }
+// //   } 
 
   
 }
