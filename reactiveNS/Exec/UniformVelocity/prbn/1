@@ -1,6 +1,6 @@
 &tagging
   
-   phigrad = 4.0E-02, 4.0E-02
+   phigrad = 5E-2, 5E-2
    max_phigrad_lev = 10
    max_phierr_lev = 10
 

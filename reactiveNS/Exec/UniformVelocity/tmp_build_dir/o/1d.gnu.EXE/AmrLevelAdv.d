@@ -145,7 +145,8 @@ tmp_build_dir/o/1d.gnu.EXE/AmrLevelAdv.o: ../../Source/AmrLevelAdv.cpp \
  ../../../../amrex/Src/Base/AMReX_ParmParse.H \
  ../../../../amrex/Src/Base/AMReX_BCUtil.H ../../Source/eulerFunc.H \
  ../../Source/exactFunc.H ../../Source/recon.H \
- ../../Source/diffusionFunc.H ../../Source/constants.H
+ ../../Source/diffusionFunc.H ../../Source/source.H \
+ ../../Source/constants.H
 
 ../../Source/AmrLevelAdv.H:
 
@@ -448,5 +449,7 @@ tmp_build_dir/s/1d.gnu.EXE/AMReX_Config.H:
 ../../Source/recon.H:
 
 ../../Source/diffusionFunc.H:
+
+../../Source/source.H:
 
 ../../Source/constants.H:

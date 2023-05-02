@@ -9,42 +9,55 @@ Host Name: ironmontreal
             readelf -wl my_exefile | grep my_line_address'
     to find out the offset for that line.
 
- 0: ./main1d.gnu.ex(+0x11147d) [0x55a79bfb147d]
+ 0: ./main1d.gnu.ex(+0x10edad) [0x55bac0647dad]
     amrex::BLBackTrace::print_backtrace_info(_IO_FILE*) at /usr/include/x86_64-linux-gnu/bits/unistd.h:354
  (inlined by) amrex::BLBackTrace::print_backtrace_info(_IO_FILE*) at /home/afujinawa/amrexEuler/euler/Exec/UniformVelocity/../../../../amrex/Src/Base/AMReX_BLBackTrace.cpp:196
 
- 1: ./main1d.gnu.ex(+0x1133b5) [0x55a79bfb33b5]
+ 1: ./main1d.gnu.ex(+0x110ce5) [0x55bac0649ce5]
     amrex::BLBackTrace::handler(int) at /home/afujinawa/amrexEuler/euler/Exec/UniformVelocity/../../../../amrex/Src/Base/AMReX_BLBackTrace.cpp:96
 
- 2: /lib/x86_64-linux-gnu/libc.so.6(+0x46210) [0x7f99ee257210]
+ 2: /lib/x86_64-linux-gnu/libc.so.6(+0x46210) [0x7f9b90a24210]
 
- 3: /lib/x86_64-linux-gnu/libm.so.6(+0x83314) [0x7f99ee4c4314]
-    amrex::DistributionMapping::makeKnapSack(amrex::LayoutData<double> const&, double&, double&, int, bool, int, double) at /usr/include/c++/9/ext/new_allocator.h:89
+ 3: /lib/x86_64-linux-gnu/libm.so.6(+0x82d63) [0x7f9b90c90d63]
+    std::_Vector_base<amrex::WeightedBoxList, std::allocator<amrex::WeightedBoxList> >::_M_allocate(unsigned long) at /usr/include/c++/9/bits/stl_vector.h:343
+ (inlined by) void std::vector<amrex::WeightedBoxList, std::allocator<amrex::WeightedBoxList> >::_M_realloc_insert<amrex::WeightedBoxList const&>(__gnu_cxx::__normal_iterator<amrex::WeightedBoxList*, std::vector<amrex::WeightedBoxList, std::allocator<amrex::WeightedBoxList> > >, amrex::WeightedBoxList const&) at /usr/include/c++/9/bits/vector.tcc:440
 
- 4: /lib/x86_64-linux-gnu/libm.so.6(powf64+0x18) [0x7f99ee484208]
+ 4: /lib/x86_64-linux-gnu/libm.so.6(exp+0x13) [0x7f9b90c512c3]
     ?? ??:0
 
- 5: ./main1d.gnu.ex(+0x3963f) [0x55a79bed963f]
-    mu(double const&, double const&) at /home/afujinawa/amrexReactiveNS/reactiveNS/Exec/UniformVelocity/../../Source/diffusionFunc.cpp:375
- (inlined by) diffusiveSpeed(amrex::Vector<double, std::allocator<double> > const&, amrex::Vector<double, std::allocator<double> > const&) at /home/afujinawa/amrexReactiveNS/reactiveNS/Exec/UniformVelocity/../../Source/diffusionFunc.cpp:352
+ 5: ./main1d.gnu.ex(+0x368ce) [0x55bac056f8ce]
+    getEnergySource(double const&, double const&, double const&) at /home/afujinawa/amrexReactiveNS/reactiveNS/Exec/UniformVelocity/../../Source/source.cpp:169
+ (inlined by) rk4(amrex::Vector<double, std::allocator<double> >&, amrex::Vector<double, std::allocator<double> > const&, double const&) at /home/afujinawa/amrexReactiveNS/reactiveNS/Exec/UniformVelocity/../../Source/source.cpp:128
 
- 6: ./main1d.gnu.ex(+0x260b0) [0x55a79bec60b0]
-    double const& std::max<double>(double const&, double const&) at /usr/include/c++/9/bits/stl_algobase.h:228
- (inlined by) AmrLevelAdv::estTimeStep(double) at /home/afujinawa/amrexReactiveNS/reactiveNS/Exec/UniformVelocity/../../Source/AmrLevelAdv.cpp:763
+ 6: ./main1d.gnu.ex(+0x36fb7) [0x55bac056ffb7]
+    updateSource(amrex::MultiFab&, amrex::Vector<double, std::allocator<double> >&, amrex::Vector<double, std::allocator<double> >&, double const&, int const&) at /home/afujinawa/amrexReactiveNS/reactiveNS/Exec/UniformVelocity/../../Source/source.cpp:50
 
- 7: ./main1d.gnu.ex(+0x26921) [0x55a79bec6921]
-    amrex::Vector<double, std::allocator<double> >::operator[](unsigned long) at /home/afujinawa/amrexReactiveNS/reactiveNS/Exec/UniformVelocity/../../../../amrex/Src/Base/AMReX_Vector.H:37
- (inlined by) AmrLevelAdv::computeNewDt(int, int, amrex::Vector<int, std::allocator<int> >&, amrex::Vector<amrex::IntVect, std::allocator<amrex::IntVect> > const&, amrex::Vector<double, std::allocator<double> >&, amrex::Vector<double, std::allocator<double> >&, double, int) at /home/afujinawa/amrexReactiveNS/reactiveNS/Exec/UniformVelocity/../../Source/AmrLevelAdv.cpp:881
- (inlined by) AmrLevelAdv::computeNewDt(int, int, amrex::Vector<int, std::allocator<int> >&, amrex::Vector<amrex::IntVect, std::allocator<amrex::IntVect> > const&, amrex::Vector<double, std::allocator<double> >&, amrex::Vector<double, std::allocator<double> >&, double, int) at /home/afujinawa/amrexReactiveNS/reactiveNS/Exec/UniformVelocity/../../Source/AmrLevelAdv.cpp:858
+ 7: ./main1d.gnu.ex(+0x29cd4) [0x55bac0562cd4]
+    AmrLevelAdv::advance(double, double, int, int) at /home/afujinawa/amrexReactiveNS/reactiveNS/Exec/UniformVelocity/../../Source/AmrLevelAdv.cpp:762 (discriminator 2)
 
- 8: ./main1d.gnu.ex(+0x15bdb3) [0x55a79bffbdb3]
-    amrex::Amr::coarseTimeStep(double) at /home/afujinawa/amrexEuler/euler/Exec/UniformVelocity/../../../../amrex/Src/Amr/AMReX_Amr.cpp:2104
+ 8: ./main1d.gnu.ex(+0x165039) [0x55bac069e039]
+    amrex::Amr::timeStep(int, double, int, int, double) at /home/afujinawa/amrexEuler/euler/Exec/UniformVelocity/../../../../amrex/Src/Amr/AMReX_Amr.cpp:2017
 
- 9: ./main1d.gnu.ex(+0x208ed) [0x55a79bec08ed]
-    main at /home/afujinawa/amrexReactiveNS/reactiveNS/Exec/UniformVelocity/../../Source/main.cpp:93
+ 9: ./main1d.gnu.ex(+0x165275) [0x55bac069e275]
+    amrex::Amr::timeStep(int, double, int, int, double) at /home/afujinawa/amrexEuler/euler/Exec/UniformVelocity/../../../../amrex/Src/Amr/AMReX_Amr.cpp:2063
 
-10: /lib/x86_64-linux-gnu/libc.so.6(__libc_start_main+0xf3) [0x7f99ee2380b3]
+10: ./main1d.gnu.ex(+0x165275) [0x55bac069e275]
+    amrex::Amr::timeStep(int, double, int, int, double) at /home/afujinawa/amrexEuler/euler/Exec/UniformVelocity/../../../../amrex/Src/Amr/AMReX_Amr.cpp:2063
 
-11: ./main1d.gnu.ex(+0x24bde) [0x55a79bec4bde]
+11: ./main1d.gnu.ex(+0x165275) [0x55bac069e275]
+    amrex::Amr::timeStep(int, double, int, int, double) at /home/afujinawa/amrexEuler/euler/Exec/UniformVelocity/../../../../amrex/Src/Amr/AMReX_Amr.cpp:2063
+
+12: ./main1d.gnu.ex(+0x165275) [0x55bac069e275]
+    amrex::Amr::timeStep(int, double, int, int, double) at /home/afujinawa/amrexEuler/euler/Exec/UniformVelocity/../../../../amrex/Src/Amr/AMReX_Amr.cpp:2063
+
+13: ./main1d.gnu.ex(+0x15970f) [0x55bac069270f]
+    amrex::Amr::coarseTimeStep(double) at /home/afujinawa/amrexEuler/euler/Exec/UniformVelocity/../../../../amrex/Src/Amr/AMReX_Amr.cpp:2127
+
+14: ./main1d.gnu.ex(+0x2033d) [0x55bac055933d]
+    main at /home/afujinawa/amrexReactiveNS/reactiveNS/Exec/UniformVelocity/../../Source/main.cpp:95
+
+15: /lib/x86_64-linux-gnu/libc.so.6(__libc_start_main+0xf3) [0x7f9b90a050b3]
+
+16: ./main1d.gnu.ex(+0x246de) [0x55bac055d6de]
     ?? ??:0
 

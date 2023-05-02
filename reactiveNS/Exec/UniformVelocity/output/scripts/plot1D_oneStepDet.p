@@ -10,28 +10,24 @@
 set terminal postscript portrait enhanced color
 set fit quiet
 set size 3.0/3.0, 4.0/4.0
-set size ratio 0.4/1
+set size ratio 1/1
 
 set output "output/plot1.eps"
 
-set multiplot layout 4,1 rowsfirst
+set multiplot layout 2,1 rowsfirst
 
 set xlabel '{/:Bold x}' font ",18"
-set ylabel '{/:Bold Pressure}' font ",18"
+set ylabel '{/:Bold Pressure (bar)}' font ",18"
 #set yr[0:1.2]
 set key top left
-plot for [i=1:10] 'output/txt/test8/1MUSCL128time'.i.'.txt' using 1:4 title "" with lines linecolor rgb "#000000"  lw 3 lt 3
+plot for [i=1:124] 'output/txt/test8/time'.i.'.txt' using 1:4 title "" \
+smooth unique linecolor rgb "#000000" lw 1.5 lt 1.5
 
 set xlabel '{/:Bold x}' font ",18"
-set ylabel '{/:Bold Temperature}' font ",18"
+set ylabel '{/:Bold Temperature (K)}' font ",18"
 #set yr[0:1.2]
-plot for [i=1:10] 'output/txt/test8/1MUSCL128time'.i.'.txt' using 1:7 title "" with lines linecolor rgb "#000000"  lw 3 lt 3
-
-
-set xlabel '{/:Bold x}' font ",18"
-set ylabel '{/:Bold Unburnt mass fraction}' font ",18"
-#set yr[0:1.2]
-plot for [i=1:10] 'output/txt/test8/1MUSCL128time'.i.'.txt' using 1:6 title "" with lines linecolor rgb "#000000"  lw 3 lt 3
+plot for [i=1:124] 'output/txt/test8/time'.i.'.txt' using 1:7 title "" \
+smooth unique linecolor rgb "#000000" lw 1 lt 1
 
 
 set xr[0:1]
