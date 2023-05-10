@@ -18,7 +18,7 @@ enIC               = 1       # 1:Toro1, 2:Toro2, ..., 5:Toro5, 6:Cylindrical exp
 # SYSTEM OF EQUATIONS AND METHODS
 euler              = 2         # 0:No advection, 1:HLLC, 2:MUSCL
 viscous            = 1         # 0:No diffusion, 1:Central
-source             = 0         # 0:No source terms, 1:RK4 subcycle
+particle           = 0         # 0:No source terms, 1:RK4 subcycle
 enLimiter          = 1         # 0:Superbee, 1:vanLeer, 2:vanAlbada, 3:minbee
 
 # VERBOSITY - controls the number of messages output to screen

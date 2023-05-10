@@ -95,7 +95,7 @@ AmrLevelAdv::AmrLevelAdv (Amr&  papa,
 }
 
 //
-//The destructor.
+//The destructor. 
 //
 AmrLevelAdv::~AmrLevelAdv () 
 {
@@ -390,6 +390,27 @@ AmrLevelAdv::initData ()
 
               // std::cout << "x: " << x << "Density: " << arr(i,j,k,0) << " Temperature: " << T << " Energy: " << arr(i,j,k,3) << std::endl; 
             }
+            else if (enIC == 9){
+              double xDomain = prob_hi-prob_lo;
+              double T       = 300;
+              
+              // density
+              arr(i,j,k,0) = one_atm_Pa/((R/M)*T);
+
+              // x-momentum
+              arr(i,j,k,1) = 0.0;
+
+              // y-momentum
+              arr(i,j,k,2) = 0.0;
+
+              // energy
+              arr(i,j,k,3) = energy(arr(i,j,k,0),0.0,0.0,one_atm_Pa);
+
+              // density*unburned fuel mass fraction
+              arr(i,j,k,4) = arr(i,j,k,0)*1.0;
+
+              // std::cout << "x: " << x << "Density: " << arr(i,j,k,0) << " Temperature: " << T << " Energy: " << arr(i,j,k,3) << std::endl; 
+            }
             else {
               if (x<xDisc){
                 arr(i,j,k,0) = RPLeftRight[0];
@@ -465,7 +486,11 @@ AmrLevelAdv::initData ()
     }
   }
 
-  // A few vector quantities are resized here, only once in the code
+  // If particles are enabled, initialize particles
+  if (particle == 1)
+  {
+
+  }
   
 
   if (verbose) {
@@ -872,13 +897,10 @@ AmrLevelAdv::estTimeStep (Real)
     if (viscous == 1){
       dt_est = std::min(dt_est, dx[d]*dx[d]/sMaxDiff);
     }
-    
   }
-  
+
   // Ensure that we really do have the minimum across all processors
   ParallelDescriptor::ReduceRealMin(dt_est);
-  // dt_est *= cfl;
-
     
   if (verbose) {
     amrex::Print() << "AmrLevelAdv::estTimeStep at level " << level 
@@ -1055,270 +1077,6 @@ AmrLevelAdv::post_timestep (int iteration)
   
   if (level < finest_level)
     avgDown();
-  
-//   // If final time, loop through all patches here.
-  const Real* dx = geom.CellSize();
-  const Real* prob_lo = geom.ProbLo();
-  const Real* prob_hi = geom.ProbHi();
-  const Real cur_time = state[Phi_Type].curTime();
-  const MultiFab& S_plot = get_new_data(Phi_Type);
-
-// if (enIC < 8){
-
-//   if (cur_time == stop_time){
-
-//     std::string method;
-
-//     if (euler==1){
-//       method = "HLLC";
-//     }
-//     else if (euler==2) {
-//       method = "MUSCL";
-//     }
-
-//     std::cout << enIC << std::endl;
-
-//     std::string resolution = std::to_string(n_cell);
-//     std::string dimension  = std::to_string(amrex::SpaceDim);
-//     std::string test       = std::to_string(enIC);
-//     std::string AMR;
-
-//     std::ofstream approx;
-
-//     if (conv == 0) // if we are not testing for convergence, i.e., just outputting spatial distributions to plot
-//     {
-//       if (max_level == 0)
-//       {
-//         AMR = "noAMR";
-//         approx.open("output/txt/test"+test+"/field"+dimension+method+resolution+AMR+".txt",std::ofstream::out | std::ofstream::trunc);
-//       }
-//       else
-//       {
-//         AMR = "AMR";
-//         if (level == 1)
-//         {
-//           approx.open("output/txt/test"+test+"/field"+dimension+method+resolution+AMR+".txt",std::ofstream::out | std::ofstream::trunc);
-//         }
-//         else
-//         {
-//           approx.open("output/txt/test"+test+"/field"+dimension+method+resolution+AMR+".txt",std::ofstream::app);
-//         }
-//       }
-//     }
-//     else // if we are testing for convergence, i.e., running for various resolutions and calculating error via post processing
-//     {
-//       if (max_level == 0)
-//       {
-//         AMR = "noAMR";
-//         approx.open("output/txt/conv/field"+dimension+method+resolution+AMR+test+".txt",std::ofstream::out | std::ofstream::trunc);
-//       }
-//       else
-//       {
-//         AMR = "AMR";
-//         if (level == 1)
-//         {
-//           approx.open("output/txt/conv/field"+dimension+method+resolution+AMR+test+".txt",std::ofstream::out | std::ofstream::trunc);
-//         }
-//         else
-//         {
-//           approx.open("output/txt/conv/field"+dimension+method+resolution+AMR+test+".txt",std::ofstream::app);
-//         }
-//       }
-//     }
-    
-    
-//     const Real dX = dx[0];
-//     const Real dY = (amrex::SpaceDim > 1 ? dx[1] : 0.0);
-
-//     const Real probLoX = prob_lo[0];
-//     const Real probLoY = (amrex::SpaceDim > 1 ? prob_lo[1] : 0.0);
-
-
-//     // After AMReX computations are completed, solve for the exact solution using the exact Riemann solver 
-//     // contained within the exactFunc.cpp file, where headers are located in exactFunc.H
-//     // The exact solver is only run if the test is 1D.
-
-//     if (amrex::SpaceDim == 1)
-//     {
-//       std::ofstream exact;
-//       if (conv == 0)
-//       {
-//         exact.open("output/txt/test"+test+"/field"+dimension+method+"exact.txt",std::ofstream::out | std::ofstream::trunc);
-//       }
-//       else 
-//       {
-//         exact.open("output/txt/conv/field"+dimension+method+test+"exact.txt",std::ofstream::out | std::ofstream::trunc);
-//       }
-      
-//       Vector <Vector<double> > arrExact; 
-//       int n_exact = pow(2,12);
-      
-//       double dXexact = (prob_hi[0]-prob_lo[0])/n_exact;
-//       arrExact.resize(n_exact, Vector<double> (NUM_STATE));
-//       updateExact(n_exact, dXexact, amrex::SpaceDim, exact, arrExact);
-//       exact.close();
-//     }
-    
-
-//     int uppery;
-//     int lowery;
-
-//     std::cout << "start data collection for output here" << std::endl;
-
-//     for (MFIter mfi(S_plot); mfi.isValid(); ++mfi)
-//     {
-//       Box bx = mfi.tilebox();
-//       const Dim3 lo = lbound(bx);
-//       const Dim3 hi = ubound(bx);
-//       const auto& arr = S_plot.array(mfi);
-
-//       if (amrex::SpaceDim == 1)
-//       {
-//         lowery = lo.y;
-//         uppery = hi.y;
-//       }
-//       else
-//       {
-//         if (enIC == 6)  // if cyl expl
-//         {
-//           lowery = (n_cell/2)-1;
-//           uppery = lowery;
-//         }
-//         else
-//         {
-//           if (lo.y > 4) // only print if in patches along bottom boundary
-//           {
-//             continue;
-//           }
-//           lowery = lo.y;
-//           uppery = lo.y; // take 1-D slice at lower boundary
-//         }
-//       }
-      
-//       for(int k = lo.z; k <= hi.z; k++)
-//       { 
-//         for(int j = lowery; j <= uppery; j++)
-//           {
-//             for(int i = lo.x; i <= hi.x; i++)
-//             {
-//               const Real x     = probLoX + (double(i)+0.5) * dX;
-//               double rho       = arr(i,j,k,0);
-//               double xmomentum = arr(i,j,k,1);
-//               double ymomentum = arr(i,j,k,2);
-//               double energy    = arr(i,j,k,3);
-//               double rhoY      = arr(i,j,k,4);
-
-//               double vx  = xmomentum/rho;
-//               double vy  = ymomentum/rho;
-//               double p   = pressure(rho,vx,vy,energy);
-//               double eps = specIntEner(rho,vx,vy,energy);
-//               double Y   = rhoY/rho;
-//               double T   = p/((R/M)*rho);
-
-//               approx << x << " " << rho << " " << vx << " " << p << " " << eps << " " << Y << " " << T << std::endl;
-
-//             }
-//           }
-//       }
-//     }
- 
-//     std::cout << "wrote output data to text file" << std::endl;
-//     approx.close();
-
-//   }
-// }
-
-// // else {
-// //     double val = cur_time/stop_time;
-
-// //     if (val > (1.0/pfrequency)*(iter-1)){
-
-// //       if (level == 1){
-// //         printIter += 1;
-// //       }
-      
-// //       std::cout << "Printing data on AMR level: " << level << std::endl;
-      
-// //       const Real dX = dx[0];
-// //       const Real dY = (amrex::SpaceDim > 1 ? dx[1] : 0.0);
-
-// //       const Real probLoX = prob_lo[0];
-// //       const Real probLoY = (amrex::SpaceDim > 1 ? prob_lo[1] : 0.0);
-
-
-// //       std::string method;
-
-// //       if (euler==0){
-// //         method = "HLLC";
-// //       }
-// //       else {
-// //         method = "MUSCL";
-// //       }
-
-// //       std::string resolution = std::to_string(n_cell);
-// //       std::string dimension  = std::to_string(amrex::SpaceDim);
-// //       std::string test       = std::to_string(enIC);
-// //       std::string iteration  = std::to_string(iter);
-
-// //       std::ofstream approx;
-
-// //       // if (level == 0){
-// //       //   approx.open("output/txt/test8/time"+iteration+".txt",std::ofstream::out | std::ofstream::trunc);
-// //       // }
-// //       // else{
-// //         approx.open("output/txt/test8/time"+iteration+".txt",std::ofstream::app);
-// //       // }
-
-// //       // approx.open("output/txt/test8/time"+iteration+".txt",std::ofstream::app);
-// //       //std::ofstream::out | std::ofstream::trunc
-
-// //       for (MFIter mfi(S_plot); mfi.isValid(); ++mfi)
-// //       {
-// //         Box bx = mfi.tilebox();
-// //         const Dim3 lo = lbound(bx);
-// //         const Dim3 hi = ubound(bx);
-// //         const auto& arr = S_plot.array(mfi);
-        
-// //         for(int k = lo.z; k <= hi.z; k++)
-// //         {
-// //           for(int j = lo.y; j <= hi.y; j++)
-// //           {
-// //             const Real y     = probLoY + (double(j)+0.5) * dY;
-// //             for(int i = lo.x; i <= hi.x; i++)
-// //             {
-// //               const Real x     = probLoX + (double(i)+0.5) * dX;
-
-// //               double rho       = arr(i,j,k,0);
-// //               double xmomentum = arr(i,j,k,1);
-// //               double ymomentum = arr(i,j,k,2);
-// //               double ener      = arr(i,j,k,3);
-// //               double rholambda = arr(i,j,k,4);
-
-// //               double vx  = xmomentum/rho;
-// //               double vy  = ymomentum/rho;
-// //               double lambda = rholambda/rho;
-// //               double p   = pressure(rho,vx,vy,ener);  //print in bar
-// //               double T = p/(rho*R/M);
-// //               double eps = specIntEner(rho,vx,vy,ener);
-
-// //               approx << x << " " << rho << " " << vx << " " << p/101325 << " " << eps << " " << lambda << " " << T << std::endl;
-
-// //             }
-// //           }
-// //         }
-// //       }
-// //       std::cout << "wrote output data to text file" << std::endl;
-// //       approx.close();
-
-// //       if (level == 0){
-// //         iter+=1;
-// //       }
-      
-
-// //     }
-// //   } 
-
-  
 }
 
 //

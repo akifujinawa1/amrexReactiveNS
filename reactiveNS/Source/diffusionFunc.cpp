@@ -383,7 +383,7 @@ double k(const double& T, const double& rho){
 }
 
 double D(const double& T, const double& rho){
-    double D_val = (2.9*1e-4/rho)*pow(T,0.7);
+    double D_val = (2.9*1e-5/rho)*pow(T,0.7);
     return D_val;
 }
 

@@ -71,7 +71,7 @@ main (int   argc,
     //     amrex::Abort("MUST SPECIFY a valid initial condition"); 
     // } 
     
-    if (euler < 0 || euler > 2) {
+    if (euler < 0 || euler > 3) {
         amrex::Abort("MUST SPECIFY a valid boolean value"); 
     } 
     
