@@ -90,8 +90,6 @@ ax2.plot(arr,1-y1[:,1],":",c="blue",label='$\mathrm{Analytical},t=100$')
 
 
 
-
-
 # tick_spacing = 1
 
 # # set labels
