@@ -172,7 +172,7 @@ AmrLevelAdv::writePlotFile (const std::string& dir,
   const Real* prob_hi = geom.ProbHi();
   const Real cur_time = state[Phi_Type].curTime();
 
-  if ((enIC == 9) && (cur_time == stop_time)){
+  if (((enIC == 8)||(enIC == 9)) && (cur_time == stop_time)){
 
     const MultiFab& S_plot = get_new_data(Phi_Type);
 
@@ -187,17 +187,33 @@ AmrLevelAdv::writePlotFile (const std::string& dir,
     const Real probLoX = prob_lo[0];
     const Real probLoY = (amrex::SpaceDim > 1 ? prob_lo[1] : 0.0);
 
-    std::string method;
+    std::string method, test;
 
     std::string resolution = std::to_string(n_cell);
     std::string dimension  = std::to_string(amrex::SpaceDim);
-    std::string test       = std::to_string(enIC);
     std::string iteration  = std::to_string(iter);
+    std::string stoptime   = std::to_string((int)stop_time);
+
+    if (enIC == 9){
+      test  = "multiGasSod";
+    } 
+    if (enIC == 8){
+      test  = "multiGasDiffusion";
+    } 
 
     std::ofstream approx;
 
-    approx.open("output/txt/test"+test+"/time"+iteration+".txt",std::ofstream::app);
+    if (conv == 1){
+      approx.open("output/txt/"+test+"/time"+iteration+resolution+".txt",std::ofstream::app);
+    } 
+    if (enIC == 8){
+      approx.open("output/txt/"+test+"/time"+iteration+stoptime+".txt",std::ofstream::app);
+    }
+    else {
+      approx.open("output/txt/"+test+"/time"+iteration+".txt",std::ofstream::app);
+    }
 
+    
     for (MFIter mfi(S_plot); mfi.isValid(); ++mfi)
     {
       Box bx = mfi.tilebox();
@@ -394,13 +410,14 @@ AmrLevelAdv::initData ()
             // Implement new initial conditions here, take IC from FV_func.cpp,
             // which are converted to conserved variables, apply to arr(i,j,k,NUM_STATES) -2023W2
             if (enIC == 8){
-              // double xDomain = prob_hi-prob_lo;
-              // double Tstar   = 1500.0;
-              // double L       = (3.0/4.0)*xDomain;
-              // double T       = std::max(T0,Tstar - (Tstar - T0)*(x/L));
+              // Use this to set spatial profile of oxygen concentration
+
+              double yO2 = exp(-100*(x-0.5)*(x-0.5));
+              double yN2 = 1-yO2;
+              double mAvg = getMavg(yO2,yN2);
               
               // density
-              arr(i,j,k,0) = one_atm_Pa/((R/Mavg)*T0);
+              arr(i,j,k,0) = one_atm_Pa/((R/mAvg)*T0);
 
               // x-momentum
               arr(i,j,k,1) = 0.0;
@@ -409,59 +426,16 @@ AmrLevelAdv::initData ()
               arr(i,j,k,2) = 0.0;
 
               // energy
-              arr(i,j,k,3) = energy(arr(i,j,k,0),0.0,0.0,T0,Y_O2,Y_N2,one_atm_Pa);
+              arr(i,j,k,3) = energy(arr(i,j,k,0),0.0,0.0,T0,yO2,yN2,one_atm_Pa);
 
               // density*O2 mass frac
-              arr(i,j,k,4) = arr(i,j,k,0)*Y_O2;
+              arr(i,j,k,4) = arr(i,j,k,0)*yO2;
 
               // density*unburned fuel mass fraction
-              arr(i,j,k,5) = arr(i,j,k,0)*Y_N2;
+              arr(i,j,k,5) = arr(i,j,k,0)*yN2;
 
               // std::cout << "x: " << x << "Density: " << arr(i,j,k,0) << " Temperature: " << T << " Energy: " << arr(i,j,k,3) << std::endl; 
             } 
-            else if (enIC == 10){   // use O2 and N2 mixture
-              double xDomain = prob_hi-prob_lo;
-              double xNorm   = x/xDomain;
-              // double Tstar   = 1500.0;
-              // double L       = (3.0/4.0)*xDomain;
-              // double T       = std::max(T0,Tstar - (Tstar - T0)*(x/L));
-
-              double T,p;
-              if (xNorm < 0.2){
-                T = 1200.0;
-                p = one_atm_Pa;
-              }
-              else {
-                T = 300.0;
-                p = 0.5*one_atm_Pa;
-              }
-              
-              // density
-              arr(i,j,k,0) = p/((R/Mavg)*T);    // Pa/(J/kg) -> kg/m^3
-
-              // x-momentum
-              arr(i,j,k,1) = 0.0;   // zero velocity
-
-              // y-momentum
-              arr(i,j,k,2) = 0.0;   // zero velocity
-
-              // energy
-              arr(i,j,k,3) = energy(arr(i,j,k,0),0.0,0.0,T,Y_O2,Y_N2,p);   // gas-phase energy
-
-              // density*O2 mass fraction
-              arr(i,j,k,4) = arr(i,j,k,0)*Y_O2;
-
-              // density*N2 mass fraction
-              arr(i,j,k,5) = arr(i,j,k,0)*Y_N2;
-
-              // std::cout << "x: " << x << ", Density: " << arr(i,j,k,0) << \
-              // ", Pressure: " << p << ", Temperature: " << T << ", Energy: " << arr(i,j,k,3) << std::endl; 
-              
-              // test temperature iteration
-
-              // double Tgas = Tg(arr(i,j,k,0),0,0,Y_O2,Y_N2,arr(i,j,k,3));
-              // std::cout << "gas temperature via iteration is: " << Tgas << std::endl;
-            }
             else {
               if (x<xDisc){
                 arr(i,j,k,0) = RPLeftRight[0];
@@ -741,12 +715,22 @@ AmrLevelAdv::advance (Real time,
 
   // if (enIC < 8) // For the Euler equation tests, use transmissive BCs everywhere
   // {
+  // if (enIC == 8){ // if we are testing for multicomponent diffusion validation
     for (int nVar = 0; nVar < NUM_STATE; nVar++){
       for (int nDim = 0; nDim < amrex::SpaceDim; nDim++){
-        BCVec[nVar].setLo(nDim,BCType::foextrap);
-        BCVec[nVar].setHi(nDim,BCType::foextrap);
+        // if ((nVar == 4) || (nVar == 5)){
+        //   BCVec[nVar].setLo(nDim,BCType::foextrap);
+        //   BCVec[nVar].setHi(nDim,BCType::foextrap);
+        // }
+        // else{
+          BCVec[nVar].setLo(nDim,BCType::foextrap);
+          BCVec[nVar].setHi(nDim,BCType::foextrap);
+        // }
       }
     }
+  // }
+    
+    
   // }
   // else // For the shock-induced igntion problem, use the reflective BC at the left wall
   // {
@@ -961,8 +945,10 @@ AmrLevelAdv::estTimeStep (Real)
   //const Real velMag = sqrt(2.);
   for(unsigned int d = 0; d < amrex::SpaceDim; ++d)
   {
-    dt_est = std::min(dt_est, cfl*dx[d]/sMax);
-    if (viscous == 1){
+    if (euler > 0){
+      dt_est = std::min(dt_est, cfl*dx[d]/sMax);
+    }
+    if (viscous > 0){
       dt_est = std::min(dt_est, dx[d]*dx[d]/sMaxDiff);
     }
   }

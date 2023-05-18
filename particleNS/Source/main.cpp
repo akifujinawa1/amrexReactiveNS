@@ -59,7 +59,13 @@ main (int   argc,
         pp.query("particle",particle);
         
         // Call getStopTime in eulerFunc.cpp to set correct final time based on initial condition -2023W2
-        getStopTime(enIC,stop_time);
+        if (enIC == 8){
+            pp.query("stop_time",stop_time);
+        }
+        else{
+            getStopTime(enIC,stop_time);
+        }
+        
     }
 
     if (euler == 2){

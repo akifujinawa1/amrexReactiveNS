@@ -36,7 +36,9 @@ void updateEuler(MultiFab& Sborder, Array<MultiFab, SpaceDim>& fluxes, Vector<do
     switch (euler)
     {
         case 0: 
-        {}
+        {
+            break;
+        }
         case 1: // Use HLLC
         {
             const int iOffset = ( d == 0 ? 1 : 0);
@@ -164,6 +166,8 @@ void updateEuler(MultiFab& Sborder, Array<MultiFab, SpaceDim>& fluxes, Vector<do
             Vector <double> boundRslice(NUM_STATE);
             Vector <double> boundLsliceOld(NUM_STATE);
             Vector <double> boundRsliceOld(NUM_STATE);
+
+            double rho,T1,T2,T3;
             
             for (MFIter mfi(Sborder, true); mfi.isValid(); ++mfi)
             {
@@ -192,7 +196,21 @@ void updateEuler(MultiFab& Sborder, Array<MultiFab, SpaceDim>& fluxes, Vector<do
                             // states for cell i+1. Store this information in boundL and boundR
                             // starting with entry i+1. -2023W2
 
-                                slopeCells = {arr(i-gCells,j,k,3),arr(i-gCells+1,j,k,3),arr(i-gCells+2,j,k,3)};
+                                // For real gas mixture, apply slope limiting on temperature instead of energy,
+                                // since depending on the gas-phase enthalpy, energy will give a negative value,
+                                // which may give non-physical humps when slope limiting. -2023W2
+
+                                rho = arr(i-gCells,j,k,0);
+                                T1  = Tg(rho,arr(i-gCells,j,k,1)/rho,arr(i-gCells,j,k,2)/rho,\
+                                         arr(i-gCells,j,k,4)/rho,arr(i-gCells,j,k,5)/rho,arr(i-gCells,j,k,3));
+                                rho = arr(i-gCells+1,j,k,0);
+                                T2  = Tg(rho,arr(i-gCells+1,j,k,1)/rho,arr(i-gCells+1,j,k,2)/rho,\
+                                         arr(i-gCells+1,j,k,4)/rho,arr(i-gCells+1,j,k,5)/rho,arr(i-gCells+1,j,k,3));
+                                rho = arr(i-gCells+2,j,k,0);
+                                T3  = Tg(rho,arr(i-gCells+2,j,k,1)/rho,arr(i-gCells+2,j,k,2)/rho,\
+                                         arr(i-gCells+2,j,k,4)/rho,arr(i-gCells+2,j,k,5)/rho,arr(i-gCells+2,j,k,3));
+
+                                slopeCells = {T1,T2,T3};
 
                                 for(int h = 0; h < NUM_STATE; h++) // fill matrix u0 with values from arr to calculate slope ratio. -2023W2
                                 {
@@ -254,7 +272,10 @@ void updateEuler(MultiFab& Sborder, Array<MultiFab, SpaceDim>& fluxes, Vector<do
                                 // states for cell i+1. Store this information in boundL and boundR
                                 // starting with entry i+1
 
-                                slopeCells = {arr(i,j-gCells,k,3),arr(i,j-gCells+1,k,3),arr(i,j-gCells+2,k,3)};
+                                slopeCells = {arr(i,j-gCells,k,3),\
+                                              arr(i,j-gCells+1,k,3),\
+                                              arr(i,j-gCells+2,k,3)};
+
                                 // std::cout << "Y entry i,j " << i << "," << j << " " << slopeCells[0] << slopeCells[1] << slopeCells[2] << std::endl;
 
                                 for(int h = 0; h < NUM_STATE; h++) // fill matrix u0 with values from arr to calculate slope ratio
@@ -595,7 +616,7 @@ Vector<double> setIC(const int dim) {
                 TgR = Tg(rhoR,0.0,0.0,Y_O2,Y_N2,ER);
                 break;
             }
-            case 8: //one step ns Detonation
+            case 8: // Diffusion validation test
             {
                 x0  = 0; xEnd = 4.0; xDisc = 0.5; tEnd=0.25;
                 rhoL = 8.7345e-4; vxL = 0.0; pL = 1.0; 
@@ -619,16 +640,16 @@ Vector<double> setIC(const int dim) {
                 TgR = pR*Mavg/(R*rhoR);; //Tg(rhoR,0.0,0.0,Y_O2,Y_N2,ER);
                 break;
             }
-            case 10: // Sods shock tube problem with O2-N2 diatomic gas mixture and detailed thermodynamics
+            case 10: // Particle ignition and combustion test
             {
                 x0  = 0; xEnd = 1; xDisc = 0.5; tEnd=0.25;
-                rhoL = 1.0;   vxL = 0.0;  pL = 1.0*one_atm_Pa; 
-                rhoR = 0.125; vxR = 0.0;  pR = 0.1*one_atm_Pa; 
+                vxL = 0.0;  pL = 1.0*one_atm_Pa; 
+                vxR = 0.0;  pR = 1.0*one_atm_Pa; 
                 YO2L = Y_O2; YN2L = Y_N2; YO2R = Y_O2; YN2R = Y_N2;
-                EL = pL/(Gamma-1);
-                ER = pR/(Gamma-1);
-                TgL = Tg(rhoL,0.0,0.0,Y_O2,Y_N2,EL);
-                TgR = Tg(rhoR,0.0,0.0,Y_O2,Y_N2,ER);
+                TgL = 1270;
+                TgR = 1270;
+                rhoL = pL*Mavg/(R*TgL);
+                rhoR = pR*Mavg/(R*TgR);
                 break;
             }
         }
@@ -786,7 +807,7 @@ void getStopTime(int enIC, Real& stop_time){
         }
         case 8: //offset for 2-D, revert to toro1
         {
-            stop_time=6e-4;
+            stop_time=100;
             break;
         }
         case 9: //offset for 2-D, revert to toro1
@@ -810,6 +831,7 @@ double soundSpeed(const double& p, const double& rho, const double& Tg,\
     Mavgval = getMavg(YO2,YN2);
     gammaval = cpval/(cpval-R/Mavgval);
     a = sqrt(fabs(gammaval*p/rho));
+
     // std::cout << "Tg is: " << Tg << ", gamma is: " << gammaval << std::endl;
     return a;
 }

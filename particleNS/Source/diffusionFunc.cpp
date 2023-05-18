@@ -196,7 +196,7 @@ void getViscFlux1D(Vector<double>& viscSlice, const Vector<double>& qL,\
     mu_avg = muMix(muO2(TAvg),muN2(TAvg),YO2Avg,YN2Avg);
     k_avg  = kMix(kO2(TAvg),kN2(TAvg),YO2Avg,YN2Avg);
 
-    std::cout << "p: " << pAvg << ", T: " << TAvg << ", D: " << D_avg << ", mu: " << mu_avg << ", k: " << k_avg << std::endl;
+    // std::cout << "p: " << pAvg << ", T: " << TAvg << ", D: " << D_avg << ", mu: " << mu_avg << ", k: " << k_avg << std::endl;
 
 
     viscSlice[0] = 0;
@@ -387,12 +387,16 @@ double diffusiveSpeed(const Vector<double>& qL, const Vector<double>& qR){
     D_avg  = D(TL,pL);
     mu_avg = muMix(muO2(TL),muN2(TL),YO2L,YN2L);
 
-    maxLeft = 2*std::max(mu_avg/rhoL,mu_avg/(rhoL*Pr));
+    maxLeft = 2*std::max(mu_avg/rhoL,D_avg);
 
     D_avg  = D(TR,pR);
     mu_avg = muMix(muO2(TR),muN2(TR),YO2R,YN2R);
 
-    maxRight = 2*std::max(mu_avg/rhoR,mu_avg/(rhoR*Pr));
+    maxRight = 2*std::max(mu_avg/rhoR,D_avg);
+
+    if (enIC == 8){
+        return 2*D_avg;
+    }
 
     // std::cout << "mu: " << mu_avg << ", max speed" << maxRight << std::endl;
 
@@ -406,6 +410,10 @@ double diffusiveSpeed(const Vector<double>& qL, const Vector<double>& qR){
 
 
 double D(const double& Tg, const double& p){
+    if (enIC == 8){ // if validating diffusion implementation
+        double D_val = 2e-5;
+        return D_val;
+    }
     double p_atm = p/one_atm_Pa;
     double D_val = Dpre*pow(Tg,1.75)/p_atm;
     return D_val;

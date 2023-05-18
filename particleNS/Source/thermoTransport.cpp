@@ -365,6 +365,9 @@ double muN2(const double& Tg){
 
 
 double Hgas(const double& rho, const double& YO2, const double& YN2, const double& Tg){
+    // returns gas-phase sensible enthalpy (std H of form. of O2, N2 are zero) of the 
+    // binary O2-N2 gas mixture as a function of temperature, YO2, and YN2, in units
+    // J/m^3 (scaled by density to make volumetric)
     double H = rho*(YO2*hO2(Tg)/M_O2 + YN2*hN2(Tg)/M_N2);
     return H;
 }
@@ -378,7 +381,7 @@ double getMavg(const double& YO2, const double& YN2){
 
 double Tg(const double& rho, const double& u, const double& v, \
           const double& YO2, const double& YN2, const double& ener){
-    double Tg0=300,tol=1e-6,error=1;
+    double Tg0=300,tol=1e-3,error=1;
     double dE,E,Eest,vT,Mavg,cp,Tgn,iter=0;
 
     Mavg = getMavg(YO2,YN2);
@@ -393,7 +396,7 @@ double Tg(const double& rho, const double& u, const double& v, \
         // dE    = E - (Hgas(rho,YO2,YN2,Tg0)-rho*(R/Mavg)*Tg0); //
         cp    = rho*(YO2*cpO2(Tg0)/M_O2+YN2*cpN2(Tg0)/M_N2);
         Tgn   = Tg0 + dE/cp;
-        error = std::fabs(Tgn-Tg0);
+        error = std::fabs(Tgn-Tg0)/Tg0;
         // std::cout << "ener: " << ener << ", enthalpy guess: " << enthalpy << \
         // ", p guess: " << pressure << ", Tgn: " << Tgn << ", error: " << error << std::endl;
         Tg0 = Tgn;
