@@ -21,6 +21,7 @@ do
     done
 done
 
+rm -r detonation/*plt*
 
 python3 output/pyscripts/particleIgnition.py
 

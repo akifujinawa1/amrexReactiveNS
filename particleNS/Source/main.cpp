@@ -9,7 +9,8 @@
 #include <AMReX_ParmParse.H>
 #include <AMReX_ParallelDescriptor.H>
 #include <AMReX_AmrLevel.H>
-#include <eulerFunc.H>
+#include "eulerFunc.H"
+#include "AmrLevelAdv.H"
 // #include "particleContainer.H"
 
 using namespace amrex;

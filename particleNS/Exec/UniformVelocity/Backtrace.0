@@ -9,42 +9,42 @@ Host Name: ironmontreal
             readelf -wl my_exefile | grep my_line_address'
     to find out the offset for that line.
 
- 0: ./main1d.gnu.DEBUG.MPI.ex(+0x2657c6) [0x55ccf1a7e7c6]
+ 0: ./main1d.gnu.DEBUG.MPI.ex(+0x2657e6) [0x564210cd47e6]
     amrex::BLBackTrace::print_backtrace_info(_IO_FILE*) at /home/afujinawa/amrexReactiveNS/particleNS/Exec/UniformVelocity/../../../../amrex/Src/Base/AMReX_BLBackTrace.cpp:186
 
- 1: ./main1d.gnu.DEBUG.MPI.ex(+0x2652ab) [0x55ccf1a7e2ab]
+ 1: ./main1d.gnu.DEBUG.MPI.ex(+0x2652cb) [0x564210cd42cb]
     amrex::BLBackTrace::handler(int) at /home/afujinawa/amrexReactiveNS/particleNS/Exec/UniformVelocity/../../../../amrex/Src/Base/AMReX_BLBackTrace.cpp:96
 
- 2: ./main1d.gnu.DEBUG.MPI.ex(+0x11afde) [0x55ccf1933fde]
+ 2: ./main1d.gnu.DEBUG.MPI.ex(+0x11affe) [0x564210b89ffe]
     amrex::ParallelDescriptor::Abort(int, bool) at /home/afujinawa/amrexReactiveNS/particleNS/Exec/UniformVelocity/../../../../amrex/Src/Base/AMReX_ParallelDescriptor.cpp:213
 
- 3: ./main1d.gnu.DEBUG.MPI.ex(+0x9aa6e) [0x55ccf18b3a6e]
+ 3: ./main1d.gnu.DEBUG.MPI.ex(+0x9aa8e) [0x564210b09a8e]
     amrex::Abort_host(char const*) at /home/afujinawa/amrexReactiveNS/particleNS/Exec/UniformVelocity/../../../../amrex/Src/Base/AMReX.cpp:248
 
- 4: ./main1d.gnu.DEBUG.MPI.ex(+0x66b7f) [0x55ccf187fb7f]
+ 4: ./main1d.gnu.DEBUG.MPI.ex(+0x66b9f) [0x564210ad5b9f]
     amrex::Abort(char const*) at /home/afujinawa/amrexReactiveNS/particleNS/Exec/UniformVelocity/../../../../amrex/Src/Base/AMReX.H:163
  (inlined by) getOxidationRates(double const&, double const&, double const&, double const&, double const&) at /home/afujinawa/amrexReactiveNS/particleNS/Exec/UniformVelocity/../../Source/particleFunc.cpp:391
 
- 5: ./main1d.gnu.DEBUG.MPI.ex(+0x6deb9) [0x55ccf1886eb9]
+ 5: ./main1d.gnu.DEBUG.MPI.ex(+0x6ded9) [0x564210adced9]
     void getSource<amrex::Array4<double> const>(amrex::Vector<double, std::allocator<double> >&, amrex::Vector<double, std::allocator<double> >&, amrex::Array4<double> const&, int const&, int const&, int const&, amrex::Vector<double, std::allocator<double> > const&, amrex::Vector<int, std::allocator<int> > const&, double const&, double const&, double const&) at /home/afujinawa/amrexReactiveNS/particleNS/Exec/UniformVelocity/../../Source/particleFunc.cpp:287 (discriminator 1)
 
- 6: ./main1d.gnu.DEBUG.MPI.ex(+0x65303) [0x55ccf187e303]
+ 6: ./main1d.gnu.DEBUG.MPI.ex(+0x65323) [0x564210ad4323]
     AmrLevelAdv::updateParticleInfo(amrex::MultiFab&, double const&, double const&, double const&) at /home/afujinawa/amrexReactiveNS/particleNS/Exec/UniformVelocity/../../Source/particleFunc.cpp:197
 
- 7: ./main1d.gnu.DEBUG.MPI.ex(+0x1aa8c) [0x55ccf1833a8c]
+ 7: ./main1d.gnu.DEBUG.MPI.ex(+0x1aa8c) [0x564210a89a8c]
     AmrLevelAdv::advance(double, double, int, int) at /home/afujinawa/amrexReactiveNS/particleNS/Exec/UniformVelocity/../../Source/AmrLevelAdv.cpp:769
 
- 8: ./main1d.gnu.DEBUG.MPI.ex(+0x347f8a) [0x55ccf1b60f8a]
+ 8: ./main1d.gnu.DEBUG.MPI.ex(+0x347faa) [0x564210db6faa]
     amrex::Amr::timeStep(int, double, int, int, double) at /home/afujinawa/amrexReactiveNS/particleNS/Exec/UniformVelocity/../../../../amrex/Src/Amr/AMReX_Amr.cpp:1987
 
- 9: ./main1d.gnu.DEBUG.MPI.ex(+0x3487e6) [0x55ccf1b617e6]
+ 9: ./main1d.gnu.DEBUG.MPI.ex(+0x348806) [0x564210db7806]
     amrex::Amr::coarseTimeStep(double) at /home/afujinawa/amrexReactiveNS/particleNS/Exec/UniformVelocity/../../../../amrex/Src/Amr/AMReX_Amr.cpp:2097
 
-10: ./main1d.gnu.DEBUG.MPI.ex(+0x46089) [0x55ccf185f089]
-    main at /home/afujinawa/amrexReactiveNS/particleNS/Exec/UniformVelocity/../../Source/main.cpp:109
+10: ./main1d.gnu.DEBUG.MPI.ex(+0x460a8) [0x564210ab50a8]
+    main at /home/afujinawa/amrexReactiveNS/particleNS/Exec/UniformVelocity/../../Source/main.cpp:110
 
-11: /lib/x86_64-linux-gnu/libc.so.6(__libc_start_main+0xf3) [0x7f3378d6c083]
+11: /lib/x86_64-linux-gnu/libc.so.6(__libc_start_main+0xf3) [0x7f98d0c0b083]
 
-12: ./main1d.gnu.DEBUG.MPI.ex(+0x1683e) [0x55ccf182f83e]
+12: ./main1d.gnu.DEBUG.MPI.ex(+0x1683e) [0x564210a8583e]
     ?? ??:0
 
