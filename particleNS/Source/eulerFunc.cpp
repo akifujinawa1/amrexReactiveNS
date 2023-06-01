@@ -23,6 +23,8 @@ extern double Y_N2;
 extern double R;
 extern double one_atm_Pa;      // one atmosphere in Pa
 extern double Mavg;            // average molecular weight of the gas mixture
+extern double TgInitial;
+extern double TpInitial;
 
 extern int NUM_STATE;
 extern int gCells;
@@ -640,14 +642,38 @@ Vector<double> setIC(const int dim) {
                 TgR = pR*Mavg/(R*rhoR);; //Tg(rhoR,0.0,0.0,Y_O2,Y_N2,ER);
                 break;
             }
-            case 10: // Particle ignition and combustion test
+            case 10: // Particle drag test
+            {
+                x0  = 0; xEnd = 1; xDisc = 0.5; tEnd=0.25;
+                vxL = 5.0;  pL = 1.0*one_atm_Pa; 
+                vxR = 5.0;  pR = 1.0*one_atm_Pa; 
+                YO2L = Y_O2; YN2L = Y_N2; YO2R = Y_O2; YN2R = Y_N2;
+                TgL = TgInitial;
+                TgR = TgInitial;
+                rhoL = pL*Mavg/(R*TgL);
+                rhoR = pR*Mavg/(R*TgR);
+                break;
+            }
+            case 11: // Particle heat test
+            {
+                x0  = 0; xEnd = 1; xDisc = 0.5; tEnd=0.25;
+                vxL = 5.0;  pL = 1.0*one_atm_Pa; 
+                vxR = 5.0;  pR = 1.0*one_atm_Pa; 
+                YO2L = Y_O2; YN2L = Y_N2; YO2R = Y_O2; YN2R = Y_N2;
+                TgL = TgInitial;
+                TgR = TgInitial;
+                rhoL = pL*Mavg/(R*TgL);
+                rhoR = pR*Mavg/(R*TgR);
+                break;
+            }
+            case 12: // Particle heat test
             {
                 x0  = 0; xEnd = 1; xDisc = 0.5; tEnd=0.25;
                 vxL = 0.0;  pL = 1.0*one_atm_Pa; 
                 vxR = 0.0;  pR = 1.0*one_atm_Pa; 
                 YO2L = Y_O2; YN2L = Y_N2; YO2R = Y_O2; YN2R = Y_N2;
-                TgL = 1270;
-                TgR = 1270;
+                TgL = TpInitial;
+                TgR = TpInitial;
                 rhoL = pL*Mavg/(R*TgL);
                 rhoR = pR*Mavg/(R*TgR);
                 break;
@@ -817,7 +843,17 @@ void getStopTime(int enIC, Real& stop_time){
         }
         case 10:
         {
-            stop_time=0.25;
+            stop_time=0.1;
+            break;
+        }
+        case 11:
+        {
+            stop_time=0.1;
+            break;
+        }
+        case 12:
+        {
+            stop_time=0.03;
             break;
         }
     }

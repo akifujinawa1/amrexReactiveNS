@@ -10,6 +10,7 @@
 #include <AMReX_ParallelDescriptor.H>
 #include <AMReX_AmrLevel.H>
 #include <eulerFunc.H>
+// #include "particleContainer.H"
 
 using namespace amrex;
 
@@ -26,6 +27,9 @@ int timing;           // whether to run timing exercise or not
 int conv;             // whether to run convergence study or not
 int Da;               // Damkohler number, ratio of chemical to flow timescale
 int particle;         // =0 if no particles, =1 if enabled
+double TpInitial;
+double TgInitial;
+double dp0;           // initial particle size
 
 int
 main (int   argc,
@@ -57,6 +61,10 @@ main (int   argc,
         pp.query("conv",conv);
         pp.query("Da",Da);
         pp.query("particle",particle);
+        pp.query("dp0",dp0);
+        pp.query("TpInitial",TpInitial);
+        pp.query("TgInitial",TgInitial);
+
         
         // Call getStopTime in eulerFunc.cpp to set correct final time based on initial condition -2023W2
         if (enIC == 8){
@@ -74,10 +82,6 @@ main (int   argc,
     else {
         gCells = 1;
     }
-
-    // if (enIC < 1 || enIC > 7) {
-    //     amrex::Abort("MUST SPECIFY a valid initial condition"); 
-    // } 
     
     if (euler < 0 || euler > 3) {
         amrex::Abort("MUST SPECIFY a valid boolean value"); 
@@ -99,6 +103,8 @@ main (int   argc,
         Amr amr(getLevelBld());
 
 	amr.init(strt_time,stop_time);
+
+
 
 	while ( amr.okToContinue() &&
   	       (amr.levelSteps(0) < max_step || max_step < 0) &&

@@ -1,10 +1,13 @@
-
 #include <AmrLevelAdv.H>
 #include <Adv_F.H>
 #include <AMReX_VisMF.H>
 #include <AMReX_TagBox.H>
 #include <AMReX_ParmParse.H>
 #include <AMReX_BCUtil.H>
+#include <AMReX_Particles.H>
+#include <AMReX_MultiFab.H>
+#include <AMReX_FArrayBox.H>
+#include <AMReX_MFIter.H>
 
 #include <eulerFunc.H>
 #include <exactFunc.H>
@@ -13,6 +16,8 @@
 #include <source.H>
 #include <constants.H>
 #include <thermoTransport.H>
+#include <particleFunc.H>
+// #include <particleContainer.H>
 #include <math.h>
 #include <cmath>
 #include <iostream>
@@ -51,13 +56,14 @@ int      AmrLevelAdv::NUM_STATE       = 6;  // set this to 6 for reactive NS wit
 int      AmrLevelAdv::NUM_GROW        = 2;  // number of ghost cells, set gCells from main.cpp file. -2023W2
 int      n_cell;
 int      max_level;
-const int      spacedim               = amrex::SpaceDim;
+const int spacedim               = amrex::SpaceDim;
 int      NUM_STATE                    = AmrLevelAdv::NUM_STATE;
 int      pfrequency                   = 20;
 int      iter                         = 0;
 int      printlevel                   = 0;
+int      advIter = 0;
 
-
+// std::unique_ptr<amrex::ParticleContainer<RealData::ncomps, IntData::ncomps>> AmrLevelAdv::particles =  nullptr;
 
 // A few vector quantities are defined here to be used in the slope reconstruction / flux calculations
 Vector<double> qL(NUM_STATE);
@@ -76,6 +82,7 @@ Vector <double> printCount(pfrequency);
 // Vector <double> boundRsliceOld(NUM_STATE);
 Vector <double> viscSlice(NUM_STATE);
 
+
 //
 //Default constructor.  Builds invalid object.
 //
@@ -88,6 +95,28 @@ AmrLevelAdv::AmrLevelAdv ()
 //
 //The basic constructor.
 //
+// old constructor for only AmrLevel
+
+// AmrLevelAdv::AmrLevelAdv (Amr&  papa,
+//      	                    int   lev,
+//                           const Geometry& level_geom,
+//                           const BoxArray& bl,
+//                           const DistributionMapping& dm,
+//                           Real  time)
+//   :
+//   AmrLevel(papa,lev,level_geom,bl,dm,time) 
+// {
+//   // Flux registers are only required if AMR is actually used, and if flux fix up is being done (recommended)
+//   flux_reg = 0;
+//   if (level > 0 && do_reflux)
+//   {
+//     flux_reg = new FluxRegister(grids,dmap,crse_ratio,level,NUM_STATE);
+//   }
+// }
+
+
+// New constructor creating both AmrLevel and ParticleContainer 
+
 AmrLevelAdv::AmrLevelAdv (Amr&  papa,
      	                    int   lev,
                           const Geometry& level_geom,
@@ -95,7 +124,7 @@ AmrLevelAdv::AmrLevelAdv (Amr&  papa,
                           const DistributionMapping& dm,
                           Real  time)
   :
-  AmrLevel(papa,lev,level_geom,bl,dm,time) 
+  AmrLevel(papa,lev,level_geom,bl,dm,time),ParticleContainer<RealData::ncomps, IntData::ncomps>(level_geom,dm,bl)
 {
   // Flux registers are only required if AMR is actually used, and if flux fix up is being done (recommended)
   flux_reg = 0;
@@ -104,6 +133,7 @@ AmrLevelAdv::AmrLevelAdv (Amr&  papa,
     flux_reg = new FluxRegister(grids,dmap,crse_ratio,level,NUM_STATE);
   }
 }
+
 
 //
 //The destructor. 
@@ -151,121 +181,7 @@ AmrLevelAdv::checkPoint (const std::string& dir,
 //Write a plotfile to specified directory - format is handled automatically by AMReX.
 //
 
-void
-AmrLevelAdv::writePlotFile (const std::string& dir,
-	 	                        std::ostream&      os,
-                            VisMF::How         how)
-{
-  // AmrLevel::writePlotFile (dir,os,how);
-  
-  int finest_level = parent->finestLevel();
-  
-  if (do_reflux && level < finest_level)
-    reflux();
-  
-  if (level < finest_level)
-    avgDown();
-  
-//   // If final time, loop through all patches here.
-  const Real* dx = geom.CellSize();
-  const Real* prob_lo = geom.ProbLo();
-  const Real* prob_hi = geom.ProbHi();
-  const Real cur_time = state[Phi_Type].curTime();
 
-  if (((enIC == 8)||(enIC == 9)) && (cur_time == stop_time)){
-
-    const MultiFab& S_plot = get_new_data(Phi_Type);
-
-    int rank, size;
-    MPI_Comm_rank(MPI_COMM_WORLD, &rank);
-
-    std::cout << "Printing data on AMR level: " << level << " with CPU rank: " << rank << std::endl;
-    
-    const Real dX = dx[0];
-    const Real dY = (amrex::SpaceDim > 1 ? dx[1] : 0.0);
-
-    const Real probLoX = prob_lo[0];
-    const Real probLoY = (amrex::SpaceDim > 1 ? prob_lo[1] : 0.0);
-
-    std::string method, test;
-
-    std::string resolution = std::to_string(n_cell);
-    std::string dimension  = std::to_string(amrex::SpaceDim);
-    std::string iteration  = std::to_string(iter);
-    std::string stoptime   = std::to_string((int)stop_time);
-
-    if (enIC == 9){
-      test  = "multiGasSod";
-    } 
-    if (enIC == 8){
-      test  = "multiGasDiffusion";
-    } 
-
-    std::ofstream approx;
-
-    if (conv == 1){
-      approx.open("output/txt/"+test+"/time"+iteration+resolution+".txt",std::ofstream::app);
-    } 
-    if (enIC == 8){
-      approx.open("output/txt/"+test+"/time"+iteration+stoptime+".txt",std::ofstream::app);
-    }
-    else {
-      approx.open("output/txt/"+test+"/time"+iteration+".txt",std::ofstream::app);
-    }
-
-    
-    for (MFIter mfi(S_plot); mfi.isValid(); ++mfi)
-    {
-      Box bx = mfi.tilebox();
-      const Dim3 lo = lbound(bx);
-      const Dim3 hi = ubound(bx);
-      const auto& arr = S_plot.array(mfi);
-      
-      for(int k = lo.z; k <= hi.z; k++)
-      {
-        for(int j = lo.y; j <= hi.y; j++)
-        {
-          const Real y     = probLoY + (double(j)+0.5) * dY;
-          for(int i = lo.x; i <= hi.x; i++)
-          {
-            const Real x     = probLoX + (double(i)+0.5) * dX;
-
-            double rho       = arr(i,j,k,0);
-            double xmomentum = arr(i,j,k,1);
-            double ymomentum = arr(i,j,k,2);
-            double ener      = arr(i,j,k,3);
-            double rhoYO2    = arr(i,j,k,4);
-            double rhoYN2    = arr(i,j,k,5);      
-
-            double vx  = xmomentum/rho;
-            double vy  = ymomentum/rho;
-            double YO2 = rhoYO2/rho;
-            double YN2 = rhoYN2/rho;
-            double Tgas = Tg(rho,vx,vy,YO2,YN2,ener);
-            double p   = pressure(rho,YO2,YN2,Tgas); 
-            double eps = specIntEner(rho,vx,vy,ener,p);
-            double a   = soundSpeed(p,rho,Tgas,YO2,YN2);
-            double gammaval = a*a*rho/p;
-
-            AllPrint(approx) << x << " " << rho << " " << vx/sqrt(one_atm_Pa) << " " << p/one_atm_Pa << " " \
-            << eps/one_atm_Pa << " " << YO2 << " " << YN2 << " " << Tgas << " " << gammaval << std::endl;
-
-          }
-        }
-      }
-    }
-    if ((level == 0)&&(rank == 0)){
-      // iter += 1;
-      std::cout << "wrote output data to text file" << std::endl;
-    }
-
-    
-    approx.close();
-  }
-
-  
-
-}
 
 //
 //Define data descriptors.
@@ -273,7 +189,7 @@ AmrLevelAdv::writePlotFile (const std::string& dir,
 // This is how the variables in a simulation are defined.  In the case
 // of the advection equation, a single variable, phi, is defined.
 //
-void
+void 
 AmrLevelAdv::variableSetUp ()
 {
   BL_ASSERT(desc_lst.size() == 0);
@@ -333,6 +249,9 @@ AmrLevelAdv::variableSetUp ()
 			                  StateDescriptor::BndryFunc(nullfill));
   desc_lst.setComponent(Phi_Type, 5, "rhoN2", bc, 
 			                  StateDescriptor::BndryFunc(nullfill));
+
+  // Initialize particle here
+
 }
 
 //
@@ -347,7 +266,7 @@ AmrLevelAdv::variableCleanUp ()
 //
 //Initialize grid data at problem start-up.
 //
-void
+void 
 AmrLevelAdv::initData ()
 {
   //
@@ -365,8 +284,6 @@ AmrLevelAdv::initData ()
   if (verbose) {
     amrex::Print() << "Initializing the data at level " << level << std::endl;
   }
-
-  // Set Gamma to required value based on initial condition here
 
 
   // Slightly messy way to ensure uninitialised data is not used.
@@ -455,8 +372,8 @@ AmrLevelAdv::initData ()
               }
               double Tgas = Tg(arr(i,j,k,0),0,0,Y_O2,Y_N2,arr(i,j,k,3));
               double p = pressure(arr(i,j,k,0),Y_O2,Y_N2,Tgas);
-              std::cout << "x: " << x << ", Density: " << arr(i,j,k,0) << \
-              ", Energy: " << arr(i,j,k,3) << ", Temperature: " << Tgas << ", Pressure: " << p << std::endl; 
+              // std::cout << "x: " << x << ", Density: " << arr(i,j,k,0) << \
+              // ", Energy: " << arr(i,j,k,3) << ", Temperature: " << Tgas << ", Pressure: " << p << std::endl; 
             }
           }
           else // for 2-D tests:
@@ -521,21 +438,19 @@ AmrLevelAdv::initData ()
         }
       }
     }
-  }
+  } // closes mfi patch loop
 
-
-  // // If particles are enabled, initialize particles
-  // if (particle == 1)
-  // {
-
-  // }
-  
+  // BoxArray ba = S_new.boxArray();
+  // std::unique_ptr<ParticleContainer> AmrLevelAdv::TracerPC =  nullptr;
+  // particles(geom,dmap,ba);
+  initParticles();
+  // m_particle = Particle
 
   if (verbose) {
     amrex::Print() << "Done initializing the level " << level 
 		   << " data " << std::endl;
   }  
-  
+
 }
 
 //
@@ -600,7 +515,9 @@ AmrLevelAdv::init ()
 
     // See first init function for documentation
     FillCoarsePatch(S_new, 0, cur_time, Phi_Type, 0, NUM_STATE);
+
 }
+
 
 //
 //Advance grids at this level in time.
@@ -640,6 +557,21 @@ AmrLevelAdv::advance (Real time,
 
   const Real* dx = geom.CellSize();
   const Real* prob_lo = geom.ProbLo();
+
+  // std::unique_ptr<SingleParticleContainer> bPtr;
+
+  // if (advIter == 0){
+  //   BoxArray ba = S_new.boxArray();
+
+  //   // SingleParticleContainer particles(geom,dmap,ba);
+  //   // particles.initParticles();
+    
+  //   bPtr = std::make_unique<SingleParticleContainer>(geom,dmap,ba);
+  //   bPtr.initParticles();
+
+  //   advIter+=1;
+  // }
+  
 
   //
   // Get pointers to Flux registers, or set pointer to zero if not there.
@@ -688,7 +620,7 @@ AmrLevelAdv::advance (Real time,
 
   // The vel vector code has been commented out as it is no longer necessary - we 
   // calculate the conservative fluxes using the HLLC method for the Euler eqns. -2023W2
-  //const Vector<Real> vel{1.0,0.0,0.0};
+  // const Vector<Real> vel{1.0,0.0,0.0};
 
   // State with ghost cells - this is used to compute fluxes and perform the update.
   MultiFab Sborder(grids, dmap, NUM_STATE, NUM_GROW);
@@ -697,7 +629,7 @@ AmrLevelAdv::advance (Real time,
   
 
   // We need to implement transmissive boundary conditions, this is defined as 
-  // 'foextrap' in AMReX (strange name...). AMReX_BCUtil.H contains header files required
+  // 'foextrap' in AMReX (first order extrapolation). AMReX_BCUtil.H contains header files required
   // for setting boundary conditions (setBC, setHi, setLo, etc.). Following the convention 
   // in AMReX_BCRec.cpp, we define a BCRec vector of size NUM_STATE for Euler Eqn. compatibility.
   // Note that the line of code with geometry.is_periodic has been commented out in the inputs file. -2023W2
@@ -765,9 +697,9 @@ AmrLevelAdv::advance (Real time,
   // This loops through all spatial dimensions. We use this variable 'd' to track 
   // which direction we are computing fluxes along. -2023W2
 
-  double dX = dx[0], dY;
-  if (amrex::SpaceDim == 1){
-    dY = dx[0];
+  double dX = dx[0], dY = dX;
+  if (amrex::SpaceDim == 2){
+    dY = dx[1];
   }
 
 
@@ -804,12 +736,9 @@ AmrLevelAdv::advance (Real time,
 
   for (int d = 0; d < amrex::SpaceDim ; d++)   
   {
-    // if (viscous == 1){
-      updateViscous(Sborder, fluxes, qL, qR, qLlo, qRlo, qLhi, qRhi, viscSlice, \
-                  d, dt, dX, dY, amrex::SpaceDim, viscous);
-    // }
+    updateViscous(Sborder, fluxes, qL, qR, qLlo, qRlo, qLhi, qRhi, viscSlice, \
+                d, dt, dX, dY, amrex::SpaceDim, viscous);
     
-
     Sborder.FillBoundary(geom.periodicity());
     FillDomainBoundary(Sborder,geom,BCVec);   // use this to fill cell-centred data outside domain (AMReX_BCUtil.H) -2023W2
     
@@ -830,16 +759,17 @@ AmrLevelAdv::advance (Real time,
     }
   } //this closes the d=0 to d=spacedim loop for the EULER update
 
-  // ____ SOURCE ____ //
 
-  // if ((source == 1)||(source == 2))
-  // {
-  //   double dtSource = dt/Da;
-  //   for (int i = 0; i < Da; i++)
-  //   {
-  //     updateSource(Sborder, qL, fluxvals, dtSource, source);
-  //   }
-  // }
+  // ____ PARTICLE ____ //
+
+  // we want the particles to interact with the Sborder MultiFab
+
+  
+  updateParticleInfo(Sborder,dt,dX,dY);
+  printParticleInfo();
+
+
+
 
   // The updated data is now copied to the S_new multifab.  This means
   // it is now accessible through the get_new_data command, and AMReX
@@ -951,6 +881,10 @@ AmrLevelAdv::estTimeStep (Real)
     if (viscous > 0){
       dt_est = std::min(dt_est, dx[d]*dx[d]/sMaxDiff);
     }
+    else {
+      dt_est = 2e-5;
+    }
+
   }
 
   // Ensure that we really do have the minimum across all processors

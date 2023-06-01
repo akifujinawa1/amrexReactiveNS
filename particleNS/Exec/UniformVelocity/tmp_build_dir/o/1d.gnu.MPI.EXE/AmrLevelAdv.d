@@ -11,8 +11,6 @@ tmp_build_dir/o/1d.gnu.MPI.EXE/AmrLevelAdv.o: \
  ../../../../amrex/Src/Base/AMReX_GpuPrint.H \
  ../../../../amrex/Src/Base/AMReX_GpuAssert.H \
  ../../../../amrex/Src/Base/AMReX_ccse-mpi.H \
- /usr/lib/x86_64-linux-gnu/openmpi/include/mpi.h \
- /usr/lib/x86_64-linux-gnu/openmpi/include/mpi_portable_platform.h \
  ../../../../amrex/Src/Base/AMReX_Exception.H \
  ../../../../amrex/Src/Base/AMReX_GpuControl.H \
  ../../../../amrex/Src/Base/AMReX_GpuTypes.H \
@@ -35,6 +33,7 @@ tmp_build_dir/o/1d.gnu.MPI.EXE/AmrLevelAdv.o: \
  ../../../../amrex/Src/Base/AMReX_ParallelContext.H \
  ../../../../amrex/Src/Base/AMReX_BLBackTrace.H \
  ../../../../amrex/Src/Base/AMReX_BLProfiler.H \
+ ../../../../amrex/Src/Base/AMReX_GpuComplex.H \
  ../../../../amrex/Src/Base/AMReX_ValLocPair.H \
  ../../../../amrex/Src/Base/AMReX_RealBox.H \
  ../../../../amrex/Src/Base/AMReX_RealVect.H \
@@ -51,6 +50,7 @@ tmp_build_dir/o/1d.gnu.MPI.EXE/AmrLevelAdv.o: \
  ../../../../amrex/Src/Base/AMReX_FArrayBox.H \
  ../../../../amrex/Src/Base/AMReX_BaseFab.H \
  ../../../../amrex/Src/Base/AMReX_Loop.H \
+ ../../../../amrex/Src/Base/AMReX_Loop.nolint.H \
  ../../../../amrex/Src/Base/AMReX_BArena.H \
  ../../../../amrex/Src/Base/AMReX_Arena.H \
  ../../../../amrex/Src/Base/AMReX_CArena.H \
@@ -74,7 +74,9 @@ tmp_build_dir/o/1d.gnu.MPI.EXE/AmrLevelAdv.o: \
  ../../../../amrex/Src/Base/AMReX_TypeList.H \
  ../../../../amrex/Src/Base/AMReX_GpuLaunchGlobal.H \
  ../../../../amrex/Src/Base/AMReX_GpuLaunchMacrosC.H \
+ ../../../../amrex/Src/Base/AMReX_GpuLaunchMacrosC.nolint.H \
  ../../../../amrex/Src/Base/AMReX_GpuLaunchFunctsC.H \
+ ../../../../amrex/Src/Base/AMReX_GpuLaunch.nolint.H \
  ../../../../amrex/Src/Base/AMReX_CTOParallelForImpl.H \
  ../../../../amrex/Src/Base/AMReX_GpuBuffer.H \
  ../../../../amrex/Src/Base/AMReX_GpuAsyncArray.H \
@@ -146,10 +148,40 @@ tmp_build_dir/o/1d.gnu.MPI.EXE/AmrLevelAdv.o: \
  ../../../../amrex/Src/Boundary/AMReX_LO_BCTYPES.H ../../Source/Adv_F.H \
  ../../../../amrex/Src/Base/AMReX_BLFort.H \
  ../../../../amrex/Src/Base/AMReX_ParmParse.H \
- ../../../../amrex/Src/Base/AMReX_BCUtil.H ../../Source/eulerFunc.H \
- ../../Source/exactFunc.H ../../Source/recon.H \
+ ../../../../amrex/Src/Base/AMReX_BCUtil.H \
+ ../../../../amrex/Src/Particle/AMReX_Particles.H \
+ ../../../../amrex/Src/Particle/AMReX_ParticleContainerBase.H \
+ ../../../../amrex/Src/Particle/AMReX_ParGDB.H \
+ ../../../../amrex/Src/Particle/AMReX_ParticleUtil.H \
+ ../../../../amrex/Src/Particle/AMReX_MakeParticle.H \
+ ../../../../amrex/Src/Particle/AMReX_ParticleTile.H \
+ ../../../../amrex/Src/Particle/AMReX_Particle.H \
+ ../../../../amrex/Src/Particle/AMReX_ArrayOfStructs.H \
+ ../../../../amrex/Src/Particle/AMReX_StructOfArrays.H \
+ ../../../../amrex/Src/Particle/AMReX_ParticleBufferMap.H \
+ ../../../../amrex/Src/Particle/AMReX_ParticleLocator.H \
+ ../../../../amrex/Src/Particle/AMReX_DenseBins.H \
+ ../../../../amrex/Src/Particle/AMReX_BinIterator.H \
+ ../../../../amrex/Src/Particle/AMReX_ParticleContainer.H \
+ ../../../../amrex/Src/Base/AMReX_VectorIO.H \
+ ../../../../amrex/Src/Base/AMReX_FPC.H \
+ ../../../../amrex/Src/Base/AMReX_IntConv.H \
+ ../../../../amrex/Src/Particle/AMReX_Particle_mod_K.H \
+ ../../../../amrex/Src/Particle/AMReX_ParticleMPIUtil.H \
+ ../../../../amrex/Src/Particle/AMReX_ParticleReduce.H \
+ ../../../../amrex/Src/Particle/AMReX_ParticleCommunication.H \
+ ../../../../amrex/Src/Particle/AMReX_SparseBins.H \
+ ../../../../amrex/Src/Particle/AMReX_ParticleTransformation.H \
+ ../../../../amrex/Src/Particle/AMReX_ParticleMesh.H \
+ ../../../../amrex/Src/Particle/AMReX_ParIter.H \
+ ../../../../amrex/Src/Particle/AMReX_ParticleInit.H \
+ ../../../../amrex/Src/Particle/AMReX_ParticleContainerI.H \
+ ../../../../amrex/Src/Particle/AMReX_ParticleIO.H \
+ ../../../../amrex/Src/Particle/AMReX_WriteBinaryParticleData.H \
+ ../../Source/eulerFunc.H ../../Source/exactFunc.H ../../Source/recon.H \
  ../../Source/diffusionFunc.H ../../Source/source.H \
- ../../Source/constants.H ../../Source/thermoTransport.H
+ ../../Source/constants.H ../../Source/thermoTransport.H \
+ ../../Source/particleFunc.H ../../Source/particleContainer.H
 
 ../../Source/AmrLevelAdv.H:
 
@@ -174,10 +206,6 @@ tmp_build_dir/s/1d.gnu.MPI.EXE/AMReX_Config.H:
 ../../../../amrex/Src/Base/AMReX_GpuAssert.H:
 
 ../../../../amrex/Src/Base/AMReX_ccse-mpi.H:
-
-/usr/lib/x86_64-linux-gnu/openmpi/include/mpi.h:
-
-/usr/lib/x86_64-linux-gnu/openmpi/include/mpi_portable_platform.h:
 
 ../../../../amrex/Src/Base/AMReX_Exception.H:
 
@@ -223,6 +251,8 @@ tmp_build_dir/s/1d.gnu.MPI.EXE/AMReX_Config.H:
 
 ../../../../amrex/Src/Base/AMReX_BLProfiler.H:
 
+../../../../amrex/Src/Base/AMReX_GpuComplex.H:
+
 ../../../../amrex/Src/Base/AMReX_ValLocPair.H:
 
 ../../../../amrex/Src/Base/AMReX_RealBox.H:
@@ -254,6 +284,8 @@ tmp_build_dir/s/1d.gnu.MPI.EXE/AMReX_Config.H:
 ../../../../amrex/Src/Base/AMReX_BaseFab.H:
 
 ../../../../amrex/Src/Base/AMReX_Loop.H:
+
+../../../../amrex/Src/Base/AMReX_Loop.nolint.H:
 
 ../../../../amrex/Src/Base/AMReX_BArena.H:
 
@@ -301,7 +333,11 @@ tmp_build_dir/s/1d.gnu.MPI.EXE/AMReX_Config.H:
 
 ../../../../amrex/Src/Base/AMReX_GpuLaunchMacrosC.H:
 
+../../../../amrex/Src/Base/AMReX_GpuLaunchMacrosC.nolint.H:
+
 ../../../../amrex/Src/Base/AMReX_GpuLaunchFunctsC.H:
+
+../../../../amrex/Src/Base/AMReX_GpuLaunch.nolint.H:
 
 ../../../../amrex/Src/Base/AMReX_CTOParallelForImpl.H:
 
@@ -449,6 +485,64 @@ tmp_build_dir/s/1d.gnu.MPI.EXE/AMReX_Config.H:
 
 ../../../../amrex/Src/Base/AMReX_BCUtil.H:
 
+../../../../amrex/Src/Particle/AMReX_Particles.H:
+
+../../../../amrex/Src/Particle/AMReX_ParticleContainerBase.H:
+
+../../../../amrex/Src/Particle/AMReX_ParGDB.H:
+
+../../../../amrex/Src/Particle/AMReX_ParticleUtil.H:
+
+../../../../amrex/Src/Particle/AMReX_MakeParticle.H:
+
+../../../../amrex/Src/Particle/AMReX_ParticleTile.H:
+
+../../../../amrex/Src/Particle/AMReX_Particle.H:
+
+../../../../amrex/Src/Particle/AMReX_ArrayOfStructs.H:
+
+../../../../amrex/Src/Particle/AMReX_StructOfArrays.H:
+
+../../../../amrex/Src/Particle/AMReX_ParticleBufferMap.H:
+
+../../../../amrex/Src/Particle/AMReX_ParticleLocator.H:
+
+../../../../amrex/Src/Particle/AMReX_DenseBins.H:
+
+../../../../amrex/Src/Particle/AMReX_BinIterator.H:
+
+../../../../amrex/Src/Particle/AMReX_ParticleContainer.H:
+
+../../../../amrex/Src/Base/AMReX_VectorIO.H:
+
+../../../../amrex/Src/Base/AMReX_FPC.H:
+
+../../../../amrex/Src/Base/AMReX_IntConv.H:
+
+../../../../amrex/Src/Particle/AMReX_Particle_mod_K.H:
+
+../../../../amrex/Src/Particle/AMReX_ParticleMPIUtil.H:
+
+../../../../amrex/Src/Particle/AMReX_ParticleReduce.H:
+
+../../../../amrex/Src/Particle/AMReX_ParticleCommunication.H:
+
+../../../../amrex/Src/Particle/AMReX_SparseBins.H:
+
+../../../../amrex/Src/Particle/AMReX_ParticleTransformation.H:
+
+../../../../amrex/Src/Particle/AMReX_ParticleMesh.H:
+
+../../../../amrex/Src/Particle/AMReX_ParIter.H:
+
+../../../../amrex/Src/Particle/AMReX_ParticleInit.H:
+
+../../../../amrex/Src/Particle/AMReX_ParticleContainerI.H:
+
+../../../../amrex/Src/Particle/AMReX_ParticleIO.H:
+
+../../../../amrex/Src/Particle/AMReX_WriteBinaryParticleData.H:
+
 ../../Source/eulerFunc.H:
 
 ../../Source/exactFunc.H:
@@ -462,3 +556,7 @@ tmp_build_dir/s/1d.gnu.MPI.EXE/AMReX_Config.H:
 ../../Source/constants.H:
 
 ../../Source/thermoTransport.H:
+
+../../Source/particleFunc.H:
+
+../../Source/particleContainer.H:

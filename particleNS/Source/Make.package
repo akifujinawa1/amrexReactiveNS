@@ -1,5 +1,7 @@
-CEXE_sources += AmrLevelAdv.cpp LevelBldAdv.cpp main.cpp eulerFunc.cpp exactFunc.cpp reconstruct.cpp diffusionFunc.cpp source.cpp thermoTransport.cpp
+CEXE_sources += AmrLevelAdv.cpp LevelBldAdv.cpp main.cpp eulerFunc.cpp exactFunc.cpp reconstruct.cpp \
+diffusionFunc.cpp source.cpp thermoTransport.cpp particleFunc.cpp printFunc.cpp
 
-CEXE_headers += AmrLevelAdv.H eulerFunc.H exactFunc.H recon.H diffusionFunc.H constants.H source.H thermoTransport.H
+CEXE_headers += AmrLevelAdv.H eulerFunc.H exactFunc.H recon.H diffusionFunc.H constants.H source.H \
+thermoTransport.H particleFunc.H
  
 FEXE_headers += Adv_F.H 

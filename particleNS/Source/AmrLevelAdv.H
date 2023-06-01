@@ -3,6 +3,8 @@
 
 #include <AMReX_AmrLevel.H>
 #include <AMReX_FluxRegister.H>
+#include <AMReX_Particles.H>
+// #include <particleContainer.H>
 
 #include <memory>
 #include <iostream>
@@ -14,13 +16,44 @@
 enum StateType { Phi_Type = 0,
                  NUM_STATE_TYPE };
 
+struct RealData
+{
+    enum {
+        u = 0,
+        v,
+        w,
+        mFe,
+        mFeO,
+        mFe3O4,
+        Hp,
+        LFe,
+        LFeO,
+        LFe3O4,
+        ncomps
+    };
+};
+
+struct IntData
+{
+    enum {
+        Fe,
+        FeO,
+        Fe3O4,
+        ncomps
+    };
+};
+
+
+                //  const amrex::Geometry& geom,
+                //  const amrex::DistributionMapping& dmap,
+                //  const amrex::BoxArray& ba)
+
 //
 // AmrLevel-derived class for hyperbolic conservation equations
 //
-
-class AmrLevelAdv
-    :
-    public amrex::AmrLevel
+ // //
+class AmrLevelAdv 
+            : public amrex::AmrLevel, public amrex::ParticleContainer<RealData::ncomps, IntData::ncomps>
 {
 public:
     //
@@ -31,7 +64,7 @@ public:
     //The basic constructor.
     //
     AmrLevelAdv (amrex::Amr&     papa,
-	         int             lev,
+	             int             lev,
                  const amrex::Geometry& level_geom,
                  const amrex::BoxArray& bl,
                  const amrex::DistributionMapping& dm,
@@ -117,7 +150,6 @@ public:
     //Do work after timestep().
     //
     virtual void post_timestep (int iteration) override;
-
     //
     //Do work after regrid().
     //
@@ -136,13 +168,32 @@ public:
     virtual void errorEst (amrex::TagBoxArray& tb,
                            int          clearval,
                            int          tagval,
-                           amrex::Real         time,
-			   int          n_error_buf = 0, int ngrow = 0) override;
+                           amrex::Real  time,
+			               int          n_error_buf = 0, int ngrow = 0) override;
 
     static int  NUM_STATE;
     static int  NUM_GROW;
 
-    
+    // static amrex::ParticleContainer<RealData::ncomps, IntData::ncomps> m_particle;
+    // SingleParticleContainer (const amrex::Geometry            & a_geom,
+    //                          const amrex::DistributionMapping & a_dmap,
+    //                          const amrex::BoxArray            & a_ba);
+
+    using MyParIter = amrex::ParIter<RealData::ncomps, IntData::ncomps>;
+
+    void initParticles();  //amrex::MultiFab& S_new, const int num_particles
+
+    amrex::Vector<double> getParticleInfo(amrex::Vector<double>& pReal, amrex::Vector<int>& pInt);  //
+
+    void updateParticleInfo(amrex::MultiFab& Sborder, const double& sub_dt, const double& dx, const double& dy);  //
+
+    void printParticleInfo();
+
+    // amrex::Vector<double> getRealData() {
+    //     return GetStructOfArrays().GetRealData();
+    // }
+
+
 
 protected:
 
@@ -169,9 +220,33 @@ protected:
     static int          verbose;
     static amrex::Real  cfl;
     static int          do_reflux;
+
     
     
 };    
+
+
+// class SingleParticleContainer
+//     : public amrex::ParticleContainer<RealData::ncomps, IntData::ncomps>
+// {
+//     public:
+
+//         SingleParticleContainer (const amrex::Geometry            & a_geom,
+//                                     const amrex::DistributionMapping & a_dmap,
+//                                     const amrex::BoxArray            & a_ba);
+
+//         using MyParIter = amrex::ParIter<RealData::ncomps, IntData::ncomps>;
+
+//         void initParticles();  //amrex::MultiFab& S_new, const int num_particles
+
+//         void getParticleInfo(amrex::MultiFab& S_new);  //
+
+//     protected:
+
+//     private:
+
+// };
+
 
 //
 // Inlines.

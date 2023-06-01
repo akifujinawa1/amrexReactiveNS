@@ -13,14 +13,19 @@ amr.n_cell           =  64 64 64            # Number of cells in each dimension
 adv.cfl            = 0.9     # cfl number for hyperbolic system
 
 # TEST CASE: This value sets the initial condition to be used.
-enIC               = 1       # 1:Toro1, 2:Toro2, ..., 5:Toro5, 6:Cylindrical explosion, 7:Unaligned discontinuity
+enIC               = 11       # 1:Toro1, 2:Toro2, ..., 5:Toro5, 6:Cylindrical explosion, 7:Unaligned discontinuity
 
 # SYSTEM OF EQUATIONS AND METHODS
-euler              = 2         # 0:No advection, 1:HLLC, 2:MUSCL
-viscous            = 1         # 0:No diffusion, 1:Central
+euler              = 0         # 0:No advection, 1:HLLC, 2:MUSCL
+viscous            = 0         # 0:No diffusion, 1:Central
 source             = 0         # 0:No source terms, 1:RK4 subcycle
-particle           = 0         # 0:No particle source terms, 1:RK4 subcycle
+particle           = 1         # 0:No particle source terms, 1:RK4 subcycle
 enLimiter          = 1         # 0:Superbee, 1:vanLeer, 2:vanAlbada, 3:minbee
+
+# PARTICLE
+dp0                = 0.00002728     # Initial particle diameter
+TgInitial          = 300
+TpInitial          = 1000
 
 # VERBOSITY - controls the number of messages output to screen
 adv.v              = 1       # verbosity in Adv
@@ -33,7 +38,7 @@ amr.max_level       = 0       # maximum level number allowed
 amr.ref_ratio       = 2 2 2 2 # refinement ratio
 amr.regrid_int      = 1       # how often to regrid (number of coarse timesteps between regrid)
 amr.blocking_factor = 4       # block factor in grid generation
-amr.max_grid_size   = 8
+amr.max_grid_size   = 64
 
 # CHECKPOINT FILES
 amr.checkpoint_files_output = 0     # 0 will disable checkpoint files
@@ -46,8 +51,8 @@ amr.check_int               = 10    # number of timesteps between checkpoints
 #	 visualisation knows the current cycle (iteration) as well as time - see AMReX documentation for more.
 amr.plot_files_output = 1              # 0 will disable plot files
 amr.plot_file         = detonation/plt    # root name of plot file
-amr.plot_int          = 25               # number of timesteps between plot files, plot_per allows fixed timesteps
+amr.plot_int          = 50               # number of timesteps between plot files, plot_per allows fixed timesteps
 
 # PROBIN FILENAME - This file contains AMR refinement criteria
-amr.probin_file = probin
+amr.probin_file = prbn/1
 

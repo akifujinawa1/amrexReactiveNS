@@ -7,8 +7,6 @@ tmp_build_dir/o/1d.gnu.MPI.EXE/AMReX_iMultiFab.o: \
  ../../../../amrex/Src/Base/AMReX_GpuPrint.H \
  ../../../../amrex/Src/Base/AMReX_GpuAssert.H \
  ../../../../amrex/Src/Base/AMReX_ccse-mpi.H \
- /usr/lib/x86_64-linux-gnu/openmpi/include/mpi.h \
- /usr/lib/x86_64-linux-gnu/openmpi/include/mpi_portable_platform.h \
  ../../../../amrex/Src/Base/AMReX_Exception.H \
  ../../../../amrex/Src/Base/AMReX_Extension.H \
  ../../../../amrex/Src/Base/AMReX_iMultiFab.H \
@@ -32,6 +30,7 @@ tmp_build_dir/o/1d.gnu.MPI.EXE/AMReX_iMultiFab.o: \
  ../../../../amrex/Src/Base/AMReX_Array4.H \
  ../../../../amrex/Src/Base/AMReX_BaseFab.H \
  ../../../../amrex/Src/Base/AMReX_Loop.H \
+ ../../../../amrex/Src/Base/AMReX_Loop.nolint.H \
  ../../../../amrex/Src/Base/AMReX_BoxList.H \
  ../../../../amrex/Src/Base/AMReX_BArena.H \
  ../../../../amrex/Src/Base/AMReX_Arena.H \
@@ -47,6 +46,7 @@ tmp_build_dir/o/1d.gnu.MPI.EXE/AMReX_iMultiFab.o: \
  ../../../../amrex/Src/Base/AMReX_ParallelDescriptor.H \
  ../../../../amrex/Src/Base/AMReX_ParallelContext.H \
  ../../../../amrex/Src/Base/AMReX_BLBackTrace.H \
+ ../../../../amrex/Src/Base/AMReX_GpuComplex.H \
  ../../../../amrex/Src/Base/AMReX_ValLocPair.H \
  ../../../../amrex/Src/Base/AMReX_Random.H \
  ../../../../amrex/Src/Base/AMReX_RandomEngine.H \
@@ -68,7 +68,9 @@ tmp_build_dir/o/1d.gnu.MPI.EXE/AMReX_iMultiFab.o: \
  ../../../../amrex/Src/Base/AMReX_TypeList.H \
  ../../../../amrex/Src/Base/AMReX_GpuLaunchGlobal.H \
  ../../../../amrex/Src/Base/AMReX_GpuLaunchMacrosC.H \
+ ../../../../amrex/Src/Base/AMReX_GpuLaunchMacrosC.nolint.H \
  ../../../../amrex/Src/Base/AMReX_GpuLaunchFunctsC.H \
+ ../../../../amrex/Src/Base/AMReX_GpuLaunch.nolint.H \
  ../../../../amrex/Src/Base/AMReX_CTOParallelForImpl.H \
  ../../../../amrex/Src/Base/AMReX_GpuBuffer.H \
  ../../../../amrex/Src/Base/AMReX_GpuAsyncArray.H \
@@ -127,10 +129,6 @@ tmp_build_dir/s/1d.gnu.MPI.EXE/AMReX_Config.H:
 
 ../../../../amrex/Src/Base/AMReX_ccse-mpi.H:
 
-/usr/lib/x86_64-linux-gnu/openmpi/include/mpi.h:
-
-/usr/lib/x86_64-linux-gnu/openmpi/include/mpi_portable_platform.h:
-
 ../../../../amrex/Src/Base/AMReX_Exception.H:
 
 ../../../../amrex/Src/Base/AMReX_Extension.H:
@@ -177,6 +175,8 @@ tmp_build_dir/s/1d.gnu.MPI.EXE/AMReX_Config.H:
 
 ../../../../amrex/Src/Base/AMReX_Loop.H:
 
+../../../../amrex/Src/Base/AMReX_Loop.nolint.H:
+
 ../../../../amrex/Src/Base/AMReX_BoxList.H:
 
 ../../../../amrex/Src/Base/AMReX_BArena.H:
@@ -206,6 +206,8 @@ tmp_build_dir/s/1d.gnu.MPI.EXE/AMReX_Config.H:
 ../../../../amrex/Src/Base/AMReX_ParallelContext.H:
 
 ../../../../amrex/Src/Base/AMReX_BLBackTrace.H:
+
+../../../../amrex/Src/Base/AMReX_GpuComplex.H:
 
 ../../../../amrex/Src/Base/AMReX_ValLocPair.H:
 
@@ -249,7 +251,11 @@ tmp_build_dir/s/1d.gnu.MPI.EXE/AMReX_Config.H:
 
 ../../../../amrex/Src/Base/AMReX_GpuLaunchMacrosC.H:
 
+../../../../amrex/Src/Base/AMReX_GpuLaunchMacrosC.nolint.H:
+
 ../../../../amrex/Src/Base/AMReX_GpuLaunchFunctsC.H:
+
+../../../../amrex/Src/Base/AMReX_GpuLaunch.nolint.H:
 
 ../../../../amrex/Src/Base/AMReX_CTOParallelForImpl.H:
 

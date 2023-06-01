@@ -435,5 +435,3 @@ double muMix(const double& muO2, const double& muN2, const double& YO2, const do
     mu = XO2*muO2/(XO2+XN2*phiO2N2) + XN2*muN2/(XN2+XO2*phiN2O2);
     return mu;
 }
-
-

@@ -9,8 +9,8 @@ PROFILE    = FALSE
 # accurate line information, without optimising out variables.
 # Additionally, additional bounds checking is implemented in AMReX's
 # debug mode
-#DEBUG      = TRUE
-DEBUG      = FALSE
+DEBUG      = TRUE
+#DEBUG      = FALSE
 
 # Dimensionality is specified at compile time - this example has been written for 2D only
 DIM        = 1
@@ -19,7 +19,7 @@ DIM        = 1
 COMP	   = gnu
 
 # MPI and OpenMP compatibility must be included at compile time.  OpenMP will also require appropriate pragmas.
-USE_MPI    = FALSE
+USE_MPI    = TRUE
 USE_OMP    = FALSE
 
 Bpack   := ./Make.package 

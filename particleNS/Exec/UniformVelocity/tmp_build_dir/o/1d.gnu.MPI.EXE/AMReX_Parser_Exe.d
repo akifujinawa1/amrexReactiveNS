@@ -11,8 +11,6 @@ tmp_build_dir/o/1d.gnu.MPI.EXE/AMReX_Parser_Exe.o: \
  ../../../../amrex/Src/Base/AMReX.H \
  ../../../../amrex/Src/Base/AMReX_GpuAssert.H \
  ../../../../amrex/Src/Base/AMReX_ccse-mpi.H \
- /usr/lib/x86_64-linux-gnu/openmpi/include/mpi.h \
- /usr/lib/x86_64-linux-gnu/openmpi/include/mpi_portable_platform.h \
  ../../../../amrex/Src/Base/AMReX_Exception.H \
  ../../../../amrex/Src/Base/AMReX_ParallelContext.H \
  ../../../../amrex/Src/Base/AMReX_Vector.H \
@@ -29,6 +27,7 @@ tmp_build_dir/o/1d.gnu.MPI.EXE/AMReX_Parser_Exe.o: \
  ../../../../amrex/Src/Base/AMReX_ParallelDescriptor.H \
  ../../../../amrex/Src/Base/AMReX_BLBackTrace.H \
  ../../../../amrex/Src/Base/AMReX_BLProfiler.H \
+ ../../../../amrex/Src/Base/AMReX_GpuComplex.H \
  ../../../../amrex/Src/Base/AMReX_ValLocPair.H \
  ../../../../amrex/Src/Base/AMReX_Box.H \
  ../../../../amrex/Src/Base/AMReX_ArrayLim.H \
@@ -59,10 +58,6 @@ tmp_build_dir/s/1d.gnu.MPI.EXE/AMReX_Config.H:
 ../../../../amrex/Src/Base/AMReX_GpuAssert.H:
 
 ../../../../amrex/Src/Base/AMReX_ccse-mpi.H:
-
-/usr/lib/x86_64-linux-gnu/openmpi/include/mpi.h:
-
-/usr/lib/x86_64-linux-gnu/openmpi/include/mpi_portable_platform.h:
 
 ../../../../amrex/Src/Base/AMReX_Exception.H:
 
@@ -95,6 +90,8 @@ tmp_build_dir/s/1d.gnu.MPI.EXE/AMReX_Config.H:
 ../../../../amrex/Src/Base/AMReX_BLBackTrace.H:
 
 ../../../../amrex/Src/Base/AMReX_BLProfiler.H:
+
+../../../../amrex/Src/Base/AMReX_GpuComplex.H:
 
 ../../../../amrex/Src/Base/AMReX_ValLocPair.H:
 
