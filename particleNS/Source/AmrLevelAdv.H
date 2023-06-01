@@ -88,9 +88,11 @@ public:
     //
     //Write a plotfile to specified directory.
     //
-    virtual void writePlotFile (const std::string& dir,
-                                std::ostream&      os,
-                                amrex::VisMF::How  how) override;
+    // virtual void writePlotFile (const std::string& dir,
+    //                             std::ostream&      os,
+    //                             amrex::VisMF::How  how) override;
+
+    void writePlotFile ();
     //
     //Define data descriptors.
     //

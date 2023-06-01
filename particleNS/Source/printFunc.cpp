@@ -53,11 +53,12 @@ extern   double       Y_N2;            // mass fraction of N2
 extern   double       Mavg;            // average molecular weight of the gas mixture
 extern   double       TpInitial;
 
-void AmrLevelAdv::writePlotFile(const std::string &dir,
-                                std::ostream &os,
-                                VisMF::How how)
+void AmrLevelAdv::writePlotFile()
 {
     // AmrLevel::writePlotFile (dir,os,how);
+    // const std::string &dir,
+    //                             std::ostream &os,
+    //                             VisMF::How how
 
     int finest_level = parent->finestLevel();
 

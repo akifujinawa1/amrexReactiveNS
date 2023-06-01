@@ -1052,11 +1052,6 @@ AmrLevelAdv::post_timestep (int iteration)
   // Integration cycle on fine level grids is complete
   // do post_timestep stuff here.
   //
-  // std::cout << "level is " << level << std::endl;
-  // To validate the test cases against exact Riemann solutions, we wish to output only the final time-step information
-  // in 1-D. Initialize the step-size, lower bound of the domain, current time of simulation, and a new set of patch data,
-  // S_plot. We follow the same convention as was used in the time-step and flux calculation loops. -2023W2
-
   
   int finest_level = parent->finestLevel();
   
@@ -1065,6 +1060,8 @@ AmrLevelAdv::post_timestep (int iteration)
   
   if (level < finest_level)
     avgDown();
+
+  writePlotFile();
 }
 
 //
