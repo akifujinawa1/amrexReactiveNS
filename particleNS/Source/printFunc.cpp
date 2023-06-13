@@ -100,6 +100,29 @@ void AmrLevelAdv::writePlotFile()
 
         AllPrint(approx) << cur_time << " " << Tp << std::endl;
     }
+    if ((enIC == 13)){ // if testing for particle combustion
+        Vector<double> pPosTp(3);
+        Vector<double> pReal(RealData::ncomps);
+        Vector<int> pInt(IntData::ncomps);
+
+        pPosTp = getParticleInfo(pReal,pInt);
+
+        std::string Tp0 = std::to_string((int)TpInitial);
+        
+        double x = pPosTp[0];
+        double y = pPosTp[1];
+        double Tp = pPosTp[2];
+        double mFe = pReal[RealData::mFe];
+        double mFeO = pReal[RealData::mFeO];
+        double mFe3O4 = pReal[RealData::mFe3O4];
+
+
+        
+        std::ofstream approx;
+        approx.open("output/txt/particleCombustion/data"+Tp0+".txt", std::ofstream::app);
+
+        AllPrint(approx) << cur_time << " " << Tp << std::endl;
+    }
 
     if ((enIC == 10)||(enIC == 11)){ // if testing for particle drag or heat
         Vector<double> pPosTp(3);

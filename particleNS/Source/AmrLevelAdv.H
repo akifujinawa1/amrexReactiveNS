@@ -43,6 +43,16 @@ struct IntData
     };
 };
 
+struct gases
+{
+    enum {
+        O2,
+        N2,
+        Fe,
+        FeO,
+        ncomps
+    };
+};
 
                 //  const amrex::Geometry& geom,
                 //  const amrex::DistributionMapping& dmap,

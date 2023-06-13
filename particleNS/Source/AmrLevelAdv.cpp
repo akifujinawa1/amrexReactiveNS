@@ -62,6 +62,7 @@ int      pfrequency                   = 20;
 int      iter                         = 0;
 int      printlevel                   = 0;
 int      advIter = 0;
+double   meltFe, meltFeO, meltFe3O4;
 
 // std::unique_ptr<amrex::ParticleContainer<RealData::ncomps, IntData::ncomps>> AmrLevelAdv::particles =  nullptr;
 
@@ -764,8 +765,17 @@ AmrLevelAdv::advance (Real time,
 
   // we want the particles to interact with the Sborder MultiFab
 
-  
-  updateParticleInfo(Sborder,dt,dX,dY);
+  Vector<double> pPosTp(3);
+  Vector<double> pReal(RealData::ncomps);
+  Vector<int> pInt(IntData::ncomps);
+
+  pPosTp = getParticleInfo(pReal,pInt);
+  if ((pPosTp[2]<1870)&&(pInt[IntData::Fe3O4]!=0)){
+    std::cout << "particle burnout" << std::endl;
+  }
+  else {
+    updateParticleInfo(Sborder,dt,dX,dY);
+  }
   printParticleInfo();
 
 
@@ -882,7 +892,7 @@ AmrLevelAdv::estTimeStep (Real)
       dt_est = std::min(dt_est, dx[d]*dx[d]/sMaxDiff);
     }
     else {
-      dt_est = 2e-5;
+      dt_est = 1e-6;
     }
 
   }

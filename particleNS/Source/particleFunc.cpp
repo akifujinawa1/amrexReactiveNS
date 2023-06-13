@@ -18,8 +18,7 @@
 extern int enIC;
 extern int NUM_STATE;
 extern const int spacedim;
-extern double R;
-extern double pi;
+extern double R, pi, one_atm_Pa;
 extern double dp0;               // mu m                 Initial particle diameter
 extern double delta0;            // [-]                  Initial oxide layer thickness to particle size ratio
 extern double rhoFe;             // kg/m^3               Solid-phase iron(Fe) density
@@ -40,7 +39,12 @@ extern double nFeFe3O4;
 extern double nO2FeO;
 extern double nO2Fe3O4;
 extern double TpInitial;
-extern double M_O2;
+extern double M_O2, M_N2;
+extern double qFeOs,qFeOl,qFe3O4s;
+
+extern double meltFe,meltFeO,meltFe3O4;
+
+double mFe0;
 
 using namespace amrex;
 
@@ -62,7 +66,7 @@ AmrLevelAdv::initParticles ()
       p.pos(0) = 0.0;
       // p.pos(1) =  0.0;
 
-      double mFe0,mFeO0,mFe3O40,energy0;
+      double mFeO0,mFe3O40,energy0;
       particleInit(mFe0,mFeO0,mFe3O40,energy0);
 
       p.rdata(RealData::u)     = 0.0;         // Store the x-velocity here (unused if simulation is 1-D)
@@ -93,7 +97,7 @@ AmrLevelAdv::getParticleInfo(Vector<double>& pReal, Vector<int>& pInt)
   int  phaseFe, phaseFeO, phaseFe3O4;
   Vector<double> data(3);
 
-  std::cout << "in getParticleInfo" << std::endl;
+//   std::cout << "in getParticleInfo" << std::endl;
 
   for (MFIter mfi = MakeMFIter(lev); mfi.isValid(); ++mfi){
 
@@ -130,6 +134,7 @@ AmrLevelAdv::getParticleInfo(Vector<double>& pReal, Vector<int>& pInt)
         phaseFe    = pInt[IntData::Fe];
         phaseFeO   = pInt[IntData::FeO];
         phaseFe3O4 = pInt[IntData::Fe3O4];
+        // std::cout << "FeO melt flag and value: " << phaseFeO << ", energy req: " << LFeO << std::endl;  
         Tp = Tparticle(mFe,mFeO,mFe3O4,Hp,phaseFe,phaseFeO,phaseFe3O4,LFe,LFeO,LFe3O4);
     }
   }
@@ -147,11 +152,11 @@ AmrLevelAdv::updateParticleInfo(MultiFab& Sborder, const double& dt, const doubl
   int  i=0, j=0, k=0;
   Vector<double> q(NUM_STATE);
   Vector<double> qSource(NUM_STATE,0);
+  Vector<double> pSource(RealData::ncomps,0);
   Vector<double> pReal(RealData::ncomps);
   Vector<int>    pInt(IntData::ncomps);
-  Vector<double> pSource(RealData::ncomps,0);
 
-  std::cout << "in updateParticleInfo" << std::endl;
+//   std::cout << "in updateParticleInfo" << std::endl;
 
   for (MFIter mfi = MakeMFIter(lev); mfi.isValid(); ++mfi){
 
@@ -160,7 +165,7 @@ AmrLevelAdv::updateParticleInfo(MultiFab& Sborder, const double& dt, const doubl
     auto& particle_tile = GetParticles(lev)[std::make_pair(grid_id,tile_id)];
     auto& particles = particle_tile.GetArrayOfStructs();
     const int np = particles.numParticles();
-    std::cout << "number of particles in grid in getParticleInfo, within advance: " << np << std::endl;
+    std::cout << "number of particles in grid in updateParticleInfo, within advance: " << np << std::endl;
 
     // Access S_new multifab information here
     const Box& bx = mfi.tilebox();
@@ -182,7 +187,7 @@ AmrLevelAdv::updateParticleInfo(MultiFab& Sborder, const double& dt, const doubl
         }
 
         std::cout << "position in i is: " << lx << ", cell number is: " << i << std::endl;
-        std::cout << "density in i is: " << arr(i,j,k,0) << std::endl;
+        // std::cout << "density in i is: " << arr(i,j,k,0) << std::endl;
 
         for (int h = 0; h < NUM_STATE; h++){
             q[h] = arr(i,j,k,h);
@@ -196,6 +201,14 @@ AmrLevelAdv::updateParticleInfo(MultiFab& Sborder, const double& dt, const doubl
 
         getSource(qSource,pSource,arr,i,j,k,pReal,pInt,dt,dx,dy);
 
+        p.rdata(RealData::Hp)     = pReal[RealData::Hp];
+        // p.rdata(RealData::LFe)    = pReal[RealData::LFe];
+        // p.rdata(RealData::LFeO)   = pReal[RealData::LFeO];
+        // p.rdata(RealData::LFe3O4) = pReal[RealData::LFe3O4];
+        p.idata(IntData::Fe)      = pInt[IntData::Fe];
+        p.idata(IntData::FeO)     = pInt[IntData::FeO];
+        p.idata(IntData::Fe3O4)   = pInt[IntData::Fe3O4];
+        
         p.pos(0) = p.pos(0) + dt*p.rdata(RealData::u);
         if (spacedim == 2){
             p.pos(1) = p.pos(1) + dt*p.rdata(RealData::v);
@@ -203,26 +216,44 @@ AmrLevelAdv::updateParticleInfo(MultiFab& Sborder, const double& dt, const doubl
         for (int h = 0; h < RealData::ncomps; h++){
             p.rdata(h) = p.rdata(h) + dt*pSource[h];
         }
+
+        
     }
   }
   Redistribute();
 }
 
 void getSource(Vector<double>& qSource, Vector<double>& pSource, auto& arr, \
-               const int& i, const int& j, const int& k, const Vector<double>& pReal, \
-               const Vector<int>& pInt, const double& dt, const double& dx, const double& dy){
+               const int& i, const int& j, const int& k, Vector<double>& pReal, \
+               Vector<int>& pInt, const double& dt, const double& dx, const double& dy){
     
     // Declare particle and gas variables
     Real up, vp, wp, mFe, mFeO, mFe3O4, Hp, LFe, LFeO, LFe3O4;
     int  phaseFe, phaseFeO, phaseFe3O4;
     Real rho, rhou, rhov, energy, rhoYO2, rhoYN2, u, v, p, Tgas, YO2, YN2;
 
+    // Declare variables used for vapor pressure calculation
+    Real pFe=0, pFeO=0, pO2=0, pN2, XO2, XN2, XFep, XFeOp, XO2p, XN2p, YFep, YFeOp, YO2p, YN2p;
+    Vector<double> yGas;
+
     // Declare variables used for drag calculation
     Real Tp, vTot, rp, dp, rhop, Re, mu, uRel, vRel, CD;
+    Real rhoFel, rhoFeOl;
+
+    // Declare variables used for evaporation calculations
+    Real mdotFe=0, mdotFeO=0, mdotFeOevap=0;
 
     // Declare variables used for heat transfer calculations
-    Real Nu, Ap, epsilon, SB, kgas, conv, rad;
+    Real Nu, Ap, epsilon, SB, kgas, conv, rad, Pr, NuSt, evap;
 
+    // Declare variables for external transport rates
+    Real DO2, DFe, DFeO, rhoO2g, rhoFeg, rhoFeOg, ScO2, ScFe, ScFeO, ShO2, ShFe, ShFeO;
+    Real mdotO2, mdotO2k, mdotO2d, ShSt, cpgas, phi, Bm, Bt, Le, psi;
+    Vector<double> xGas;
+    Vector<double> mixDiffCoeffs;
+
+    // Declare boundary-layer averaged quantities
+    Real pfilm, Tfilm, YO2film, YN2film, YFefilm, YFeOfilm, rhofilm, Mfilm;
 
     // Declare source terms
     Real dupdt, dvpdt, dHpdt, dmO2dt; //, dHpdt, dmFedt, dmFeOdt, dmFe3O4dt;
@@ -256,57 +287,213 @@ void getSource(Vector<double>& qSource, Vector<double>& pSource, auto& arr, \
     phaseFeO   = pInt[IntData::FeO];
     phaseFe3O4 = pInt[IntData::Fe3O4];
     Tp         = Tparticle(mFe,mFeO,mFe3O4,Hp,phaseFe,phaseFeO,phaseFe3O4,LFe,LFeO,LFe3O4);
+    Tfilm      = filmAverage(Tp,Tgas);
+
+    // std::cout << "masses fe feo fe3o4: " << mFe << " " << mFeO << " " << mFe3O4 << std::endl;
+
+    // With the particle temperature known, we first compute the vapor pressures of gas-phase Fe and FeO
+    // resulting from the gas-liquid equilibrium at the particle surface. If the particle temperature is 
+    // below the melting point of Fe3O4, the vapor pressure is zero (use initialized value).
+    if (Tp > 1870){
+        pFe  = one_atm_Pa*pow(10,6.041-2.095e4/Tp);  // vapor pressure of Fe evaporating from liquid FeO
+        pFeO = one_atm_Pa*pow(10,5.962-2.175e4/Tp);  // vapor pressure of FeO evaporating from liquid FeO
+        pO2  = one_atm_Pa*pow(10,5.361-2.016e4/Tp);  // vapor pressure of O2 released from liquid FeO
+        rhoFeOl = 4.35*1.0e3;
+        rhoFel  = 1e3*(8.523-(8.358e-4)*Tp);
+    }
+    XO2 = (YO2/M_O2)/(YO2/M_O2+YN2/M_N2);  // mole fraction of O2 in gas-phase 
+    XN2 = (YN2/M_N2)/(YO2/M_O2+YN2/M_N2);  // mole fraction of N2 in gas-phase 
+    pN2 = one_atm_Pa-pFe-pFeO-pO2;
+    // pN2 = XN2*p;                           // partial pressure of N2 at the particle surface
+
+    XO2p = pO2/(pO2+pN2+pFe+pFeO);
+    XN2p = pN2/(pO2+pN2+pFe+pFeO);
+    XFep = pFe/(pO2+pN2+pFe+pFeO);
+    XFeOp= pFeO/(pO2+pN2+pFe+pFeO);
+
+    // std::cout << "o2 n2 Xp: " << XO2p << " " << XN2p << std::endl;
+
+    pfilm = filmAverage(pO2+pN2+pFe+pFeO,p);
+
+    std::cout << "film pressure: " << pfilm << std::endl;
+
+    yGas = getMassFractions(XO2p, XN2p, XFep, XFeOp);
+    YO2p = yGas[gases::O2];
+    YN2p = yGas[gases::N2];
+    YFep = yGas[gases::Fe];
+    YFeOp= yGas[gases::FeO];
+
+    // std::cout << "o2 n2 Yp: " << YO2p << " " << YN2p << std::endl;
+
+    // Calculate boundary-layer averaged mass fractions and density:
+    YO2film = filmAverage(YO2p,YO2);
+    YN2film = filmAverage(YN2p,YN2);
+    YFefilm = filmAverage(YFep,0);
+    YFeOfilm = filmAverage(YFeOp,0);
+    Mfilm    = 1.0/(YO2film/M_O2+YN2film/M_N2+YFefilm/M_Fe+YFeOfilm/M_FeO);
+    rhofilm  = pfilm*Mfilm/(R*Tfilm);
+
+    std::cout << "rhofilm " << rhofilm << std::endl;
 
     // Calculate necessary particle parameters here:
-    vTot = mFe/rhoFe+mFeO/rhoFeO+mFe3O4/rhoFe3O4;    // total particle volume, m^3
+    vTot = mFe/rhoFe + mFeO/rhoFeO + mFe3O4/rhoFe3O4;    // total particle volume, m^3
     rp   = pow(3.0*vTot*0.25/pi,1.0/3.0);            // particle outer radius, m
-    dp   = 2*rp;
+    dp   = 2*rp;                                     
     rhop = (mFe+mFeO+mFe3O4)/vTot;                   // average particle density, kg/m^3
     
     // Calculate Reynolds number for particle flow here:
-    uRel = fabs(u-up);
-    mu = muMix(muO2(Tgas),muN2(Tgas),YO2,YN2);
-    Re = 2.0*rp*rho*uRel/mu;
+    uRel = fabs(u-up);                               // relative velocity (slip velocity), m/s
+    mu = muMix(muO2(Tfilm),muN2(Tfilm),muFe(Tfilm),muFeO(Tfilm),YO2film,YN2film,YFefilm,YFeOfilm);  // mixture viscosity of the gas
+    Re = 2.0*rp*rhofilm*uRel/mu;                         // Reynolds number of the particle flow
+
+    std::cout << "mugas: " << mu << std::endl;
 
     // Calculate drag coefficient here:
     CD = Cdrag(Re);
 
     // Calculate the rate of change of particle velocity here:
-    dupdt = (3*CD*rho/(8*rp*rhop))*(u-up)*uRel;
+    dupdt = (3*CD*rhofilm/(8*rp*rhop))*(u-up)*uRel + 9.81;
     pSource[RealData::u] = dupdt; 
 
-    if (spacedim == 2){
+    if (spacedim == 2){ // process repeated in y-direction for a 2-D simulation
         vRel  = fabs(v-vp);
-        Re    = 2.0*rp*rho*vRel/mu;
+        Re    = 2.0*rp*rhofilm*vRel/mu;
         CD    = Cdrag(Re);
-        dvpdt = (3*CD*rho/(8*rp*rhop))*(v-vp)*vRel;
+        dvpdt = (3*CD*rhofilm/(8*rp*rhop))*(v-vp)*vRel;
         pSource[RealData::v] = dvpdt; 
     }
 
-    // Calculate change of Fe, FeO, and Fe3O4 mass based on temperature and oxide layer
-    dmdt = getOxidationRates(mFe,mFeO,mFe3O4,Tp,rp);
-    pSource[RealData::mFe] = dmdt[0];
-    pSource[RealData::mFeO] = dmdt[1];
-    pSource[RealData::mFe3O4] = dmdt[2];
+    // Calculate mass diffusivity and oxygen density here:
+    mixDiffCoeffs = getMixDiffCoeffs(Tfilm,pfilm,YO2film,YN2film,YFefilm,YFeOfilm); // use film temperature and pressure
+    DO2   = mixDiffCoeffs[gases::O2];
+    DFe   = mixDiffCoeffs[gases::Fe];
+    DFeO  = mixDiffCoeffs[gases::FeO];
+    rhoO2g = (pfilm*M_O2)/(R*Tfilm);                      // partial density of O2 in the boundary-layer film, kg/m^3
+    rhoFeg = (pfilm*M_Fe)/(R*Tfilm);
+    rhoFeOg = (pfilm*M_FeO)/(R*Tfilm);
 
+    std::cout << "DO2 Fe FeO: " << DO2 << " " << DFe << " " << DFeO << std::endl;
+    std::cout << "pO2 Fe FeO: " << pO2 << " " << pFe << " " << pFeO << std::endl;
+
+    // Calculate Schmidt number and Sherwood number from Froessling equation:
+    ScO2 = mu/(rhofilm*DO2);
+    ScFe = mu/(rhofilm*DFe);
+    ScFeO = mu/(rhofilm*DFeO);
+    phi   = 1.0-1.1*(1.0-pow((Tp/Tgas),0.2));
+    ShO2  = 2.0+(0.02*pow(ScO2,1.0/3.0)*sqrt(Re)+0.33*pow(ScO2,1.0/3.0)*pow(Re,2.0/3.0))*phi;
+    ShFe  = 2.0+(0.02*pow(ScFe,1.0/3.0)*sqrt(Re)+0.33*pow(ScFe,1.0/3.0)*pow(Re,2.0/3.0))*phi;
+    ShFeO = 2.0+(0.02*pow(ScFeO,1.0/3.0)*sqrt(Re)+0.33*pow(ScFeO,1.0/3.0)*pow(Re,2.0/3.0))*phi;
+
+    Bm = (YO2-YO2p)/(YO2p-1.0);
+    cpgas = cpMixFe(cpO2(Tfilm),cpN2(Tfilm),cpFeG(Tfilm),cpFeOG(Tfilm),YO2film,YN2film,YFefilm,YFeOfilm);
+    kgas  = kMix(kO2(Tfilm),kN2(Tfilm),kFe(Tfilm),kFeO(Tfilm),YO2film,YN2film,YFefilm,YFeOfilm);
+    Pr = mu*cpgas/kgas;
+    Nu = 2.0+(0.02*pow(Pr,1.0/3.0)*sqrt(Re)+0.33*pow(Pr,1.0/3.0)*pow(Re,2.0/3.0))*phi;
+    Le = ScO2/Pr;
+
+    psi = (ShO2/Nu)*(1.0/Le)*((cpO2(Tfilm)/M_O2)/cpgas);
+    Bt  = pow((1.0+Bm),psi) - 1.0;
+    ShSt = ShO2*log(1.0+Bm)/Bm;
+
+    // Calculate external transport rates
+    mdotO2  = 2*pi*rp*ShSt*rhoO2g*DO2*(XO2-XO2p);               // mass transport rate of O2 from the bulk gas to the particle, kg/s
+    mdotFe  = 2*pi*rp*ShFe*rhoFeg*DFe*XFep;
+    mdotFeO = 2*pi*rp*ShFeO*rhoFeOg*DFeO*XFeOp;
+    
+    mdotFeOevap = M_FeO*(mdotFeO/M_FeO + mdotFe/M_Fe);
+    mdotO2d = mdotO2 - (mdotFe*0.25*M_O2/M_Fe) - (mdotFeO*(3.0/4.0)*M_O2/M_FeO);
+
+    std::cout << "kmix: " << kgas << std::endl;
+    std::cout << "Re ScO2 rp ShO2 ShSt XO2 XO2p: " << Re << " " << ScO2 << " "  << rp << " " << ShO2 << " " << ShSt << " " << XO2 << std::endl;
+    std::cout << "mdot O2 Fe FeO: " << mdotO2 << " " << mdotFe << " " << mdotFeO << std::endl;
+    std::cout << "mdotO2d: " << mdotO2d << std::endl;
+
+    // Calculate change of Fe, FeO, and Fe3O4 mass based on temperature and oxide layer.
+    // Compare the rate at which the kinetics predict a total consumption of oxygen, compare to the molecular diffusion
+    // rate. Slower rate is limiting for the overall oxidation reaction.
+    dmdt = getOxidationRates(mFe,mFeO,mFe3O4,Tp,rp);
+    mdotO2k = dmdt[1]*nO2FeO + dmdt[2]*nO2Fe3O4;     // total kinetic rate of O2 consumption, kg/s
+
+    std::cout << "kinetic rate: " << mdotO2k << ", diffusion rate: " << mdotO2d << std::endl;
+    std::cout << "fraction of Fe mass remaining: " << mFe/mFe0 << std::endl;
+    if (mFe/mFe0 > 0.01){
+        if (mdotO2d > mdotO2k){ // if the molecular diffusion rate is FASTER than the kinetic rate of O2 consumption
+            // reaction is kinetically-controlled
+            pSource[RealData::mFe] = dmdt[0];
+            pSource[RealData::mFeO] = dmdt[1];
+            pSource[RealData::mFe3O4] = dmdt[2];
+            std::cout << "kinetics-controlled" << std::endl;
+            epsilon = 0.88;
+        }
+        else{ // if the kinetic rate of O2 consumption is FASTER than the molecular diffusion rate
+            // the particle can only consume the O2 supplied from the gas, hence, diffusion-controlled
+            if (Tp < 1870){ // if particle is still at least partially in solid-phase, partition the O2 as in Mi et al. (CnF, 2022)
+                pSource[RealData::mFeO]   = (mdotO2*dmdt[1]/(dmdt[1]+dmdt[2]))/nO2FeO;
+                pSource[RealData::mFe3O4] = (mdotO2*dmdt[2]/(dmdt[1]+dmdt[2]))/nO2Fe3O4;
+                epsilon = 0.88;
+            }
+            else{ // if particle is completely in liquid-phase, use all O2 to form FeO
+                pSource[RealData::mFeO]   = mdotO2d/nO2FeO - mdotFeOevap;
+                pSource[RealData::mFe3O4] = 0.0;
+                epsilon = 0.70;
+            }
+            pSource[RealData::mFe] = -pSource[RealData::mFeO]*nFeFeO - pSource[RealData::mFe3O4]*nFeFe3O4;
+            std::cout << "diffusion-controlled" << std::endl;
+        }
+    }
+        
     // Get rate of oxygen mass consumption due to reactions
-    dmO2dt = -( nO2FeO*dmdt[1] +  nO2Fe3O4*dmdt[2]);
+    dmO2dt = -nO2FeO*pSource[RealData::mFeO]-nO2Fe3O4*pSource[RealData::mFe3O4]; //-mdotFe*0.25*M_O2/M_Fe-mdotFeO*(3.0/4.0)*M_O2/M_FeO
 
     // Calculate Nusselt number, particle surface area, radiation parameters, gas conductivity, etc. for heat transfer
-    Nu      = 2.0;
     Ap      = pi*dp*dp;
-    epsilon = 0.88;
     SB      = 5.6704e-8;
-    double Tfilm = (1.0/3.0)*(2*Tp+Tgas);
-    kgas    = kMix(kO2(Tfilm), kN2(Tfilm), YO2, YN2);
-    conv    = -Ap*kgas*Nu*(1.0/dp)*(Tp-Tgas);
-    rad     = Ap*epsilon*SB*(pow(Tp,4.0)-pow(Tgas,4.0));
-    dHpdt   = conv + rad - dmO2dt*hO2(Tp)/M_O2;
+    if (Tp > 1870){
+        Nu = Nu*log(1.0+Bt)/Bt; // update Nusselt number with Stefan effect to use in heat transfer calculation
+        epsilon = 0.7;
+    }
+    conv    = -2*pi*rp*Nu*kgas*(Tp-Tgas);
+    rad     = -Ap*epsilon*SB*(pow(Tp,4.0)-pow(Tgas,4.0));
+    evap    = -hFeG(Tp)*mdotFe/M_Fe - hFeOG(Tp)*mdotFeO/M_Fe;
+    dHpdt   = conv + rad + evap - dmO2dt*hO2(Tp)/M_O2;
     pSource[RealData::Hp] = dHpdt; 
 
-    
-    // std::cout << "rp: " << rp << " uRel: " << uRel << " CD: " << CD << " rho: " << rho << " rhop: " << rhop << std::endl;
+    std::cout << "kgas, nuStef" << kgas << " " << Nu << std::endl;
+    std::cout << "conv+rad, evap" << conv+rad << " " << evap << std::endl;
 
+    // Must assess phase transition here. If the particle temperature reaches a melting point temperature
+    // (FeO:1650, Fe:1809, Fe3O4:1870 K) for the first time, we assign the particle enthalpy at that instance
+    // to LFe, LFeO, LFe3O4, depending on which species is melting.
+    if (Tp >= 1650){
+        if (phaseFeO == 0){
+            meltFeO = mFeO*HfuFeO;
+            pSource[RealData::LFeO] += dHpdt + pSource[RealData::mFeO]*qFeOs + pSource[RealData::mFe3O4]*qFe3O4s;
+            if (fabs(pReal[RealData::LFeO])>meltFeO){
+                pInt[IntData::FeO] = 1; 
+                pReal[RealData::Hp] = Hparticle(mFe,mFeO,mFe3O4,1650.0,0,1,0);
+            }
+        }
+    }
+    if (Tp >= 1809){
+        if (phaseFe == 0){
+            meltFe = mFe*HfuFe;
+            pSource[RealData::LFe] += dHpdt + pSource[RealData::mFeO]*qFeOs + pSource[RealData::mFe3O4]*qFe3O4s;
+            if (fabs(pReal[RealData::LFe])>meltFe){
+                pInt[IntData::Fe] = 1; 
+                pReal[RealData::Hp] = Hparticle(mFe,mFeO,mFe3O4,1809,1,1,0);
+            }
+        }
+    }
+    if (Tp >= 1870){
+        if (phaseFe3O4 == 0){
+            meltFe3O4 = mFe3O4*HfuFe3O4;
+            pSource[RealData::LFe3O4] += dHpdt + pSource[RealData::mFeO]*qFeOs + pSource[RealData::mFe3O4]*qFe3O4s;
+            if (fabs(pReal[RealData::LFe3O4])>meltFe3O4){
+                pInt[IntData::Fe3O4] = 1; 
+                pReal[RealData::Hp] = Hparticle(mFe,mFeO,mFe3O4,1870,1,1,1);
+            }
+        }
+    }
 }
 
 void
@@ -347,12 +534,13 @@ AmrLevelAdv::printParticleInfo()
         phaseFe    = p.idata(IntData::Fe);
         phaseFeO   = p.idata(IntData::FeO);
         phaseFe3O4 = p.idata(IntData::Fe3O4);
+
         Tp = Tparticle(mFe,mFeO,mFe3O4,Hp,phaseFe,phaseFeO,phaseFe3O4,LFe,LFeO,LFe3O4);
     }
   }
-  std::cout << "Position and velocity:: x: " << x << ", y: " << y << ", up: " << up << ", vp: " << vp << std::endl;
-  std::cout << "Masses:: Fe: " << mFe << ", FeO: " << mFeO << ", Fe3O4: " << mFe3O4 << ", mTot: " << mFe+mFeO+mFe3O4 << std::endl;
-  std::cout << "Enthalpy and Temperature:: Hp: " << Hp << ", Tp: " << Tp << std::endl;
+//   std::cout << "Position and velocity:: x: " << x << ", y: " << y << ", up: " << up << ", vp: " << vp << std::endl;
+//   std::cout << "Masses:: Fe: " << mFe << ", FeO: " << mFeO << ", Fe3O4: " << mFe3O4 << ", mTot: " << mFe+mFeO+mFe3O4 << std::endl;
+//   std::cout << "Enthalpy and Temperature:: Hp: " << Hp << ", Tp: " << Tp << std::endl;
 }
 
 void particleInit(double& mFe0, double& mFeO0, double& mFe3O40, double& energy0){
@@ -375,7 +563,7 @@ void particleInit(double& mFe0, double& mFeO0, double& mFe3O40, double& energy0)
     energy0    = Hparticle(mFe0,mFeO0,mFe3O40,Tp,phaseFe,phaseFeO,phaseFe3O4);
 
     // check mass values
-    std::cout << "Fe, FeO, Fe3O4 mass: " << mFe0 << " " << mFeO0 << " " << mFe3O40 << ", energy: " << energy0 << std::endl;
+    // std::cout << "Fe, FeO, Fe3O4 mass: " << mFe0 << " " << mFeO0 << " " << mFe3O40 << ", energy: " << energy0 << std::endl;
 }
 
 Vector<double> getOxidationRates(const double& mFe, const double& mFeO, const double& mFe3O4, \
@@ -383,13 +571,9 @@ Vector<double> getOxidationRates(const double& mFe, const double& mFeO, const do
 
     Vector<double> rates(3);
     
-    if (Tp >= 1600){
-        // for (int i = 0; i < 3; i++){
-        //     rates[i] = 0;
-        // }
-        // return rates;
-        Abort("Particle ignited"); 
-    }
+    // if (Tp >= 1660){
+    //     Abort("Particle ignited"); 
+    // }
 
     Real vFe, vFeO, vFe3O4, rFe, rFeO, XFeO, XFe3O4;
     Real FeOform, Fe3O4form, dmFedt, dmFeOdt, dmFe3O4dt;
@@ -435,25 +619,39 @@ double Hparticle(const double& mFe, const double& mFeO, const double& mFe3O4, co
 
     double eFe,eFeO,eFe3O4,eTotal;
 
-    if (phaseFe == 0){ // Fe solid 
-        eFe = hFeS(Tp);
-    }
-    else{ // Fe liquid
-        eFe = hFeL(Tp);
-    }
-    if (phaseFeO == 0){ // FeO solid
-        eFeO = hFeOS(Tp);
-    }
-    else{ // FeO liquid
-        eFeO = hFeOL(Tp);
-    }
-    if (phaseFe3O4 == 0){ // Fe3O4 solid
-        eFe3O4 = hFe3O4S(Tp);
-    }
-    else{ // Fe3O4 liquid
-        eFe3O4 = hFe3O4L(Tp);
-    }
-
+    // if (Tp < 1809){
+    //     eFe = hFeS(Tp);
+    // }
+    // else{
+        if (phaseFe == 0){ // Fe solid 
+            eFe = hFeS(Tp);
+        }
+        else{ // Fe liquid
+            eFe = hFeL(Tp);
+        }
+    // }
+    // if (Tp < 1650){
+    //     eFeO = hFeOS(Tp);
+    // }
+    // else{ 
+        if (phaseFeO == 0){ // FeO solid
+            eFeO = hFeOS(Tp);
+        }
+        else{ // FeO liquid
+            eFeO = hFeOL(Tp);
+        }
+    // }
+    // if (Tp < 1870){
+    //     eFe3O4 = hFe3O4S(Tp);
+    // }
+    // else{ 
+        if (phaseFe3O4 == 0){ // Fe3O4 solid
+            eFe3O4 = hFe3O4S(Tp);
+        }
+        else{ // Fe3O4 liquid
+            eFe3O4 = hFe3O4L(Tp);
+        }
+    // }
     eTotal = mFe*(1/M_Fe)*eFe + mFeO*(1/M_FeO)*eFeO + mFe3O4*(1/M_Fe3O4)*eFe3O4;
     return eTotal;
 
@@ -530,7 +728,7 @@ double hFeS(const double& Tp){
         					
         a1 = -3.450190030E+08;
         a2 = 0.000000000E+00;
-        a3 = 7.057501520E+02;
+        a3 = 7.057501520E+02-0.060473972081289;
         a4 = -5.442977890E-01;
         a5 = 1.190040139E-04;
         a6 = 0.000000000E+00;
@@ -564,6 +762,58 @@ double hFeL(const double& Tp){
     return hFeval;    
 
 }
+
+double hFeG(const double& Tp){
+
+    // NASA polynomial fits for total enthalpy of Fe in gas-phase
+    // Returns hFe in J/mol
+
+    double a1,a2,a3,a4,a5,a6,a7,b1,b2,hFeval;
+    if (Tp < 1000){
+        a1=	6.790822660E+04;
+        a2=	-1.197218407E+03;
+        a3=	9.843393310E+00;
+        a4=	-1.652324828E-02;
+        a5=	1.917939959E-05;
+        a6=	-1.149825371E-08;
+        a7=	2.832773807E-12;
+        b1=	5.466995940E+04;
+        b2=	-3.383946260E+01;
+
+
+    }
+    else if ((Tp >= 1000) && (Tp < 6000)){
+       
+        a1=	-1.954923682E+06;
+        a2=	6.737161100E+03;
+        a3=	-5.486410970E+00;
+        a4=	4.378803450E-03;
+        a5=	-1.116286672E-06;
+        a6=	1.544348856E-10;
+        a7=	-8.023578182E-15;
+        b1=	7.137370060E+03;
+        b2=	6.504979860E+01;
+
+    }
+    else{
+        								
+        a1=	1.216352511E+09;
+        a2=	-5.828563930E+05;
+        a3=	9.789634510E+01;
+        a4=	-5.370704430E-03;
+        a5=	3.192037920E-08;
+        a6=	6.267671430E-12;
+        a7=	-1.480574914E-16;
+        b1=	4.847648290E+06;
+        b2=	-8.697289770E+02;
+
+    }
+
+    hFeval = R*Tp*(-a1/(Tp*Tp) + a2*log(Tp)/Tp + a3 + a4*Tp/2.0 + a5*Tp*Tp/3.0 + a6*Tp*Tp*Tp/4.0 + a7*Tp*Tp*Tp*Tp/5.0 + b1/Tp);
+    return hFeval;    
+
+}
+
 
 double hFeOS(const double& Tp){
 
@@ -608,6 +858,42 @@ double hFeOL(const double& Tp){
 
 }
 
+double hFeOG(const double& Tp){
+
+    // NASA polynomial fits for total enthalpy of FeO in gas-phase
+    // Returns hFe in J/mol
+
+    double a1,a2,a3,a4,a5,a6,a7,b1,b2,hFeval;
+    if (Tp < 1000){
+        a1=	1.569282213E+04;
+        a2=	-6.460188880E+01;
+        a3=	2.458925470E+00;
+        a4=	7.016047360E-03;
+        a5=	-1.021405947E-05;
+        a6=	7.179297870E-09;
+        a7=	-1.978966365E-12;
+        b1=	2.964572665E+04;
+        b2=	1.326115545E+01;
+
+    }
+    else{
+       
+        a1=	-1.195971480E+05;
+        a2=	-3.624864780E+02;
+        a3=	5.518880750E+00;
+        a4=	-9.978856890E-04;
+        a5=	4.376913830E-07;
+        a6=	-6.790629460E-11;
+        a7=	3.639292680E-15;
+        b1=	3.037985806E+04;
+        b2=	-3.633655420E+00;
+
+
+    }
+    hFeval = R*Tp*(-a1/(Tp*Tp) + a2*log(Tp)/Tp + a3 + a4*Tp/2.0 + a5*Tp*Tp/3.0 + a6*Tp*Tp*Tp/4.0 + a7*Tp*Tp*Tp*Tp/5.0 + b1/Tp);
+    return hFeval;    
+
+}
 
 double hFe3O4S(const double& Tp){
 
@@ -771,7 +1057,7 @@ double cpFeS(const double& Tp){
         					
         a1=	-3.450190030E+08;
         a2=	0.000000000E+00;
-        a3=	7.057501520E+02;
+        a3=	7.057501520E+02-0.060473972081289;
         a4=	-5.442977890E-01;
         a5=	1.190040139E-04;
         a6=	0.000000000E+00;
@@ -802,8 +1088,58 @@ double cpFeL(const double& Tp){
     b1 = -1.270608703e+03;
     b2 = -2.948115042e+01;
 
+
     cpFeval = R*(a1/(Tp*Tp) + a2/Tp + a3 + a4*Tp + a5*Tp*Tp + a6*Tp*Tp*Tp + a7*Tp*Tp*Tp*Tp);
     return cpFeval;    
+
+}
+
+double cpFeG(const double& Tp){
+
+    // NASA polynomial fits for specific heat capacity of Fe in gas-phase
+    // Returns cpFe in J/mol
+
+    double a1,a2,a3,a4,a5,a6,a7,b1,b2,cpFeval;
+    if (Tp < 1000){
+        a1=	6.790822660E+04;
+        a2=	-1.197218407E+03;
+        a3=	9.843393310E+00;
+        a4=	-1.652324828E-02;
+        a5=	1.917939959E-05;
+        a6=	-1.149825371E-08;
+        a7=	2.832773807E-12;
+        b1=	5.466995940E+04;
+        b2=	-3.383946260E+01;
+    }
+    else if ((Tp >= 1000) && (Tp < 6000)){
+       
+        a1=	-1.954923682E+06;
+        a2=	6.737161100E+03;
+        a3=	-5.486410970E+00;
+        a4=	4.378803450E-03;
+        a5=	-1.116286672E-06;
+        a6=	1.544348856E-10;
+        a7=	-8.023578182E-15;
+        b1=	7.137370060E+03;
+        b2=	6.504979860E+01;
+
+    }
+    else{
+        								
+        a1=	1.216352511E+09;
+        a2=	-5.828563930E+05;
+        a3=	9.789634510E+01;
+        a4=	-5.370704430E-03;
+        a5=	3.192037920E-08;
+        a6=	6.267671430E-12;
+        a7=	-1.480574914E-16;
+        b1=	4.847648290E+06;
+        b2=	-8.697289770E+02;
+
+    }
+
+    cpFeval = R*(a1/(Tp*Tp) + a2/Tp + a3 + a4*Tp + a5*Tp*Tp + a6*Tp*Tp*Tp + a7*Tp*Tp*Tp*Tp);
+    return cpFeval;
 
 }
 
@@ -851,6 +1187,40 @@ double cpFeOL(const double& Tp){
 
 }
 
+double cpFeOG(const double& Tp){
+
+    // NASA polynomial fits for specific heat capacity of FeO in gas-phase
+    // Returns cpFeO in J/mol
+
+    double a1,a2,a3,a4,a5,a6,a7,b1,b2,cpFeOval;
+    if (Tp < 1000){
+        a1=	1.569282213E+04;
+        a2=	-6.460188880E+01;
+        a3=	2.458925470E+00;
+        a4=	7.016047360E-03;
+        a5=	-1.021405947E-05;
+        a6=	7.179297870E-09;
+        a7=	-1.978966365E-12;
+        b1=	2.964572665E+04;
+        b2=	1.326115545E+01;
+    }
+    else{
+       
+        a1=	-1.195971480E+05;
+        a2=	-3.624864780E+02;
+        a3=	5.518880750E+00;
+        a4=	-9.978856890E-04;
+        a5=	4.376913830E-07;
+        a6=	-6.790629460E-11;
+        a7=	3.639292680E-15;
+        b1=	3.037985806E+04;
+        b2=	-3.633655420E+00;
+    }
+
+    cpFeOval = R*(a1/(Tp*Tp) + a2/Tp + a3 + a4*Tp + a5*Tp*Tp + a6*Tp*Tp*Tp + a7*Tp*Tp*Tp*Tp);
+    return cpFeOval;
+
+}
 
 double cpFe3O4S(const double& Tp){
 
@@ -948,24 +1318,39 @@ double cpparticle(const double& mFe, const double& mFeO, const double& mFe3O4, c
 
     double cpFe,cpFeO,cpFe3O4,cpTotal;
 
-    if (phaseFe == 0){ // Fe solid 
-        cpFe = cpFeS(Tp);
-    }
-    else{ // Fe liquid
-        cpFe = cpFeL(Tp);
-    }
-    if (phaseFeO == 0){ // FeO solid
-        cpFeO = cpFeOS(Tp);
-    }
-    else{ // FeO liquid
-        cpFeO = cpFeOL(Tp);
-    }
-    if (phaseFe3O4 == 0){ // Fe3O4 solid
-        cpFe3O4 = cpFe3O4S(Tp);
-    }
-    else{ // Fe3O4 liquid
-        cpFe3O4 = cpFe3O4L(Tp);
-    }
+    // if (Tp < 1809){
+    //     cpFe = cpFeS(Tp);
+    // }
+    // else{
+        if (phaseFe == 0){ // Fe solid 
+            cpFe = cpFeS(Tp);
+        }
+        else{ // Fe liquid
+            cpFe = cpFeL(Tp);
+        }
+    // }
+    // if (Tp < 1650){
+    //     cpFeO = cpFeOS(Tp);
+    // }
+    // else{
+        if (phaseFeO == 0) { // FeO solid
+            cpFeO = cpFeOS(Tp);
+        }
+        else{ // FeO liquid
+            cpFeO = cpFeOL(Tp);
+        }
+    // }
+    // if (Tp < 1870){
+    //     cpFe3O4 = cpFe3O4S(Tp);
+    // }
+    // else{
+        if (phaseFe3O4 == 0){ // Fe3O4 solid
+            cpFe3O4 = cpFe3O4S(Tp);
+        }
+        else{ // Fe3O4 liquid
+            cpFe3O4 = cpFe3O4L(Tp);
+        }
+    // }
 
     cpTotal = mFe*(1/M_Fe)*cpFe+mFeO*(1/M_FeO)*cpFeO+mFe3O4*(1/M_Fe3O4)*cpFe3O4;
     return cpTotal;
@@ -985,16 +1370,19 @@ double Tparticle(const double& mFe, const double& mFeO, const double& mFe3O4, co
 
     double Tpn;
 
-    if ((phaseFe == 0)&&(LFe != 0)){
+    if ((phaseFe == 0)&&(LFe != 0.0)){
         Tpn = 1809;
+        std::cout << "in Fe melt, Tp = 1809" << std::endl;
         return Tpn;
     }
-    if ((phaseFeO == 0)&&(LFeO != 0)){
+    if ((phaseFeO == 0)&&(LFeO != 0.0)){
         Tpn = 1650;
+        std::cout << "in FeO melt, Tp = 1650" << std::endl;
         return Tpn;
     }
-    if ((phaseFe3O4 == 0)&&(LFe3O4 != 0)){
+    if ((phaseFe3O4 == 0)&&(LFe3O4 != 0.0)){
         Tpn = 1870;
+        std::cout << "in Fe3O4 melt, Tp = 1870" << std::endl;
         return Tpn;
     }
 
@@ -1005,21 +1393,42 @@ double Tparticle(const double& mFe, const double& mFeO, const double& mFe3O4, co
     double Tp0=300,tol=1e-3,error=1;
     double dH,cp,iter=0;
 
+    // std::cout << "particle enthalpy " << Hp << std::endl;
+
     while (error > tol)
     {
         dH    = Hp - Hparticle(mFe, mFeO, mFe3O4, Tp0, phaseFe, phaseFeO, phaseFe3O4);
         cp    = cpparticle(mFe, mFeO, mFe3O4, Tp0, phaseFe, phaseFeO, phaseFe3O4);
         Tpn   = Tp0 + dH/cp;
         error = std::fabs(Tpn-Tp0)/Tpn;
-        std::cout << "ener: " << Hp << ", enthalpy diff: " << dH << \
-        ", Tpn: " << Tpn << ", error: " << error << std::endl;
         Tp0 = Tpn;
         iter += 1;
         if (iter > 20){
             Abort("Particle temperature iteration does not converge"); 
         }
     }
-
+    if ((Tpn >= 1650)&&(phaseFeO == 0)){
+        std::cout << "in FeO melt, Tp = 1650" << std::endl;
+        Tpn = 1650;
+        return Tpn;
+    }
+    if ((Tpn >= 1809)&&(phaseFe == 0)){
+        std::cout << "in Fe melt, Tp = 1809" << std::endl;
+        Tpn = 1809;
+        return Tpn;
+    }
+    if ((Tpn >= 1870)&&(phaseFe3O4 == 0)){
+        std::cout << "in Fe3O4 melt, Tp = 1870" << std::endl;
+        Tpn = 1870;
+        return Tpn;
+    }
+    std::cout << "Particle temperature: " << Tpn << std::endl;
     return Tpn;
 
+}
+
+double filmAverage(const double& Tp, const double& Tg){
+    double fraction = 1.0/2.0;
+    double Tfilm = fraction*Tg + (1.0-fraction)*Tp;
+    return Tfilm;
 }

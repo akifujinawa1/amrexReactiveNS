@@ -1,6 +1,7 @@
 #include "eulerFunc.H"
 #include "diffusionFunc.H"
 #include "thermoTransport.H"
+#include "AmrLevelAdv.H"
 #include "AMReX_Vector.H"
 #include "AMReX_Array.H"
 #include "AMReX_REAL.H"
@@ -155,7 +156,8 @@ void getViscFlux1D(Vector<double>& viscSlice, const Vector<double>& qL,\
 
     double rhoL, uL, vL, enerL, epsL, TL, YO2L, YN2L, pL, rhoR, uR, vR, enerR, epsR, TR, YO2R, YN2R, pR;
     double dudx, dTdx, dYO2dx, dYN2dx, uAvg, TAvg, pAvg, rhoAvg, YO2Avg, YN2Avg;
-    double mu_avg, k_avg, D_avg;
+    double mu_avg, k_avg;
+    Vector<double> mixDiffCoeffs;
     
 
     Vector<double> primL;
@@ -192,9 +194,9 @@ void getViscFlux1D(Vector<double>& viscSlice, const Vector<double>& qL,\
     rhoAvg = (rhoR+rhoL)/2.0;
     YO2Avg = (YO2R+YO2L)/2.0;
     YN2Avg = (YN2R+YN2L)/2.0;
-    D_avg  = D(TAvg,pAvg);
-    mu_avg = muMix(muO2(TAvg),muN2(TAvg),YO2Avg,YN2Avg);
-    k_avg  = kMix(kO2(TAvg),kN2(TAvg),YO2Avg,YN2Avg);
+    mixDiffCoeffs = getMixDiffCoeffs(TAvg,pAvg,YO2Avg,YN2Avg,0,0);
+    mu_avg = muMix(muO2(TAvg),muN2(TAvg),0,0,YO2Avg,YN2Avg,0,0); // consider only the O2-N2 gas mixture
+    k_avg  = kMix(kO2(TAvg),kN2(TAvg),0,0,YO2Avg,YN2Avg,0,0);
 
     // std::cout << "p: " << pAvg << ", T: " << TAvg << ", D: " << D_avg << ", mu: " << mu_avg << ", k: " << k_avg << std::endl;
 
@@ -203,8 +205,8 @@ void getViscFlux1D(Vector<double>& viscSlice, const Vector<double>& qL,\
     viscSlice[1] = (4.0/3.0)*mu_avg*dudx;
     viscSlice[2] = 0;
     viscSlice[3] = uAvg*viscSlice[1] + k_avg*dTdx;
-    viscSlice[4] = rhoAvg*D_avg*dYO2dx;
-    viscSlice[5] = rhoAvg*D_avg*dYN2dx;
+    viscSlice[4] = rhoAvg*mixDiffCoeffs[gases::O2]*dYO2dx;
+    viscSlice[5] = rhoAvg*mixDiffCoeffs[gases::N2]*dYN2dx;
 
 }
 
@@ -221,7 +223,8 @@ void getViscFlux2D(Vector<double>& viscSlice, const Vector<double>& qL, const Ve
     double dudx, dudy, dvdx, dvdy, dTdx, dTdy, dYO2dx, dYN2dx, dYO2dy, dYN2dy, uAvg, vAvg, TAvg, rhoAvg, pAvg, YO2Avg, YN2Avg;
     // double mu = 3e-5;
     // double k  = 1.4;
-    double mu_avg, k_avg, D_avg;
+    double mu_avg, k_avg;
+    Vector<double> mixDiffCoeffs;
 
     Vector<double> primL;
     Vector<double> primR;
@@ -307,16 +310,16 @@ void getViscFlux2D(Vector<double>& viscSlice, const Vector<double>& qL, const Ve
         rhoAvg = (rhoR+rhoL)/2.0;
         YO2Avg = (YO2R+YO2L)/2.0;
         YN2Avg = (YN2R+YN2L)/2.0;
-        D_avg  = D(TAvg,pAvg);
-        mu_avg = muMix(muO2(TAvg),muN2(TAvg),YO2Avg,YN2Avg);
-        k_avg  = kMix(kO2(TAvg),kN2(TAvg),YO2Avg,YN2Avg);
+        mixDiffCoeffs = getMixDiffCoeffs(TAvg,pAvg,YO2Avg,YN2Avg,0,0);
+        mu_avg = muMix(muO2(TAvg),muN2(TAvg),0,0,YO2Avg,YN2Avg,0,0);
+        k_avg  = kMix(kO2(TAvg),kN2(TAvg),0,0,YO2Avg,YN2Avg,0,0);
 
         viscSlice[0] = 0;
         viscSlice[1] = 2.0*mu_avg*dudx - (2.0/3.0)*mu_avg*(dudx+dvdy);
         viscSlice[2] = mu_avg*(dvdx+dudy);
         viscSlice[3] = uAvg*viscSlice[1] + vAvg*viscSlice[2] + k_avg*dTdx;
-        viscSlice[4] = rhoAvg*D_avg*dYO2dx;
-        viscSlice[5] = rhoAvg*D_avg*dYN2dx;
+        viscSlice[4] = rhoAvg*mixDiffCoeffs[gases::O2]*dYO2dx;
+        viscSlice[5] = rhoAvg*mixDiffCoeffs[gases::N2]*dYN2dx;
 
     }
 
@@ -336,16 +339,16 @@ void getViscFlux2D(Vector<double>& viscSlice, const Vector<double>& qL, const Ve
         rhoAvg = (rhoR+rhoL)/2.0;
         YO2Avg = (YO2R+YO2L)/2.0;
         YN2Avg = (YN2R+YN2L)/2.0;
-        D_avg  = D(TAvg,pAvg);
-        mu_avg = muMix(muO2(TAvg),muN2(TAvg),YO2Avg,YN2Avg);
-        k_avg  = kMix(kO2(TAvg),kN2(TAvg),YO2Avg,YN2Avg);
+        mixDiffCoeffs = getMixDiffCoeffs(TAvg,pAvg,YO2Avg,YN2Avg,0,0);
+        mu_avg = muMix(muO2(TAvg),muN2(TAvg),0,0,YO2Avg,YN2Avg,0,0);
+        k_avg  = kMix(kO2(TAvg),kN2(TAvg),0,0,YO2Avg,YN2Avg,0,0);
 
         viscSlice[0] = 0;
         viscSlice[1] = mu_avg*(dvdx+dudy);
         viscSlice[2] = 2.0*mu_avg*dvdy - (2.0/3.0)*mu_avg*(dudx+dvdy);
         viscSlice[3] = uAvg*viscSlice[1] + vAvg*viscSlice[2] + k_avg*dTdy;
-        viscSlice[4] = rhoAvg*D_avg*dYO2dy;
-        viscSlice[5] = rhoAvg*D_avg*dYN2dy;
+        viscSlice[4] = rhoAvg*mixDiffCoeffs[gases::O2]*dYO2dy;
+        viscSlice[5] = rhoAvg*mixDiffCoeffs[gases::N2]*dYN2dy;
     }
     
 }
@@ -354,8 +357,9 @@ void getViscFlux2D(Vector<double>& viscSlice, const Vector<double>& qL, const Ve
 double diffusiveSpeed(const Vector<double>& qL, const Vector<double>& qR){
 
     double rhoL, uL, vL, enerL, epsL, TL, YO2L, YN2L, pL, rhoR, uR, vR, enerR, epsR, TR, YO2R, YN2R, pR;
-    double dudx, dTdx, dYdx, uAvg, TAvg, rhoAvg;
-    double mu_avg, k_avg, D_avg;
+    double uAvg, TAvg, rhoAvg, pAvg, YO2Avg, YN2Avg;
+    double mu_avg, k_avg;
+    Vector<double> mixDiffCoeffs;
     double maxLeft, maxRight;
     
     Vector<double> primL;
@@ -384,23 +388,26 @@ double diffusiveSpeed(const Vector<double>& qL, const Vector<double>& qR){
     YN2R  = primR[5];
     TR    = Tg(rhoR,uR,vR,YO2R,YN2R,enerR);
 
-    D_avg  = D(TL,pL);
-    mu_avg = muMix(muO2(TL),muN2(TL),YO2L,YN2L);
+    uAvg = (uR+uL)/2.0;
+    TAvg = (TR+TL)/2.0;
+    pAvg = (pR+pL)/2.0;
+    rhoAvg = (rhoR+rhoL)/2.0;
+    YO2Avg = (YO2R+YO2L)/2.0;
+    YN2Avg = (YN2R+YN2L)/2.0;
+    mixDiffCoeffs = getMixDiffCoeffs(TAvg,pAvg,YO2Avg,YN2Avg,0,0);
+    double maxD   = std::max(mixDiffCoeffs[gases::O2],mixDiffCoeffs[gases::N2]);
+    mu_avg = muMix(muO2(TAvg),muN2(TAvg),0,0,YO2Avg,YN2Avg,0,0); // consider only the O2-N2 gas mixture
+    k_avg  = kMix(kO2(TAvg),kN2(TAvg),0,0,YO2Avg,YN2Avg,0,0);
 
-    maxLeft = 2*std::max(mu_avg/rhoL,D_avg);
-
-    D_avg  = D(TR,pR);
-    mu_avg = muMix(muO2(TR),muN2(TR),YO2R,YN2R);
-
-    maxRight = 2*std::max(mu_avg/rhoR,D_avg);
+    
+    double maxSpeed = 2*std::max(mu_avg/rhoR,maxD);
 
     if (enIC == 8){
-        return 2*D_avg;
+        return 2*2e-5;
     }
 
     // std::cout << "mu: " << mu_avg << ", max speed" << maxRight << std::endl;
 
-    double maxSpeed = std::max(maxLeft,maxRight);
     return maxSpeed;
 
 }
@@ -409,13 +416,14 @@ double diffusiveSpeed(const Vector<double>& qL, const Vector<double>& qR){
 // functions to calculate transport properties via temperature fits go here
 
 
-double D(const double& Tg, const double& p){
-    if (enIC == 8){ // if validating diffusion implementation
-        double D_val = 2e-5;
-        return D_val;
-    }
-    double p_atm = p/one_atm_Pa;
-    double D_val = Dpre*pow(Tg,1.75)/p_atm;
-    return D_val;
-}
+// double D(const double& Tg, const double& p){
+//     if (enIC == 8){ // if validating diffusion implementation
+//         double D_val = 2e-5;
+//         return D_val;
+//     }
+//     double p_atm = p/one_atm_Pa;
+//     double D_val = Dpre*pow(Tg,1.75)/p_atm;
+//     // std::cout << "p_atm, Tg, Dval: " << p_atm << " " << Tg << " " << D_val << std::endl;
+//     return D_val;
+// }
 

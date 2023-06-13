@@ -1,5 +1,6 @@
 #include "eulerFunc.H"
 #include "diffusionFunc.H"
+#include "AmrLevelAdv.H"
 #include "AMReX_Vector.H"
 #include "AMReX_Array.H"
 #include "AMReX_REAL.H"
@@ -20,8 +21,11 @@ extern double Gamma;
 extern int NUM_STATE;
 extern const int spacedim;
 extern double R;
-extern double M_O2;
-extern double M_N2;
+extern double M_O2, M_N2, M_Fe, M_FeO;
+extern double kb;
+extern double sigmaO2N2, sigmaO2Fe, sigmaO2FeO, sigmaN2Fe, sigmaN2FeO, sigmaFeFeO;
+extern double epsO2N2, epsO2Fe, epsO2FeO, epsN2Fe, epsN2FeO, epsFeFeO;
+extern double M_O2N2, M_O2Fe, M_O2FeO, M_N2Fe, M_N2FeO, M_FeFeO;
 
 using namespace amrex;
 
@@ -274,13 +278,19 @@ double cpN2(const double& Tg){
         b1 = 4.938707040e+06;
     }
 
-    cp = (a1*pow(Tg,-2) + a2/Tg + a3 + a4*Tg + a5*pow(Tg,2.0)  + a6*pow(Tg,3.0) + a7*pow(Tg,4.0))*R;
+    cp = (a1*pow(Tg,-2.0) + a2/Tg + a3 + a4*Tg + a5*pow(Tg,2.0)  + a6*pow(Tg,3.0) + a7*pow(Tg,4.0))*R;
     return cp;
 
 }
 
 double cpMix(const double& cpO2, const double& cpN2, const double& Y_O2, const double& Y_N2){
     double cp = Y_O2*cpO2/M_O2 + Y_N2*cpN2/M_N2;
+    return cp;
+}
+
+double cpMixFe(const double& cpO2, const double& cpN2, const double& cpFe, const double& cpFeO, \
+               const double& Y_O2, const double& Y_N2, const double& Y_Fe, const double& Y_FeO){
+    double cp = Y_O2*cpO2/M_O2 + Y_N2*cpN2/M_N2 + Y_Fe*cpFe/M_Fe + Y_FeO*cpFeO/M_FeO;
     return cp;
 }
 
@@ -318,13 +328,56 @@ double kN2(const double& Tg){
     return k;
 }
 
-double kMix(const double& kO2, const double& kN2, const double& Y_O2, const double& Y_N2){
+double kFe(const double& Tg){
+    // note that this function is used for FeO as well, as the same LJ parameters (well-depth and diameter) 
+    // are used for gas-phase Fe and FeO. 
+    double A1,A2,B1,B2,C1,C2,D1,D2,E1,k;
+    A1 = -1.158e-14; A2 = 1.657;
+    B1 = 3.539e-11;  B2 = 915.1;
+    C1 = -3.975e-8; C2 = -2.502e4;
+    D1 = 2.523e-5; D2 = -8.032;
+    E1 = -0.001842;
+    if ((Tg > 200) && (Tg <= 1000))
+    {
+        k = A1*pow(Tg,4.0) + B1*pow(Tg,3.0) + C1*pow(Tg,2.0) + D1*Tg + E1;
+    }
+    else 
+    {
+        k = 1.0e-4*exp(A2*log(Tg) + B2/Tg + C2/pow(Tg,2.0) + D2);
+    }
+    return k;
+}
 
-    double X_O2,X_N2,k;
+double kFeO(const double& Tg){
+    // note that this function is used for FeO as well, as the same LJ parameters (well-depth and diameter) 
+    // are used for gas-phase Fe and FeO. 
+    double A1,A2,B1,B2,C1,C2,D1,D2,E1,k;
+    A1 = -1.158e-14; A2 = 1.657;
+    B1 = 3.539e-11;  B2 = 915.1;
+    C1 = -3.975e-8; C2 = -2.502e4;
+    D1 = 2.523e-5; D2 = -8.032;
+    E1 = -0.001842;
+    if ((Tg > 200) && (Tg <= 1000))
+    {
+        k = A1*pow(Tg,4.0) + B1*pow(Tg,3.0) + C1*pow(Tg,2.0) + D1*Tg + E1;
+    }
+    else 
+    {
+        k = 1.0e-4*exp(A2*log(Tg) + B2/Tg + C2/pow(Tg,2.0) + D2);
+    }
+    return k;
+}
 
-    X_O2 = (Y_O2/M_O2)/(Y_O2/M_O2+Y_N2/M_N2);
-    X_N2 = (Y_N2/M_N2)/(Y_O2/M_O2+Y_N2/M_N2);
-    k = 0.5*((X_O2*kO2+X_N2*kN2) + 1/(X_O2/kO2+X_N2/kN2));
+double kMix(const double& kO2, const double& kN2, const double& kFe, const double& kFeO,\
+            const double& Y_O2, const double& Y_N2, const double& Y_Fe, const double& Y_FeO){
+
+    double X_O2,X_N2,X_Fe,X_FeO,k;
+
+    X_O2  = (Y_O2/M_O2)/(Y_O2/M_O2+Y_N2/M_N2+Y_Fe/M_Fe+Y_FeO/M_FeO);
+    X_N2  = (Y_N2/M_N2)/(Y_O2/M_O2+Y_N2/M_N2+Y_Fe/M_Fe+Y_FeO/M_FeO);
+    X_Fe  = (Y_Fe/M_Fe)/(Y_O2/M_O2+Y_N2/M_N2+Y_Fe/M_Fe+Y_FeO/M_FeO);
+    X_FeO = (Y_FeO/M_FeO)/(Y_O2/M_O2+Y_N2/M_N2+Y_Fe/M_Fe+Y_FeO/M_FeO);
+    k = 0.5*((X_O2*kO2+X_N2*kN2+X_Fe*kFe+X_FeO*kFeO) + 1/(X_O2/kO2+X_N2/kN2+X_Fe/kFe+X_FeO/kFeO));
 
     return k;
 }
@@ -363,6 +416,45 @@ double muN2(const double& Tg){
     return mu;
 }
 
+double muFe(const double& Tg){
+    // note that this function is used for FeO as well, as the same LJ parameters (well-depth and diameter) 
+    // are used for gas-phase Fe and FeO. 
+    double A1,A2,B1,B2,C1,C2,D1,D2,E1,E2,mu;
+    A1 = -1.111e-17; A2 = 1.58e-20;
+    B1 = 3.269e-14;  B2 = -2.884e-16;
+    C1 = -3.514e-11; C2 = 1.662e-12;
+    D1 = 2.735e-8;   D2 = 8.758e-9;
+    E1 = -1.309e-6;  E2 = 2.355e-6;
+    if ((Tg > 200) && (Tg <= 1000))
+    {
+        mu = A1*pow(Tg,4.0) + B1*pow(Tg,3.0) + C1*pow(Tg,2.0) + D1*Tg + E1;
+    }
+    else 
+    {
+        mu = A1*pow(Tg,4.0) + B1*pow(Tg,3.0) + C1*pow(Tg,2.0) + D1*Tg + E1;
+    }
+    return mu;
+}
+
+double muFeO(const double& Tg){
+    // note that this function is used for FeO as well, as the same LJ parameters (well-depth and diameter) 
+    // are used for gas-phase Fe and FeO. 
+    double A1,A2,B1,B2,C1,C2,D1,D2,E1,E2,mu;
+    A1 = -1.111e-17; A2 = 1.58e-20;
+    B1 = 3.269e-14;  B2 = -2.884e-16;
+    C1 = -3.514e-11; C2 = 1.662e-12;
+    D1 = 2.735e-8;   D2 = 8.758e-9;
+    E1 = -1.309e-6;  E2 = 2.355e-6;
+    if ((Tg > 200) && (Tg <= 1000))
+    {
+        mu = A1*pow(Tg,4.0) + B1*pow(Tg,3.0) + C1*pow(Tg,2.0) + D1*Tg + E1;
+    }
+    else 
+    {
+        mu = A1*pow(Tg,4.0) + B1*pow(Tg,3.0) + C1*pow(Tg,2.0) + D1*Tg + E1;
+    }
+    return mu;
+}
 
 double Hgas(const double& rho, const double& YO2, const double& YN2, const double& Tg){
     // returns gas-phase sensible enthalpy (std H of form. of O2, N2 are zero) of the 
@@ -410,28 +502,96 @@ double Tg(const double& rho, const double& u, const double& v, \
 
 }
 
-Vector<double> getMoleFractions(const double& YO2, const double& YN2){
-    Vector<double> xGas(2);
-    xGas[0] = (YO2/M_O2)/(YO2/M_O2 + YN2/M_N2);
-    xGas[1] = (YN2/M_N2)/(YO2/M_O2 + YN2/M_N2);
+Vector<double> getMoleFractions(const double& Y_O2, const double& Y_N2, const double& Y_Fe, const double& Y_FeO){
+    Vector<double> xGas(4);
+    xGas[0] = (Y_O2/M_O2)/(Y_O2/M_O2+Y_N2/M_N2+Y_Fe/M_Fe+Y_FeO/M_FeO);
+    xGas[1] = (Y_N2/M_N2)/(Y_O2/M_O2+Y_N2/M_N2+Y_Fe/M_Fe+Y_FeO/M_FeO);
+    xGas[2] = (Y_Fe/M_Fe)/(Y_O2/M_O2+Y_N2/M_N2+Y_Fe/M_Fe+Y_FeO/M_FeO);
+    xGas[3] = (Y_FeO/M_FeO)/(Y_O2/M_O2+Y_N2/M_N2+Y_Fe/M_Fe+Y_FeO/M_FeO);
     return xGas;    
 }
 
-Vector<double> getMassFractions(const double& XO2, const double& XN2){
-    Vector<double> yGas(2);
-    yGas[0] = (XO2*M_O2)/(XO2*M_O2 + XN2*M_N2);
-    yGas[1] = (XN2*M_N2)/(XO2*M_O2 + XN2*M_N2);
+Vector<double> getMassFractions(const double& X_O2, const double& X_N2, const double& X_Fe, const double& X_FeO){
+    Vector<double> yGas(4);
+    yGas[0] = (X_O2*M_O2)/(X_O2*M_O2 + X_N2*M_N2 + X_Fe*M_Fe + X_FeO*M_FeO);
+    yGas[1] = (X_N2*M_N2)/(X_O2*M_O2 + X_N2*M_N2 + X_Fe*M_Fe + X_FeO*M_FeO);
+    yGas[2] = (X_Fe*M_Fe)/(X_O2*M_O2 + X_N2*M_N2 + X_Fe*M_Fe + X_FeO*M_FeO);
+    yGas[3] = (X_FeO*M_FeO)/(X_O2*M_O2 + X_N2*M_N2 + X_Fe*M_Fe + X_FeO*M_FeO);
     return yGas;    
 }
 
-double muMix(const double& muO2, const double& muN2, const double& YO2, const double& YN2){
-    double phiO2N2,phiN2O2,XO2,XN2,mu;
-    Vector<double> xGas(2);
-    xGas = getMoleFractions(YO2,YN2);
+double muMix(const double& muO2, const double& muN2, const double& muFe, const double& muFeO, \
+             const double& YO2, const double& YN2, const double& YFe, const double& YFeO){
+    // Uses the Herning and Zipperer mixture rule to calculate mixture viscosity based on mole fractions
+    // and viscosity of individual gas species
+    double XO2,XN2,XFe,XFeO,mu;
+    Vector<double> xGas(gases::ncomps,0);
+    xGas = getMoleFractions(YO2,YN2,YFe,YFeO);
     XO2 = xGas[0];
     XN2 = xGas[1];
-    phiO2N2 = pow((1/sqrt(8.0))*sqrt(1+(M_O2/M_N2))*(1+sqrt(muO2/muN2)*pow(M_N2/M_O2,0.25)),2);
-    phiN2O2 = pow((1/sqrt(8.0))*sqrt(1+(M_N2/M_O2))*(1+sqrt(muN2/muO2)*pow(M_O2/M_N2,0.25)),2);
-    mu = XO2*muO2/(XO2+XN2*phiO2N2) + XN2*muN2/(XN2+XO2*phiN2O2);
+    XFe = xGas[2];
+    XFeO= xGas[3];
+    // phiO2N2 = pow((1/sqrt(8.0))*sqrt(1+(M_O2/M_N2))*(1+sqrt(muO2/muN2)*pow(M_N2/M_O2,0.25)),2);
+    // phiN2O2 = pow((1/sqrt(8.0))*sqrt(1+(M_N2/M_O2))*(1+sqrt(muN2/muO2)*pow(M_O2/M_N2,0.25)),2);
+    // mu = XO2*muO2/(XO2+XN2*phiO2N2) + XN2*muN2/(XN2+XO2*phiN2O2);
+    mu = (muFe*XFe*M_Fe + muFeO*XFeO*M_FeO + muO2*XO2*M_O2 + muN2*XN2*M_N2)/(XFe*M_Fe + XFeO*M_FeO + XO2*M_O2 + XN2*M_N2);
     return mu;
+}
+
+
+double omega(const double& T, const double& eps){
+    // calculates the collision integral based on method of Neufield et al. (1972)
+    double Tstar = T*kb/eps;
+    double a,b,c,d,e,f,g,h;
+    a = 1.06036;
+    b = 0.15610;
+    c = 0.19300;
+    d = 0.47635;
+    e = 1.03587;
+    f = 1.52996;
+    g = 1.76474;
+    h = 3.89411;
+    double omega_val = a/pow(Tstar,b) + c/exp(d*Tstar) + e/exp(f*Tstar) + g/exp(h*Tstar);
+    // std::cout << "Tstar: " << Tstar << " omega: " << omega_val << std::endl;
+    return omega_val;
+}
+
+Vector<double> getMixDiffCoeffs(const double& T, const double& p, const double& YO2, \
+                                const double& YN2, const double& YFe, const double& YFeO){
+    
+    double XO2, XN2, XFe, XFeO, p_bar;
+    double DO2N2, DO2Fe, DO2FeO, DN2Fe, DN2FeO, DFeFeO;
+    Vector<double> mixDiffCoeffs(gases::ncomps,0);
+    Vector<double> xGas(gases::ncomps,0);
+
+    xGas = getMoleFractions(YO2,YN2,YFe,YFeO);
+    XO2 = xGas[0];
+    XN2 = xGas[1];
+    XFe = xGas[2];
+    XFeO= xGas[3];
+
+    p_bar = p/1.0e5;
+
+    // get binary diffusion coefficients of each binary gas pair:    0.00266
+
+    DO2N2  = 0.00266*1e-4*pow(T,3.0/2.0)/(p_bar*sqrt(M_O2N2)*sigmaO2N2*sigmaO2N2*omega(T,epsO2N2));
+    DO2Fe  = 0.00266*1e-4*pow(T,3.0/2.0)/(p_bar*sqrt(M_O2Fe)*sigmaO2Fe*sigmaO2Fe*omega(T,epsO2Fe));
+    DO2FeO = 0.00266*1e-4*pow(T,3.0/2.0)/(p_bar*sqrt(M_O2FeO)*sigmaO2FeO*sigmaO2FeO*omega(T,epsO2FeO));
+    DN2Fe  = 0.00266*1e-4*pow(T,3.0/2.0)/(p_bar*sqrt(M_N2Fe)*sigmaN2Fe*sigmaN2Fe*omega(T,epsN2Fe));
+    DN2FeO = 0.00266*1e-4*pow(T,3.0/2.0)/(p_bar*sqrt(M_N2FeO)*sigmaN2FeO*sigmaN2FeO*omega(T,epsN2FeO));
+    DFeFeO = 0.00266*1e-4*pow(T,3.0/2.0)/(p_bar*sqrt(M_FeFeO)*sigmaFeFeO*sigmaFeFeO*omega(T,epsFeFeO));
+
+    // DO2N2  = (3.03-0.98/sqrt(M_O2N2))*1e-7*pow(T,3.0/2.0)/(p_bar*sqrt(M_O2N2)*sigmaO2N2*sigmaO2N2*omega(T,epsO2N2));
+    // DO2Fe  = (3.03-0.98/sqrt(M_O2Fe))*1e-7*pow(T,3.0/2.0)/(p_bar*sqrt(M_O2Fe)*sigmaO2Fe*sigmaO2Fe*omega(T,epsO2Fe));
+    // DO2FeO = (3.03-0.98/sqrt(M_O2FeO))*1e-7*pow(T,3.0/2.0)/(p_bar*sqrt(M_O2FeO)*sigmaO2FeO*sigmaO2FeO*omega(T,epsO2FeO));
+    // DN2Fe  = (3.03-0.98/sqrt(M_N2Fe))*1e-7*pow(T,3.0/2.0)/(p_bar*sqrt(M_N2Fe)*sigmaN2Fe*sigmaN2Fe*omega(T,epsN2Fe));
+    // DN2FeO = (3.03-0.98/sqrt(M_N2FeO))*1e-7*pow(T,3.0/2.0)/(p_bar*sqrt(M_N2FeO)*sigmaN2FeO*sigmaN2FeO*omega(T,epsN2FeO));
+    // DFeFeO = (3.03-0.98/sqrt(M_FeFeO))*1e-7*pow(T,3.0/2.0)/(p_bar*sqrt(M_FeFeO)*sigmaFeFeO*sigmaFeFeO*omega(T,epsFeFeO));
+
+    mixDiffCoeffs[gases::O2]  = (1.0-XO2)/(XN2/DO2N2 + XFe/DO2Fe + XFeO/DO2FeO);
+    mixDiffCoeffs[gases::N2]  = (1.0-XN2)/(XO2/DO2N2 + XFe/DN2Fe + XFeO/DN2FeO);
+    mixDiffCoeffs[gases::Fe]  = (1.0-XFe)/(XO2/DO2Fe + XN2/DN2Fe + XFeO/DFeFeO);
+    mixDiffCoeffs[gases::FeO] = (1.0-XFeO)/(XO2/DO2FeO + XN2/DN2FeO + XFe/DFeFeO);
+    
+    return mixDiffCoeffs;
 }

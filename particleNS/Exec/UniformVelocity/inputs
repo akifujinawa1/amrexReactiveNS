@@ -1,5 +1,5 @@
 # ------------------  INPUTS TO MAIN PROGRAM  -------------------
-stop_time = 0.25
+stop_time = 0.04
 
 # PROBLEM SIZE & GEOMETRY
 # NOTE - although this example is 2D, 3D data can be specified safely; the z-components are ignored
@@ -13,7 +13,7 @@ amr.n_cell           =  64 64 64            # Number of cells in each dimension
 adv.cfl            = 0.9     # cfl number for hyperbolic system
 
 # TEST CASE: This value sets the initial condition to be used.
-enIC               = 11       # 1:Toro1, 2:Toro2, ..., 5:Toro5, 6:Cylindrical explosion, 7:Unaligned discontinuity
+enIC               = 12       # 1:Toro1, 2:Toro2, ..., 5:Toro5, 6:Cylindrical explosion, 7:Unaligned discontinuity
 
 # SYSTEM OF EQUATIONS AND METHODS
 euler              = 0         # 0:No advection, 1:HLLC, 2:MUSCL
@@ -23,9 +23,9 @@ particle           = 1         # 0:No particle source terms, 1:RK4 subcycle
 enLimiter          = 1         # 0:Superbee, 1:vanLeer, 2:vanAlbada, 3:minbee
 
 # PARTICLE
-dp0                = 0.00002728     # Initial particle diameter
+dp0                = 0.000054     # Initial particle diameter
 TgInitial          = 300
-TpInitial          = 1000
+TpInitial          = 1270
 
 # VERBOSITY - controls the number of messages output to screen
 adv.v              = 1       # verbosity in Adv
@@ -49,9 +49,9 @@ amr.check_int               = 10    # number of timesteps between checkpoints
 # NOTE - VisIt (recommended), Paraview or amrvis are needed to visualise data.  AMReX outputs boxlib format
 #        data; see lab CAMReX wiki for instructions on plotting.  Using a base name of plt ensures
 #	 visualisation knows the current cycle (iteration) as well as time - see AMReX documentation for more.
-amr.plot_files_output = 0              # 0 will disable plot files
+amr.plot_files_output = 1              # 0 will disable plot files
 amr.plot_file         = detonation/plt    # root name of plot file
-amr.plot_int          = 50               # number of timesteps between plot files, plot_per allows fixed timesteps
+amr.plot_int          = 1               # number of timesteps between plot files, plot_per allows fixed timesteps
 
 # PROBIN FILENAME - This file contains AMR refinement criteria
 amr.probin_file = prbn/1

@@ -65,15 +65,16 @@ main (int   argc,
         pp.query("dp0",dp0);
         pp.query("TpInitial",TpInitial);
         pp.query("TgInitial",TgInitial);
+        pp.query("stop_time",stop_time);
 
         
         // Call getStopTime in eulerFunc.cpp to set correct final time based on initial condition -2023W2
-        if (enIC == 8){
-            pp.query("stop_time",stop_time);
-        }
-        else{
-            getStopTime(enIC,stop_time);
-        }
+        // if (enIC == 8){
+        //     pp.query("stop_time",stop_time);
+        // }
+        // else{
+        //     getStopTime(enIC,stop_time);
+        // }
         
     }
 

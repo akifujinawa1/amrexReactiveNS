@@ -8,7 +8,7 @@
 
 double Gamma = 1.4;
 double R     = 8.31446261815324;   // J/K/mol
-double Pr    = 0.75;               // dimensionless
+// double Pr    = 0.75;               // dimensionless
 double one_atm_Pa = 101325.0;      // pa
 
 double M_O2  = 31.9988*1e-3;       // molecular mass of O2 in kg/mol
@@ -21,7 +21,7 @@ double Mavg  = 1/(Y_O2/M_O2+Y_N2/M_N2);             // average molecular weight 
 
 double vO2   = 16.6;
 double vN2   = 17.9;
-double Dpre  = (1e-7*pow(1/M_O2 + 1/M_N2,0.5))/pow(pow(vO2,(1.0/3.0))+pow(vN2,(1.0/3.0)),2);
+double Dpre  = (1e-7*pow(1.0/M_O2 + 1.0/M_N2,0.5))/pow(pow(vO2,(1.0/3.0))+pow(vN2,(1.0/3.0)),2.0);
 
 
 // Particle constants
@@ -42,15 +42,51 @@ double k0Fe3O4s  = 1.027e-6;       // m^2/s                   Pre-exponential fa
 double TaFeOs    = 20319;          // K                       Activation temperature for kinetic rate of FeO oxide layer growth
 double TaFe3O4s  = 21310;          // K                       Activation temperature for kinetic rate of Fe3O4 oxide layer growth
 
+double qFeOs     = 3.787e6;        // J/kg
+double qFeOl     = 3.473e6;        // J/kg
+double qFe3O4s   = 4.841e6;        // J/kg
+
+
 double nFeFeO = M_Fe/M_FeO;
 double nFeFe3O4 = 3.0*M_Fe/M_Fe3O4;
 double nO2FeO = 0.5*M_O2/M_FeO;
 double nO2Fe3O4 = 2.0*M_O2/M_Fe3O4;   
 
+
+// Constants for multi-species diffusion of O2, N2, Fe, FeO
+double kb      = 1.380649e-23;
+double sigmaO2 = 3.46;
+double sigmaN2 = 3.621; 
+double sigmaFe = 4.3;
+double sigmaFeO = 4.3;
+double epsO2    = 107.40*kb;
+double epsN2    = 97.53*kb;
+double epsFe    = 3000.0*kb;
+double epsFeO   = 3000.0*kb;
+
+double sigmaO2N2  = 0.5*(sigmaO2+sigmaN2);
+double sigmaO2Fe  = 0.5*(sigmaO2+sigmaFe);
+double sigmaO2FeO = 0.5*(sigmaO2+sigmaFeO);
+double sigmaN2Fe  = 0.5*(sigmaFe+sigmaN2);
+double sigmaN2FeO = 0.5*(sigmaFeO+sigmaN2);
+double sigmaFeFeO = 0.5*(sigmaFe+sigmaFeO);
+
+double epsO2N2  = sqrt(epsO2*epsN2);
+double epsO2Fe  = sqrt(epsO2*epsFe);
+double epsO2FeO = sqrt(epsO2*epsFeO);
+double epsN2Fe  = sqrt(epsFe*epsN2);
+double epsN2FeO = sqrt(epsFeO*epsN2);
+double epsFeFeO = sqrt(epsFe*epsFeO);
+
+double M_O2N2   = 2.0/(1.0/(1e3*M_O2) + 1.0/(1e3*M_N2));   // need these quantities in g/mol for diffusion calculations
+double M_O2Fe   = 2.0/(1.0/(1e3*M_O2) + 1.0/(1e3*M_Fe));
+double M_O2FeO  = 2.0/(1.0/(1e3*M_O2) + 1.0/(1e3*M_FeO));
+double M_N2Fe   = 2.0/(1.0/(1e3*M_Fe) + 1.0/(1e3*M_N2));
+double M_FeFeO  = 2.0/(1.0/(1e3*M_Fe) + 1.0/(1e3*M_FeO));
+double M_N2FeO  = 2.0/(1.0/(1e3*M_N2) + 1.0/(1e3*M_FeO));
+
 double pi    = M_PI;
-
 double M     = 21; //placeholder value for source.cpp
-
 double A     = 6.85*1e9;           // m3/kgs
 double q     = 43.28;              // must be scaled RT0/M
 double Ea    = 46.37;              // must be scaled RT0

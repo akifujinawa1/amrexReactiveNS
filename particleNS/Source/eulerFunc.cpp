@@ -666,14 +666,26 @@ Vector<double> setIC(const int dim) {
                 rhoR = pR*Mavg/(R*TgR);
                 break;
             }
-            case 12: // Particle heat test
+            case 12: // Particle ignition test
             {
                 x0  = 0; xEnd = 1; xDisc = 0.5; tEnd=0.25;
                 vxL = 0.0;  pL = 1.0*one_atm_Pa; 
                 vxR = 0.0;  pR = 1.0*one_atm_Pa; 
                 YO2L = Y_O2; YN2L = Y_N2; YO2R = Y_O2; YN2R = Y_N2;
-                TgL = TpInitial;
-                TgR = TpInitial;
+                TgL = TgInitial;
+                TgR = TgInitial;
+                rhoL = pL*Mavg/(R*TgL);
+                rhoR = pR*Mavg/(R*TgR);
+                break;
+            }
+            case 13: // Particle combustion test
+            {
+                x0  = 0; xEnd = 1; xDisc = 0.5; tEnd=0.25;
+                vxL = 0.0;  pL = 1.0*one_atm_Pa; 
+                vxR = 0.0;  pR = 1.0*one_atm_Pa; 
+                YO2L = Y_O2; YN2L = Y_N2; YO2R = Y_O2; YN2R = Y_N2;
+                TgL = TgInitial;
+                TgR = TgInitial;
                 rhoL = pL*Mavg/(R*TgL);
                 rhoR = pR*Mavg/(R*TgR);
                 break;
@@ -853,7 +865,7 @@ void getStopTime(int enIC, Real& stop_time){
         }
         case 12:
         {
-            stop_time=0.03;
+            stop_time=0.04;
             break;
         }
     }
