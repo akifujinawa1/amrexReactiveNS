@@ -195,7 +195,7 @@ void AmrLevelAdv::writePlotFile()
                 int particleID = p.idata(IntData::pIter);
                 Tp = Tparticle(mFe,mFeO,mFe3O4,Hp,phaseFe,phaseFeO,phaseFe3O4,LFe,LFeO,LFe3O4);
                 
-                AllPrint(parOut) << cur_time << " " << mFe << " " << mFeO << " " << mFe3O4 << " " << Tp << std::endl;
+                AllPrint(parOut) << cur_time << " " << x << " " << mFe << " " << mFeO << " " << mFe3O4 << " " << Tp << std::endl;
                 
                 parOut.close();
 

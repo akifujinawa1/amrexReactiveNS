@@ -300,6 +300,12 @@ AmrLevelAdv::updateParticleInfo(MultiFab& Sborder, const double& dt, const doubl
         for (int h = 0; h < RealData::ncomps; h++){
             p.rdata(h) = p.rdata(h) + dt*pSource[h];
         }
+        if (p.pos(0) < 0){
+            p.id()) = -1;
+        }
+        else if (p.pos(0)/dx + 2 > n_cell){
+            p.rdata(RealData::u) = -p.rdata(RealData::u);
+        }
 
         if (particle == 2){ // if we enable two-way coupling
             vCell = dx*interDist*interDist;
