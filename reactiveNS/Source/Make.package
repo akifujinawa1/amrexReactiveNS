@@ -1,5 +1,0 @@
-CEXE_sources += AmrLevelAdv.cpp LevelBldAdv.cpp main.cpp eulerFunc.cpp exactFunc.cpp reconstruct.cpp diffusionFunc.cpp source.cpp
-
-CEXE_headers += AmrLevelAdv.H eulerFunc.H exactFunc.H recon.H diffusionFunc.H constants.H source.H
-
-FEXE_headers += Adv_F.H 
