@@ -257,7 +257,7 @@ AmrLevelAdv::updateParticleInfo(MultiFab& Sborder, const double& dt, const doubl
 
         x  = p.pos(0);   //given in meters, lo.x is in cell count, so scale by dx to get meters
         i  = static_cast<int>(Math::floor(x/dx));
-        std::cout << "x-position: " << x << std::endl;
+	//        std::cout << "x-position: " << x << std::endl;
         // std::cout << "position in x cell number is: " << x/dx << ", cell number is: " << i << std::endl;
 
         if (spacedim == 2){
@@ -380,7 +380,7 @@ void getSource(Vector<double>& qSource, Vector<double>& pSource, auto& arr, \
     Tp         = Tparticle(mFe,mFeO,mFe3O4,Hp,phaseFe,phaseFeO,phaseFe3O4,LFe,LFeO,LFe3O4);
     Tfilm      = filmAverage(Tp,Tgas);
 
-    std::cout << "Tp, Tg: " << Tp << " " << Tgas << "\n" << std::endl;
+    //    std::cout << "Tp, Tg: " << Tp << " " << Tgas << "\n" << std::endl;
 
     // With the particle temperature known, we first compute the vapor pressures of gas-phase Fe and FeO
     // resulting from the gas-liquid equilibrium at the particle surface. If the particle temperature is 
@@ -506,8 +506,8 @@ void getSource(Vector<double>& qSource, Vector<double>& pSource, auto& arr, \
     dmdt = getOxidationRates(mFe,mFeO,mFe3O4,Tp,rp);
     mdotO2k = dmdt[1]*nO2FeO + dmdt[2]*nO2Fe3O4;     // total kinetic rate of O2 consumption, kg/s
 
-    std::cout << "kinetic rate: " << mdotO2k << ", diffusion rate: " << mdotO2d << std::endl;
-    std::cout << "fraction of Fe mass remaining: " << mFe/mFe0 << std::endl;
+    //    std::cout << "kinetic rate: " << mdotO2k << ", diffusion rate: " << mdotO2d << std::endl;
+    // std::cout << "fraction of Fe mass remaining: " << mFe/mFe0 << std::endl;
     if (mFe/mFe0 > 0.01){
         if (mdotO2d > mdotO2k){ // if the molecular diffusion rate is FASTER than the kinetic rate of O2 consumption
             // reaction is kinetically-controlled
