@@ -145,10 +145,7 @@ tmp_build_dir/o/1d.gnu.MPI.EXE/AmrLevelAdv.o: \
  ../../../../amrex/Src/AmrCore/AMReX_FluxRegister.H \
  ../../../../amrex/Src/Boundary/AMReX_BndryRegister.H \
  ../../../../amrex/Src/Boundary/AMReX_FabSet.H \
- ../../../../amrex/Src/Boundary/AMReX_LO_BCTYPES.H ../../Source/Adv_F.H \
- ../../../../amrex/Src/Base/AMReX_BLFort.H \
- ../../../../amrex/Src/Base/AMReX_ParmParse.H \
- ../../../../amrex/Src/Base/AMReX_BCUtil.H \
+ ../../../../amrex/Src/Boundary/AMReX_LO_BCTYPES.H \
  ../../../../amrex/Src/Particle/AMReX_Particles.H \
  ../../../../amrex/Src/Particle/AMReX_ParticleContainerBase.H \
  ../../../../amrex/Src/Particle/AMReX_ParGDB.H \
@@ -156,6 +153,7 @@ tmp_build_dir/o/1d.gnu.MPI.EXE/AmrLevelAdv.o: \
  ../../../../amrex/Src/Particle/AMReX_MakeParticle.H \
  ../../../../amrex/Src/Particle/AMReX_ParticleTile.H \
  ../../../../amrex/Src/Particle/AMReX_Particle.H \
+ ../../../../amrex/Src/Base/AMReX_ParmParse.H \
  ../../../../amrex/Src/Particle/AMReX_ArrayOfStructs.H \
  ../../../../amrex/Src/Particle/AMReX_StructOfArrays.H \
  ../../../../amrex/Src/Particle/AMReX_ParticleBufferMap.H \
@@ -178,10 +176,12 @@ tmp_build_dir/o/1d.gnu.MPI.EXE/AmrLevelAdv.o: \
  ../../../../amrex/Src/Particle/AMReX_ParticleContainerI.H \
  ../../../../amrex/Src/Particle/AMReX_ParticleIO.H \
  ../../../../amrex/Src/Particle/AMReX_WriteBinaryParticleData.H \
- ../../Source/eulerFunc.H ../../Source/exactFunc.H ../../Source/recon.H \
+ ../../Source/Adv_F.H ../../../../amrex/Src/Base/AMReX_BLFort.H \
+ ../../../../amrex/Src/Base/AMReX_BCUtil.H ../../Source/eulerFunc.H \
+ ../../Source/exactFunc.H ../../Source/recon.H \
  ../../Source/diffusionFunc.H ../../Source/source.H \
  ../../Source/constants.H ../../Source/thermoTransport.H \
- ../../Source/particleFunc.H ../../Source/particleContainer.H
+ ../../Source/particleFunc.H
 
 ../../Source/AmrLevelAdv.H:
 
@@ -477,14 +477,6 @@ tmp_build_dir/s/1d.gnu.MPI.EXE/AMReX_Config.H:
 
 ../../../../amrex/Src/Boundary/AMReX_LO_BCTYPES.H:
 
-../../Source/Adv_F.H:
-
-../../../../amrex/Src/Base/AMReX_BLFort.H:
-
-../../../../amrex/Src/Base/AMReX_ParmParse.H:
-
-../../../../amrex/Src/Base/AMReX_BCUtil.H:
-
 ../../../../amrex/Src/Particle/AMReX_Particles.H:
 
 ../../../../amrex/Src/Particle/AMReX_ParticleContainerBase.H:
@@ -498,6 +490,8 @@ tmp_build_dir/s/1d.gnu.MPI.EXE/AMReX_Config.H:
 ../../../../amrex/Src/Particle/AMReX_ParticleTile.H:
 
 ../../../../amrex/Src/Particle/AMReX_Particle.H:
+
+../../../../amrex/Src/Base/AMReX_ParmParse.H:
 
 ../../../../amrex/Src/Particle/AMReX_ArrayOfStructs.H:
 
@@ -543,6 +537,12 @@ tmp_build_dir/s/1d.gnu.MPI.EXE/AMReX_Config.H:
 
 ../../../../amrex/Src/Particle/AMReX_WriteBinaryParticleData.H:
 
+../../Source/Adv_F.H:
+
+../../../../amrex/Src/Base/AMReX_BLFort.H:
+
+../../../../amrex/Src/Base/AMReX_BCUtil.H:
+
 ../../Source/eulerFunc.H:
 
 ../../Source/exactFunc.H:
@@ -558,5 +558,3 @@ tmp_build_dir/s/1d.gnu.MPI.EXE/AMReX_Config.H:
 ../../Source/thermoTransport.H:
 
 ../../Source/particleFunc.H:
-
-../../Source/particleContainer.H:

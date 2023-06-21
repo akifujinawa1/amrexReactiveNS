@@ -51,6 +51,7 @@ extern   double       Mavg;            // average molecular weight of the gas mi
 // define the remaining global variables here. NUM_GROW should be defined based on the value of slope limiting.
 int      AmrLevelAdv::verbose         = 0;
 Real     AmrLevelAdv::cfl             = 0.9; // Default value - can be overwritten in settings file
+Real     AmrLevelAdv::fourier         = 0.8;
 int      AmrLevelAdv::do_reflux       = 1;  
 int      AmrLevelAdv::NUM_STATE       = 6;  // set this to 6 for reactive NS with O2-N2 gas mixture. -2023W2
 int      AmrLevelAdv::NUM_GROW        = 2;  // number of ghost cells, set gCells from main.cpp file. -2023W2
@@ -63,6 +64,7 @@ int      iter                         = 0;
 int      printlevel                   = 0;
 int      advIter = 0;
 double   meltFe, meltFeO, meltFe3O4;
+int counter =0;
 
 // std::unique_ptr<amrex::ParticleContainer<RealData::ncomps, IntData::ncomps>> AmrLevelAdv::particles =  nullptr;
 
@@ -371,69 +373,34 @@ AmrLevelAdv::initData ()
                 arr(i,j,k,4) = RPLeftRight[10];
                 arr(i,j,k,5) = RPLeftRight[11];
               }
-              double Tgas = Tg(arr(i,j,k,0),0,0,Y_O2,Y_N2,arr(i,j,k,3));
-              double p = pressure(arr(i,j,k,0),Y_O2,Y_N2,Tgas);
+              // double Tgas = Tg(arr(i,j,k,0),0,0,Y_O2,Y_N2,arr(i,j,k,3));
+              // double p = pressure(arr(i,j,k,0),Y_O2,Y_N2,Tgas);
               // std::cout << "x: " << x << ", Density: " << arr(i,j,k,0) << \
               // ", Energy: " << arr(i,j,k,3) << ", Temperature: " << Tgas << ", Pressure: " << p << std::endl; 
             }
           }
           else // for 2-D tests:
           {
-            if (enIC<6){  //Toro's tests in 2-D
-              if (x<xDisc){
-                arr(i,j,k,0) = RPLeftRight[0];
-                arr(i,j,k,1) = RPLeftRight[1];
-                arr(i,j,k,2) = RPLeftRight[2];
-                arr(i,j,k,3) = RPLeftRight[3];
-                arr(i,j,k,4) = RPLeftRight[4];
-                arr(i,j,k,5) = RPLeftRight[5];
-              }
-              else {
-                arr(i,j,k,0) = RPLeftRight[6];
-                arr(i,j,k,1) = RPLeftRight[7];
-                arr(i,j,k,2) = RPLeftRight[8];
-                arr(i,j,k,3) = RPLeftRight[9];
-                arr(i,j,k,4) = RPLeftRight[10];
-                arr(i,j,k,5) = RPLeftRight[11];
-              }
+            if (x<xDisc){
+              arr(i,j,k,0) = RPLeftRight[0];
+              arr(i,j,k,1) = RPLeftRight[1];
+              arr(i,j,k,2) = RPLeftRight[2];
+              arr(i,j,k,3) = RPLeftRight[3];
+              arr(i,j,k,4) = RPLeftRight[4];
+              arr(i,j,k,5) = RPLeftRight[5];
             }
-            else if (enIC == 6){  //cylindrical explosion
-              if (x*x+y*y<=xDisc*xDisc){
-                arr(i,j,k,0) = RPLeftRight[0];
-                arr(i,j,k,1) = RPLeftRight[1];
-                arr(i,j,k,2) = RPLeftRight[2];
-                arr(i,j,k,3) = RPLeftRight[3];
-                arr(i,j,k,4) = RPLeftRight[4];
-                arr(i,j,k,5) = RPLeftRight[5];
-              }
-              else {
-                arr(i,j,k,0) = RPLeftRight[6];
-                arr(i,j,k,1) = RPLeftRight[7];
-                arr(i,j,k,2) = RPLeftRight[8];
-                arr(i,j,k,3) = RPLeftRight[9];
-                arr(i,j,k,4) = RPLeftRight[10];
-                arr(i,j,k,5) = RPLeftRight[11];
-              }
-              //std::cout << "x,y=" << x << "," << y << ", rho=" << arr(i,j,k,0) << std::endl;
+            else {
+              arr(i,j,k,0) = RPLeftRight[6];
+              arr(i,j,k,1) = RPLeftRight[7];
+              arr(i,j,k,2) = RPLeftRight[8];
+              arr(i,j,k,3) = RPLeftRight[9];
+              arr(i,j,k,4) = RPLeftRight[10];
+              arr(i,j,k,5) = RPLeftRight[11];
             }
-            else {  //case where discontinuity is not aligned with the grid
-              if ((y-x)>0){
-                arr(i,j,k,0) = RPLeftRight[0];
-                arr(i,j,k,1) = RPLeftRight[1];
-                arr(i,j,k,2) = RPLeftRight[2];
-                arr(i,j,k,3) = RPLeftRight[3];
-                arr(i,j,k,4) = RPLeftRight[4];
-                arr(i,j,k,5) = RPLeftRight[5];
-              }
-              else {
-                arr(i,j,k,0) = RPLeftRight[6];
-                arr(i,j,k,1) = RPLeftRight[7];
-                arr(i,j,k,2) = RPLeftRight[8];
-                arr(i,j,k,3) = RPLeftRight[9];
-                arr(i,j,k,4) = RPLeftRight[10];
-                arr(i,j,k,5) = RPLeftRight[11];
-              }
-            }
+            // double Tgas = Tg(arr(i,j,k,0),0,0,Y_O2,Y_N2,arr(i,j,k,3));
+            // double p = pressure(arr(i,j,k,0),Y_O2,Y_N2,Tgas);
+            // std::cout << "x: " << x << ", Density: " << arr(i,j,k,0) << \
+            // ", Energy: " << arr(i,j,k,3) << ", Temperature: " << Tgas << ", Pressure: " << p << std::endl; 
             
           }
         }
@@ -441,11 +408,9 @@ AmrLevelAdv::initData ()
     }
   } // closes mfi patch loop
 
-  // BoxArray ba = S_new.boxArray();
-  // std::unique_ptr<ParticleContainer> AmrLevelAdv::TracerPC =  nullptr;
-  // particles(geom,dmap,ba);
-  initParticles();
-  // m_particle = Particle
+  initParticles(S_new);
+
+  // Abort("particles initialized ");
 
   if (verbose) {
     amrex::Print() << "Done initializing the level " << level 
@@ -559,21 +524,6 @@ AmrLevelAdv::advance (Real time,
   const Real* dx = geom.CellSize();
   const Real* prob_lo = geom.ProbLo();
 
-  // std::unique_ptr<SingleParticleContainer> bPtr;
-
-  // if (advIter == 0){
-  //   BoxArray ba = S_new.boxArray();
-
-  //   // SingleParticleContainer particles(geom,dmap,ba);
-  //   // particles.initParticles();
-    
-  //   bPtr = std::make_unique<SingleParticleContainer>(geom,dmap,ba);
-  //   bPtr.initParticles();
-
-  //   advIter+=1;
-  // }
-  
-
   //
   // Get pointers to Flux registers, or set pointer to zero if not there.
   //
@@ -651,17 +601,25 @@ AmrLevelAdv::advance (Real time,
   // if (enIC == 8){ // if we are testing for multicomponent diffusion validation
     for (int nVar = 0; nVar < NUM_STATE; nVar++){
       for (int nDim = 0; nDim < amrex::SpaceDim; nDim++){
-        // if ((nVar == 4) || (nVar == 5)){
-        //   BCVec[nVar].setLo(nDim,BCType::foextrap);
-        //   BCVec[nVar].setHi(nDim,BCType::foextrap);
-        // }
-        // else{
-          BCVec[nVar].setLo(nDim,BCType::foextrap);
-          BCVec[nVar].setHi(nDim,BCType::foextrap);
-        // }
+        if (nDim == 0){ // x domain BCs
+          BCVec[nVar].setLo(nDim,BCType::foextrap);      // flame has open end at the left boundary
+          if ((nVar == gasVar::rhou)){
+            BCVec[nVar].setHi(nDim,BCType::reflect_odd);  // closed end at the right, odd-reflect x-momentum
+          }
+          else{
+            BCVec[nVar].setHi(nDim,BCType::reflect_even); // closed end at the right, even-reflect the rest x-momentum
+          }
+        }
+        else{ // y domain BCs are set to periodic
+          BCVec[nVar].setLo(nDim,BCType::int_dir);
+          BCVec[nVar].setHi(nDim,BCType::int_dir);
+        }
+
+        // BCVec[nVar].setLo(nDim,BCType::foextrap);
+        // BCVec[nVar].setHi(nDim,BCType::foextrap);
+
       }
     }
-  // }
     
     
   // }
@@ -765,18 +723,24 @@ AmrLevelAdv::advance (Real time,
 
   // we want the particles to interact with the Sborder MultiFab
 
-  Vector<double> pPosTp(3);
-  Vector<double> pReal(RealData::ncomps);
-  Vector<int> pInt(IntData::ncomps);
+  
+  if (particle > 0){
+    // if ((enIC == 12)&&(pPosTp[2]>1600)){
+    //   Vector<double> pPosTp(3);
+    //   Vector<double> pReal(RealData::ncomps);
+    //   Vector<int> pInt(IntData::ncomps);
+    //   pPosTp = getParticleInfo(pReal,pInt);
+    //   Abort("ignition");
+    // }
+    // else {
+      updateParticleInfo(Sborder,dt,dX,dY);
+    // }
 
-  pPosTp = getParticleInfo(pReal,pInt);
-  if ((pPosTp[2]<1870)&&(pInt[IntData::Fe3O4]!=0)){
-    std::cout << "particle burnout" << std::endl;
+    Sborder.FillBoundary(geom.periodicity());
+    FillDomainBoundary(Sborder,geom,BCVec);   // use this to fill cell-centred data outside domain (AMReX_BCUtil.H) -2023W2
+    
   }
-  else {
-    updateParticleInfo(Sborder,dt,dX,dY);
-  }
-  printParticleInfo();
+  
 
 
 
@@ -885,14 +849,17 @@ AmrLevelAdv::estTimeStep (Real)
   //const Real velMag = sqrt(2.);
   for(unsigned int d = 0; d < amrex::SpaceDim; ++d)
   {
-    if (euler > 0){
+    if (euler > 0){ // if we are solving the convective subsystem
       dt_est = std::min(dt_est, cfl*dx[d]/sMax);
+      if (viscous > 0){ // if we are also solving the viscous subsystem
+        dt_est = std::min(dt_est, fourier*dx[d]*dx[d]/sMaxDiff);
+      }
     }
-    if (viscous > 0){
-      dt_est = std::min(dt_est, dx[d]*dx[d]/sMaxDiff);
-    }
-    else {
-      dt_est = 1e-6;
+    else if (viscous > 0){ // if we are only solving the viscous subsystem
+      dt_est = std::min(dt_est, fourier*dx[d]*dx[d]/sMaxDiff);
+    }    
+    else { // if we are solving neither (only the particle)
+      dt_est = 1e-7;
     }
 
   }
@@ -1189,6 +1156,7 @@ AmrLevelAdv::read_params ()
   // file.
   pp.query("v",verbose);
   pp.query("cfl",cfl);
+  pp.query("fourier",fourier); 
   pp.query("do_reflux",do_reflux);
   // pp.query("slopelimiting",slopelimiting);
 

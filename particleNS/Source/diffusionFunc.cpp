@@ -195,10 +195,9 @@ void getViscFlux1D(Vector<double>& viscSlice, const Vector<double>& qL,\
     YO2Avg = (YO2R+YO2L)/2.0;
     YN2Avg = (YN2R+YN2L)/2.0;
     mixDiffCoeffs = getMixDiffCoeffs(TAvg,pAvg,YO2Avg,YN2Avg,0,0);
-    mu_avg = muMix(muO2(TAvg),muN2(TAvg),0,0,YO2Avg,YN2Avg,0,0); // consider only the O2-N2 gas mixture
-    k_avg  = kMix(kO2(TAvg),kN2(TAvg),0,0,YO2Avg,YN2Avg,0,0);
+    mu_avg = muMix_O2N2(muO2(TAvg),muN2(TAvg),YO2Avg,YN2Avg); // consider only the O2-N2 gas mixture
+    k_avg  = kMix_O2N2(kO2(TAvg),kN2(TAvg),YO2Avg,YN2Avg);
 
-    // std::cout << "p: " << pAvg << ", T: " << TAvg << ", D: " << D_avg << ", mu: " << mu_avg << ", k: " << k_avg << std::endl;
 
 
     viscSlice[0] = 0;
@@ -310,9 +309,11 @@ void getViscFlux2D(Vector<double>& viscSlice, const Vector<double>& qL, const Ve
         rhoAvg = (rhoR+rhoL)/2.0;
         YO2Avg = (YO2R+YO2L)/2.0;
         YN2Avg = (YN2R+YN2L)/2.0;
-        mixDiffCoeffs = getMixDiffCoeffs(TAvg,pAvg,YO2Avg,YN2Avg,0,0);
-        mu_avg = muMix(muO2(TAvg),muN2(TAvg),0,0,YO2Avg,YN2Avg,0,0);
-        k_avg  = kMix(kO2(TAvg),kN2(TAvg),0,0,YO2Avg,YN2Avg,0,0);
+        mixDiffCoeffs = getMixDiffCoeffs(TAvg,pAvg,YO2Avg,YN2Avg,0.0,0.0);
+        mu_avg = muMix_O2N2(muO2(TAvg),muN2(TAvg),YO2Avg,YN2Avg);
+        k_avg  = kMix_O2N2(kO2(TAvg),kN2(TAvg),YO2Avg,YN2Avg);
+
+        std::cout << "p: " << pAvg << ", T: " << TAvg << ", D: " << mixDiffCoeffs[gases::O2] << ", mu: " << mu_avg << ", k: " << k_avg << std::endl;
 
         viscSlice[0] = 0;
         viscSlice[1] = 2.0*mu_avg*dudx - (2.0/3.0)*mu_avg*(dudx+dvdy);
@@ -330,8 +331,8 @@ void getViscFlux2D(Vector<double>& viscSlice, const Vector<double>& qL, const Ve
         dTdy = (TR-TL)/dy;
         dYO2dy = (YO2R-YO2L)/dy;
         dYN2dy = (YN2R-YN2L)/dy;
-        dudx = 0.5*((uRhi-uRlo)/(2*dx)+(uLhi-uLlo)/(2*dx));
-        dvdx = 0.5*((vRhi-vRlo)/(2*dx)+(vLhi-vLlo)/(2*dx));
+        dudx = 0.5*((uRhi-uRlo)/(2.0*dx)+(uLhi-uLlo)/(2.0*dx));
+        dvdx = 0.5*((vRhi-vRlo)/(2.0*dx)+(vLhi-vLlo)/(2.0*dx));
         uAvg = (uR+uL)/2.0;
         vAvg = (uR+uL)/2.0;
         TAvg = (TR+TL)/2.0;
@@ -339,11 +340,13 @@ void getViscFlux2D(Vector<double>& viscSlice, const Vector<double>& qL, const Ve
         rhoAvg = (rhoR+rhoL)/2.0;
         YO2Avg = (YO2R+YO2L)/2.0;
         YN2Avg = (YN2R+YN2L)/2.0;
-        mixDiffCoeffs = getMixDiffCoeffs(TAvg,pAvg,YO2Avg,YN2Avg,0,0);
-        mu_avg = muMix(muO2(TAvg),muN2(TAvg),0,0,YO2Avg,YN2Avg,0,0);
-        k_avg  = kMix(kO2(TAvg),kN2(TAvg),0,0,YO2Avg,YN2Avg,0,0);
+        mixDiffCoeffs = getMixDiffCoeffs(TAvg,pAvg,YO2Avg,YN2Avg,0.0,0.0);
+        mu_avg = muMix_O2N2(muO2(TAvg),muN2(TAvg),YO2Avg,YN2Avg);
+        k_avg  = kMix_O2N2(kO2(TAvg),kN2(TAvg),YO2Avg,YN2Avg);
 
-        viscSlice[0] = 0;
+        std::cout << "p: " << pAvg << ", T: " << TAvg << ", D: " << mixDiffCoeffs[gases::O2] << ", mu: " << mu_avg << ", k: " << k_avg << std::endl;
+
+        viscSlice[0] = 0.0;
         viscSlice[1] = mu_avg*(dvdx+dudy);
         viscSlice[2] = 2.0*mu_avg*dvdy - (2.0/3.0)*mu_avg*(dudx+dvdy);
         viscSlice[3] = uAvg*viscSlice[1] + vAvg*viscSlice[2] + k_avg*dTdy;
@@ -394,16 +397,16 @@ double diffusiveSpeed(const Vector<double>& qL, const Vector<double>& qR){
     rhoAvg = (rhoR+rhoL)/2.0;
     YO2Avg = (YO2R+YO2L)/2.0;
     YN2Avg = (YN2R+YN2L)/2.0;
-    mixDiffCoeffs = getMixDiffCoeffs(TAvg,pAvg,YO2Avg,YN2Avg,0,0);
+    mixDiffCoeffs = getMixDiffCoeffs(TAvg,pAvg,YO2Avg,YN2Avg,0.0,0.0);
     double maxD   = std::max(mixDiffCoeffs[gases::O2],mixDiffCoeffs[gases::N2]);
-    mu_avg = muMix(muO2(TAvg),muN2(TAvg),0,0,YO2Avg,YN2Avg,0,0); // consider only the O2-N2 gas mixture
-    k_avg  = kMix(kO2(TAvg),kN2(TAvg),0,0,YO2Avg,YN2Avg,0,0);
+    mu_avg = muMix_O2N2(muO2(TAvg),muN2(TAvg),YO2Avg,YN2Avg); // consider only the O2-N2 gas mixture
+    k_avg  = kMix_O2N2(kO2(TAvg),kN2(TAvg),YO2Avg,YN2Avg);
 
     
     double maxSpeed = 2*std::max(mu_avg/rhoR,maxD);
 
     if (enIC == 8){
-        return 2*2e-5;
+        return 2.0*2.0e-5;
     }
 
     // std::cout << "mu: " << mu_avg << ", max speed" << maxRight << std::endl;

@@ -690,6 +690,18 @@ Vector<double> setIC(const int dim) {
                 rhoR = pR*Mavg/(R*TgR);
                 break;
             }
+            case 14: // Particle combustion test
+            {
+                x0  = 0; xEnd = 0.00256; xDisc = 0.000256; tEnd=0.25;
+                vxL = 0.0;  pL = 1.0*one_atm_Pa; 
+                vxR = 0.0;  pR = 1.0*one_atm_Pa; 
+                YO2L = Y_O2; YN2L = Y_N2; YO2R = Y_O2; YN2R = Y_N2;
+                TgL = 1270;
+                TgR = 300;
+                rhoL = pL*Mavg/(R*TgL);
+                rhoR = pR*Mavg/(R*TgR);
+                break;
+            }
         }
     } //closes dimension=0 if statement
     else {
@@ -780,6 +792,18 @@ Vector<double> setIC(const int dim) {
                 TgR = Tg(rhoR,0.0,0.0,Y_O2,Y_N2,ER);
                 break;
             }
+            case 14:
+            {
+                x0  = 0; xEnd = 0.00256; xDisc =  0.00064; tEnd=1;
+                vxL = 0.0;  pL = 1.0*one_atm_Pa; 
+                vxR = 0.0;  pR = 1.0*one_atm_Pa; 
+                YO2L = Y_O2; YN2L = Y_N2; YO2R = Y_O2; YN2R = Y_N2;
+                TgL = 600;
+                TgR = 300;
+                rhoL = pL*Mavg/(R*TgL);
+                rhoR = pR*Mavg/(R*TgR);
+                break;
+            }
         }
     }
 
@@ -864,6 +888,16 @@ void getStopTime(int enIC, Real& stop_time){
             break;
         }
         case 12:
+        {
+            stop_time=0.04;
+            break;
+        }
+        case 13:
+        {
+            stop_time=0.04;
+            break;
+        }
+        case 14:
         {
             stop_time=0.04;
             break;
@@ -1005,7 +1039,7 @@ Vector<double> HLLCflux(const Vector<double>& qL, const Vector<double>& qR, cons
     else if((sStar < 0)&&(sR >= 0))
     {
         fluxvals = fRstar;
-    //     std::cout << "energy flux: " << fluxvals[3] << std::endl;
+        // std::cout << "energy flux: " << fluxvals[3] << std::endl;
         // std::cout << "right star state" << std::endl;
     }
     
@@ -1089,16 +1123,19 @@ Vector<double> HLLflux(const Vector<double>& qL, const Vector<double>& qR, const
     if(sL > 0)
     {	
         fluxvals = fL;
+        // std::cout << "Eflux: " << fluxvals[3] << std::endl;
     }
 
     else if((sL <= 0)&&(sR > 0))
     {
         fluxvals = fstar;
+        // std::cout << "Eflux: " << fluxvals[3] << std::endl;
     }
     
     else //(sR < 0)
     {	
         fluxvals = fR;
+        // std::cout << "Eflux: " << fluxvals[3] << std::endl;
     }
 
     return fluxvals;

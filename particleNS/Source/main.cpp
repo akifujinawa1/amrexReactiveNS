@@ -67,15 +67,7 @@ main (int   argc,
         pp.query("TgInitial",TgInitial);
         pp.query("stop_time",stop_time);
 
-        
-        // Call getStopTime in eulerFunc.cpp to set correct final time based on initial condition -2023W2
-        // if (enIC == 8){
-        //     pp.query("stop_time",stop_time);
-        // }
-        // else{
-        //     getStopTime(enIC,stop_time);
-        // }
-        
+        std::cout << "end time is: " << stop_time << std::endl;
     }
 
     if (euler == 2){
@@ -89,9 +81,9 @@ main (int   argc,
         amrex::Abort("MUST SPECIFY a valid boolean value"); 
     } 
     
-    if (enLimiter < 1 || enLimiter > 4) {
-        amrex::Abort("MUST SPECIFY a valid limiter value"); 
-    }
+    // if (enLimiter < 1 || enLimiter > 4) {
+    //     amrex::Abort("MUST SPECIFY a valid limiter value"); 
+    // }
 
     if (strt_time < 0.0) {
         amrex::Abort("MUST SPECIFY a non-negative strt_time");

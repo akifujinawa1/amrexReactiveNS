@@ -39,6 +39,7 @@ struct IntData
         Fe,
         FeO,
         Fe3O4,
+        pIter,
         ncomps
     };
 };
@@ -50,6 +51,19 @@ struct gases
         N2,
         Fe,
         FeO,
+        ncomps
+    };
+};
+
+struct gasVar
+{
+    enum {
+        rho,
+        rhou,
+        rhov,
+        E,
+        rhoYO2,
+        rhoYN2,
         ncomps
     };
 };
@@ -193,7 +207,7 @@ public:
 
     using MyParIter = amrex::ParIter<RealData::ncomps, IntData::ncomps>;
 
-    void initParticles();  //amrex::MultiFab& S_new, const int num_particles
+    void initParticles(const amrex::MultiFab& S_new);  //amrex::MultiFab& S_new, const int num_particles
 
     amrex::Vector<double> getParticleInfo(amrex::Vector<double>& pReal, amrex::Vector<int>& pInt);  //
 
@@ -231,6 +245,7 @@ protected:
     //
     static int          verbose;
     static amrex::Real  cfl;
+    static amrex::Real  fourier;
     static int          do_reflux;
 
     

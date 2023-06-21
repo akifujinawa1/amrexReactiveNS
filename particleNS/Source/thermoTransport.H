@@ -22,12 +22,14 @@ double kFe(const double& Tg);
 double kFeO(const double& Tg);
 double kMix(const double& kO2, const double& kN2, const double& kFe, const double& kFeO,\
             const double& Y_O2, const double& Y_N2, const double& Y_Fe, const double& Y_FeO);
+double kMix_O2N2(const double& kO2, const double& kN2, const double& Y_O2, const double& Y_N2);
 double muO2(const double& Tg);
 double muN2(const double& Tg);
 double muFe(const double& Tg);
 double muFeO(const double& Tg);
 double muMix(const double& muO2, const double& muN2, const double& muFe, const double& muFeO, \
              const double& YO2, const double& YN2, const double& YFe, const double& YFeO);
+double muMix_O2N2(const double& muO2, const double& muN2, const double& YO2, const double& YN2);
 double Hgas(const double& rho, const double& YO2, const double& YN2, const double& Tg);
 double Tg(const double& rho, const double& u, const double& v, \
           const double& YO2, const double& YN2, const double& ener);

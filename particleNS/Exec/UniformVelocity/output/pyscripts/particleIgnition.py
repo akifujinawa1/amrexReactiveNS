@@ -11,6 +11,7 @@ import sys
 # sys.path.append(os.path.join('pyblish','plots'))
 # import publish 
 
+yratio = 1/1.618
 
 plt.close('all')
 mpl.rcParams['pdf.fonttype'] = 42
@@ -27,21 +28,21 @@ colors = ['#7E301E', '#B42E0F', '#FE3C0F', '#fe770f']
 color = colors
 
 # fig,ax = plt.subplots(figsize=(10,6))
-fig2,ax2 = plt.subplots(figsize=(10,6))
+fig2,ax2 = plt.subplots(figsize=(8,8*yratio))
 
 
 
 
-data54  = np.loadtxt('output/txt/particleIgnition/data1054.txt')
-data69  = np.loadtxt('output/txt/particleIgnition/data1069.txt')
-data75  = np.loadtxt('output/txt/particleIgnition/data1075.txt')
-data76  = np.loadtxt('output/txt/particleIgnition/data1076.txt')
+data1  = np.loadtxt('output/txt/particleIgnition/data1058.txt')
+data2  = np.loadtxt('output/txt/particleIgnition/data1073.txt')
+data3  = np.loadtxt('output/txt/particleIgnition/data1079.txt')
+data4  = np.loadtxt('output/txt/particleIgnition/data1080.txt')
 
 
-ax2.plot(data76[:,0],data76[:,1],c=color[0],label='$T_\mathrm{p,0}=1076\;\mathrm{K}$')
-ax2.plot(data75[:,0],data75[:,1],c=color[1],label='$T_\mathrm{p,0}=1075\;\mathrm{K}$')
-ax2.plot(data69[:,0],data69[:,1],c=color[2],label='$T_\mathrm{p,0}=1069\;\mathrm{K}$')
-ax2.plot(data54[:,0],data54[:,1],c=color[3],label='$T_\mathrm{p,0}=1054\;\mathrm{K}$')
+ax2.plot(data4[:,0],data4[:,1],c=color[0],label='$T_\mathrm{p,0}=1080\;\mathrm{K}$')
+ax2.plot(data3[:,0],data3[:,1],c=color[1],label='$T_\mathrm{p,0}=1079\;\mathrm{K}$')
+ax2.plot(data2[:,0],data2[:,1],c=color[2],label='$T_\mathrm{p,0}=1073\;\mathrm{K}$')
+ax2.plot(data1[:,0],data1[:,1],c=color[3],label='$T_\mathrm{p,0}=1058\;\mathrm{K}$')
 
 # # set labels
 # ax[1,0].set_xlabel(r'$x$')
@@ -76,4 +77,4 @@ plt.show()
 # plt2.legend()
 # plt2.show()
 
-fig2.savefig('output/plots/particleIgnition/ignition.pdf')
+# fig2.savefig('output/plots/particleIgnition/ignition.pdf')

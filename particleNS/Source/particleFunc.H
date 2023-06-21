@@ -26,7 +26,7 @@ double cpFeOG(const double& Tp);
 double cpFe3O4S(const double& Tp);
 double cpFe3O4L(const double& Tp);
 double Tparticle(const double& mFe, const double& mFeO, const double& mFe3O4, const double& Hp, \
-                 const int& phaseFe, const int& phaseFeO, const int& phaseFe3O4, \
+                 int& phaseFe, int& phaseFeO, int& phaseFe3O4, \
                  const double& LFe, const double& LFeO, const double& LFe3O4);
 void getSource(Vector<double>& qSource, Vector<double>& pSource, auto& arr, \
                const int& i, const int& j, const int& k, Vector<double>& pReal, \

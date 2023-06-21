@@ -14,11 +14,11 @@ for i in "${Tp[@]}"
 do
     for j in "${tests[@]}"
     do
-	    mpirun -np 1 ./main1d.gnu.DEBUG.MPI.ex inputs amr.n_cell = 64 64 64 euler = 0 viscous = 0 source = 0 particle = 1 Da = 1\
-        enIC = "$j" geometry.prob_lo = 0.0 0.0 0.0 geometry.prob_hi = 1.0 1.0 1.0 adv.cfl = 0.9 \
+	    mpirun -np 1 ./main1d.gnu.MPI.ex inputs amr.n_cell = 64 0 0 euler = 0 viscous = 0 source = 0 particle = 1 Da = 1\
+        enIC = "$j" geometry.prob_lo = 0.0 0.0 0.0 geometry.prob_hi = 1.0 0.0 0.0 adv.cfl = 0.9 \
         amr.max_level = 0 amr.ref_ratio = 2 2 4 4 amr.probin_file = prbn/detonation amr.plot_int = 1\
-        amr.max_grid_size = 64 amr.plot_files_output = 0 amr.plot_file = detonation/plt stop_time = 100\
-        TpInitial = "$i" TgInitial = 300 dp0 = 0.00002728 stop_time = 0.01
+        amr.max_grid_size = 64 amr.plot_files_output = 0 amr.plot_file = detonation/plt \
+        TpInitial = "$i" TgInitial = 300 dp0 = 0.000010 stop_time = 0.0012
     done
 done
 

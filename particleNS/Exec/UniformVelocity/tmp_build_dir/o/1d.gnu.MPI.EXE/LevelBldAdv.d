@@ -146,7 +146,37 @@ tmp_build_dir/o/1d.gnu.MPI.EXE/LevelBldAdv.o: \
  ../../../../amrex/Src/AmrCore/AMReX_FluxRegister.H \
  ../../../../amrex/Src/Boundary/AMReX_BndryRegister.H \
  ../../../../amrex/Src/Boundary/AMReX_FabSet.H \
- ../../../../amrex/Src/Boundary/AMReX_LO_BCTYPES.H
+ ../../../../amrex/Src/Boundary/AMReX_LO_BCTYPES.H \
+ ../../../../amrex/Src/Particle/AMReX_Particles.H \
+ ../../../../amrex/Src/Particle/AMReX_ParticleContainerBase.H \
+ ../../../../amrex/Src/Particle/AMReX_ParGDB.H \
+ ../../../../amrex/Src/Particle/AMReX_ParticleUtil.H \
+ ../../../../amrex/Src/Particle/AMReX_MakeParticle.H \
+ ../../../../amrex/Src/Particle/AMReX_ParticleTile.H \
+ ../../../../amrex/Src/Particle/AMReX_Particle.H \
+ ../../../../amrex/Src/Base/AMReX_ParmParse.H \
+ ../../../../amrex/Src/Particle/AMReX_ArrayOfStructs.H \
+ ../../../../amrex/Src/Particle/AMReX_StructOfArrays.H \
+ ../../../../amrex/Src/Particle/AMReX_ParticleBufferMap.H \
+ ../../../../amrex/Src/Particle/AMReX_ParticleLocator.H \
+ ../../../../amrex/Src/Particle/AMReX_DenseBins.H \
+ ../../../../amrex/Src/Particle/AMReX_BinIterator.H \
+ ../../../../amrex/Src/Particle/AMReX_ParticleContainer.H \
+ ../../../../amrex/Src/Base/AMReX_VectorIO.H \
+ ../../../../amrex/Src/Base/AMReX_FPC.H \
+ ../../../../amrex/Src/Base/AMReX_IntConv.H \
+ ../../../../amrex/Src/Particle/AMReX_Particle_mod_K.H \
+ ../../../../amrex/Src/Particle/AMReX_ParticleMPIUtil.H \
+ ../../../../amrex/Src/Particle/AMReX_ParticleReduce.H \
+ ../../../../amrex/Src/Particle/AMReX_ParticleCommunication.H \
+ ../../../../amrex/Src/Particle/AMReX_SparseBins.H \
+ ../../../../amrex/Src/Particle/AMReX_ParticleTransformation.H \
+ ../../../../amrex/Src/Particle/AMReX_ParticleMesh.H \
+ ../../../../amrex/Src/Particle/AMReX_ParIter.H \
+ ../../../../amrex/Src/Particle/AMReX_ParticleInit.H \
+ ../../../../amrex/Src/Particle/AMReX_ParticleContainerI.H \
+ ../../../../amrex/Src/Particle/AMReX_ParticleIO.H \
+ ../../../../amrex/Src/Particle/AMReX_WriteBinaryParticleData.H
 
 ../../../../amrex/Src/Amr/AMReX_LevelBld.H:
 
@@ -443,3 +473,63 @@ tmp_build_dir/s/1d.gnu.MPI.EXE/AMReX_Config.H:
 ../../../../amrex/Src/Boundary/AMReX_FabSet.H:
 
 ../../../../amrex/Src/Boundary/AMReX_LO_BCTYPES.H:
+
+../../../../amrex/Src/Particle/AMReX_Particles.H:
+
+../../../../amrex/Src/Particle/AMReX_ParticleContainerBase.H:
+
+../../../../amrex/Src/Particle/AMReX_ParGDB.H:
+
+../../../../amrex/Src/Particle/AMReX_ParticleUtil.H:
+
+../../../../amrex/Src/Particle/AMReX_MakeParticle.H:
+
+../../../../amrex/Src/Particle/AMReX_ParticleTile.H:
+
+../../../../amrex/Src/Particle/AMReX_Particle.H:
+
+../../../../amrex/Src/Base/AMReX_ParmParse.H:
+
+../../../../amrex/Src/Particle/AMReX_ArrayOfStructs.H:
+
+../../../../amrex/Src/Particle/AMReX_StructOfArrays.H:
+
+../../../../amrex/Src/Particle/AMReX_ParticleBufferMap.H:
+
+../../../../amrex/Src/Particle/AMReX_ParticleLocator.H:
+
+../../../../amrex/Src/Particle/AMReX_DenseBins.H:
+
+../../../../amrex/Src/Particle/AMReX_BinIterator.H:
+
+../../../../amrex/Src/Particle/AMReX_ParticleContainer.H:
+
+../../../../amrex/Src/Base/AMReX_VectorIO.H:
+
+../../../../amrex/Src/Base/AMReX_FPC.H:
+
+../../../../amrex/Src/Base/AMReX_IntConv.H:
+
+../../../../amrex/Src/Particle/AMReX_Particle_mod_K.H:
+
+../../../../amrex/Src/Particle/AMReX_ParticleMPIUtil.H:
+
+../../../../amrex/Src/Particle/AMReX_ParticleReduce.H:
+
+../../../../amrex/Src/Particle/AMReX_ParticleCommunication.H:
+
+../../../../amrex/Src/Particle/AMReX_SparseBins.H:
+
+../../../../amrex/Src/Particle/AMReX_ParticleTransformation.H:
+
+../../../../amrex/Src/Particle/AMReX_ParticleMesh.H:
+
+../../../../amrex/Src/Particle/AMReX_ParIter.H:
+
+../../../../amrex/Src/Particle/AMReX_ParticleInit.H:
+
+../../../../amrex/Src/Particle/AMReX_ParticleContainerI.H:
+
+../../../../amrex/Src/Particle/AMReX_ParticleIO.H:
+
+../../../../amrex/Src/Particle/AMReX_WriteBinaryParticleData.H:
