@@ -99,6 +99,7 @@ while error > tol:
     # by concentration = 900-1300 g/m^3, avg 1100 g/m^3
     mTot_all = mTot0*Np    # total mass of particles in grams
     vol_chamber = mTot_all/conc
+    mO2_all = vol_chamber*(0.1*rhoHi*Y_O2+0.9*rhoLo*Y_O2)
 
     # by equivalence ratio:
 
