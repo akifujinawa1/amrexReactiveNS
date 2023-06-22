@@ -216,10 +216,10 @@ AmrLevelAdv::getParticleInfo(Vector<double>& pReal, Vector<int>& pInt)
         Tp = Tparticle(mFe,mFeO,mFe3O4,Hp,phaseFe,phaseFeO,phaseFe3O4,LFe,LFeO,LFe3O4);
     }
   }
-    data[0] = x;
-    data[1] = y;
-    data[2] = Tp;
-    return data;
+  data[0] = x;
+  data[1] = y;
+  data[2] = Tp;
+  return data;
 }
 
 void 
@@ -314,10 +314,10 @@ AmrLevelAdv::updateParticleInfo(MultiFab& Sborder, const double& dt, const doubl
                 arr(i,j,k,h) = arr(i,j,k,h) + dt*(1.0/vCell)*qSource[h];
             }
         }
-        Redistribute();
-
+        
         
     }
+    Redistribute();
   }
 //   Redistribute();
 }
