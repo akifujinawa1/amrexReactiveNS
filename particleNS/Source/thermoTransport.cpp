@@ -201,7 +201,7 @@ double cpO2(const double& Tg){
 
     double a1,a2,a3,a4,a5,a6,a7,b1,cp;
         
-    if (Tg < 1000)
+    if (Tg <= 1000)
     {
         a1 = -3.425563420*1e4;
         a2 = 4.847000970*1e2;
@@ -212,7 +212,7 @@ double cpO2(const double& Tg){
         a7 = 1.039040018*1e-12;
         b1 = -3.391454870*1e3;
     }
-    else if (Tg < 6000)
+    else if (Tg <= 6000)
     {
         a1 = -1.037939022e+06;
         a2 = 2.344830282e+03;
@@ -244,7 +244,7 @@ double cpN2(const double& Tg){
 
     double a1,a2,a3,a4,a5,a6,a7,b1,cp;
 
-    if (Tg < 1000)
+    if (Tg <= 1000)
     {
         a1 = 2.210371497e+04;
         a2 = -3.818461820e+02;
@@ -255,7 +255,7 @@ double cpN2(const double& Tg){
         a7 = 2.519705809e-12;
         b1 = 7.108460860e+02;
     }
-    else if (Tg < 6000)
+    else if (Tg <= 6000)
     {
         a1 = 5.877124060e+05;
         a2 = -2.239249073e+03;

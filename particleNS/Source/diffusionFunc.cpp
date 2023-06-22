@@ -70,7 +70,7 @@ void updateViscous(MultiFab& Sborder, Array<MultiFab, SpaceDim>& fluxes, Vector<
                                 {
                                     qL[h]   = arr(i-1,j,k,h);   // cell to the left of cell i
                                     qR[h]   = arr(i  ,j,k,h);   // cell i 
-                                    if (amrex::SpaceDim > 1)
+                                    if (amrex::SpaceDim == 2)
                                     {
                                         qLlo[h] = arr(i-1,j-1,k,h);   // cell to the left lower diagonal of cell i
                                         qRlo[h] = arr(i  ,j-1,k,h);   // cell to the right lower diagonal of cell i 
@@ -194,7 +194,7 @@ void getViscFlux1D(Vector<double>& viscSlice, const Vector<double>& qL,\
     rhoAvg = (rhoR+rhoL)/2.0;
     YO2Avg = (YO2R+YO2L)/2.0;
     YN2Avg = (YN2R+YN2L)/2.0;
-    mixDiffCoeffs = getMixDiffCoeffs(TAvg,pAvg,YO2Avg,YN2Avg,0,0);
+    mixDiffCoeffs = getMixDiffCoeffs(TAvg,pAvg,YO2Avg,YN2Avg,0.0,0.0);
     mu_avg = muMix_O2N2(muO2(TAvg),muN2(TAvg),YO2Avg,YN2Avg); // consider only the O2-N2 gas mixture
     k_avg  = kMix_O2N2(kO2(TAvg),kN2(TAvg),YO2Avg,YN2Avg);
 
@@ -300,8 +300,8 @@ void getViscFlux2D(Vector<double>& viscSlice, const Vector<double>& qL, const Ve
         dTdx = (TR-TL)/dx;
         dYO2dx = (YO2R-YO2L)/dx;
         dYN2dx = (YN2R-YN2L)/dx;
-        dudy = 0.5*((uRhi-uRlo)/(2*dy)+(uLhi-uLlo)/(2*dy));
-        dvdy = 0.5*((vRhi-vRlo)/(2*dy)+(vLhi-vLlo)/(2*dy));
+        dudy = 0.5*((uRhi-uRlo)/(2*dy)+(uLhi-uLlo)/(2.0*dy));
+        dvdy = 0.5*((vRhi-vRlo)/(2*dy)+(vLhi-vLlo)/(2.0*dy));
         uAvg = (uR+uL)/2.0;
         vAvg = (uR+uL)/2.0;
         TAvg = (TR+TL)/2.0;
@@ -409,24 +409,9 @@ double diffusiveSpeed(const Vector<double>& qL, const Vector<double>& qR){
         return 2.0*2.0e-5;
     }
 
-    // std::cout << "mu: " << mu_avg << ", max speed" << maxRight << std::endl;
+    std::cout << "mu: " << mu_avg << ", D: " << maxD << ", max speed" << maxSpeed << std::endl;
 
     return maxSpeed;
 
 }
-
-
-// functions to calculate transport properties via temperature fits go here
-
-
-// double D(const double& Tg, const double& p){
-//     if (enIC == 8){ // if validating diffusion implementation
-//         double D_val = 2e-5;
-//         return D_val;
-//     }
-//     double p_atm = p/one_atm_Pa;
-//     double D_val = Dpre*pow(Tg,1.75)/p_atm;
-//     // std::cout << "p_atm, Tg, Dval: " << p_atm << " " << Tg << " " << D_val << std::endl;
-//     return D_val;
-// }
 
