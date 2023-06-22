@@ -42,7 +42,7 @@ extern double nO2FeO;
 extern double nO2Fe3O4;
 extern double TpInitial;
 extern double M_O2, M_N2;
-extern double qFeOs,qFeOl,qFe3O4s,qFe2O3s;
+extern double qFeOs,qFeOl,qFe3O4s;
 
 extern double meltFe,meltFeO,meltFe3O4;
 
@@ -257,8 +257,8 @@ AmrLevelAdv::updateParticleInfo(MultiFab& Sborder, const double& dt, const doubl
 
         x  = p.pos(0);   //given in meters, lo.x is in cell count, so scale by dx to get meters
         i  = static_cast<int>(Math::floor(x/dx));
-        // std::cout << "x-position: " << x << std::endl;
-        std::cout << "cell number is: " << i << std::endl;
+	//        std::cout << "x-position: " << x << std::endl;
+        // std::cout << "position in x cell number is: " << x/dx << ", cell number is: " << i << std::endl;
 
         if (spacedim == 2){
             y  = p.pos(1);
@@ -268,7 +268,7 @@ AmrLevelAdv::updateParticleInfo(MultiFab& Sborder, const double& dt, const doubl
         }
 
         
-        std::cout << "rho: " << arr(i,j,k,0) << std::endl;
+        // std::cout << "rho: " << arr(i,j,k,0) << std::endl;
         // std::cout << "x- and y-momentum: " << arr(i,j,k,1) << " " << arr(i,j,k,2) << std::endl;
         // std::cout << "energy: " << arr(i,j,k,3) << std::endl;
         // std::cout << "O2 and N2 concentration: " << arr(i,j,k,4) << " " << arr(i,j,k,5) << std::endl;
@@ -300,12 +300,12 @@ AmrLevelAdv::updateParticleInfo(MultiFab& Sborder, const double& dt, const doubl
         for (int h = 0; h < RealData::ncomps; h++){
             p.rdata(h) = p.rdata(h) + dt*pSource[h];
         }
-        // if (p.pos(0) < 0){
-        //     p.id() = -1;
-        // }
-        // else if (p.pos(0)/dx + 2 > n_cell){
-        //     p.rdata(RealData::u) = -p.rdata(RealData::u);
-        // }
+        if (p.pos(0) < 0){
+            p.id() = -1;
+        }
+        else if (p.pos(0)/dx + 2 > n_cell){
+            p.rdata(RealData::u) = -p.rdata(RealData::u);
+        }
 
         if (particle == 2){ // if we enable two-way coupling
             vCell = dx*interDist*interDist;
@@ -313,12 +313,11 @@ AmrLevelAdv::updateParticleInfo(MultiFab& Sborder, const double& dt, const doubl
                 arr(i,j,k,h) = arr(i,j,k,h) + dt*(1.0/vCell)*qSource[h];
             }
         }
-        Redistribute();
 
         
     }
   }
-//   Redistribute();
+  Redistribute();
 }
 
 void getSource(Vector<double>& qSource, Vector<double>& pSource, auto& arr, \
@@ -354,7 +353,7 @@ void getSource(Vector<double>& qSource, Vector<double>& pSource, auto& arr, \
     Real pfilm, Tfilm, YO2film, YN2film, YFefilm, YFeOfilm, rhofilm, Mfilm;
 
     // Declare source terms
-    Real dupdt=0, dvpdt=0, dHpdt=0, dmO2dt=0, dmFeOformdt=0, dmFe3O4formdt=0, dHgOxidt=0; //, dHpdt, dmFedt, dmFeOdt, dmFe3O4dt;
+    Real dupdt=0, dvpdt=0, dHpdt=0, dmO2dt=0, dmFeOformdt=0, dmFe3O4formdt=0; //, dHpdt, dmFedt, dmFeOdt, dmFe3O4dt;
     Vector<double> dmdt(3);
 
     rho    = arr(i,j,k,0);
@@ -387,7 +386,7 @@ void getSource(Vector<double>& qSource, Vector<double>& pSource, auto& arr, \
     Tp         = Tparticle(mFe,mFeO,mFe3O4,Hp,phaseFe,phaseFeO,phaseFe3O4,LFe,LFeO,LFe3O4);
     Tfilm      = filmAverage(Tp,Tgas);
 
-    std::cout << "Tp, Tg: " << Tp << " " << Tgas << "\n" << std::endl;
+    //    std::cout << "Tp, Tg: " << Tp << " " << Tgas << "\n" << std::endl;
 
     // With the particle temperature known, we first compute the vapor pressures of gas-phase Fe and FeO
     // resulting from the gas-liquid equilibrium at the particle surface. If the particle temperature is 
@@ -401,8 +400,8 @@ void getSource(Vector<double>& qSource, Vector<double>& pSource, auto& arr, \
     }
     XO2 = (YO2/M_O2)/(YO2/M_O2+YN2/M_N2);  // mole fraction of O2 in gas-phase 
     XN2 = (YN2/M_N2)/(YO2/M_O2+YN2/M_N2);  // mole fraction of N2 in gas-phase 
-    // pN2 = one_atm_Pa-pFe-pFeO-pO2;
-    pN2 = XN2*p;                           // partial pressure of N2 at the particle surface
+    pN2 = one_atm_Pa-pFe-pFeO-pO2;
+    // pN2 = XN2*p;                           // partial pressure of N2 at the particle surface
 
     XO2p = pO2/(pO2+pN2+pFe+pFeO);
     XN2p = pN2/(pO2+pN2+pFe+pFeO);
@@ -513,7 +512,7 @@ void getSource(Vector<double>& qSource, Vector<double>& pSource, auto& arr, \
     dmdt = getOxidationRates(mFe,mFeO,mFe3O4,Tp,rp);
     mdotO2k = dmdt[1]*nO2FeO + dmdt[2]*nO2Fe3O4;     // total kinetic rate of O2 consumption, kg/s
 
-    // std::cout << "kinetic rate: " << mdotO2k << ", diffusion rate: " << mdotO2d << std::endl;
+    //    std::cout << "kinetic rate: " << mdotO2k << ", diffusion rate: " << mdotO2d << std::endl;
     // std::cout << "fraction of Fe mass remaining: " << mFe/mFe0 << std::endl;
     if (mFe/mFe0 > 0.01){
         if (mdotO2d > mdotO2k){ // if the molecular diffusion rate is FASTER than the kinetic rate of O2 consumption
@@ -578,12 +577,10 @@ void getSource(Vector<double>& qSource, Vector<double>& pSource, auto& arr, \
         qFeO = qFeOs;
     }
 
-    dHgOxidt = (mdotFe/M_Fe)*(0.5*qFe2O3s*M_Fe2O3) + (mdotFeO/M_FeO)*(0.5*qFe2O3s*M_Fe2O3-qFeOg*M_FeO); 
-
     qSource[gasVar::rho]    = dmO2dt;
     qSource[gasVar::rhou]   = -(mFe+mFeO+mFe3O4)*dupdt;
     qSource[gasVar::rhov]   = -(mFe+mFeO+mFe3O4)*dvpdt;
-    qSource[gasVar::E]      = -dHpdt + qFeO*dmFeOformdt + qFe3O4s*dmFe3O4formdt + dHgOxidt;
+    qSource[gasVar::E]      = -dHpdt + qFeO*dmFeOformdt + qFe3O4s*dmFe3O4formdt;
     qSource[gasVar::rhoYO2] = dmO2dt;
 
 

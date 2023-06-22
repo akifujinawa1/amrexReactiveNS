@@ -32,7 +32,8 @@ double rhoFeO    = 5745.0;         // kg/m^3                  Solid-phase FeO de
 double rhoFe3O4  = 5170.0;         // kg/m^3                  Solid-phase Fe3O4 density
 double M_Fe      = 55.845*1e-3;    // kg/mol                  Molar mass of iron (Fe)
 double M_FeO     = 71.844*1e-3;    // kg/mol                  Molar mass of wustite (FeO)
-double M_Fe3O4   = 231.533*1e-3;   // kg/mol                  Molar mass of wustite (FeO)
+double M_Fe3O4   = 231.533*1e-3;   // kg/mol                  Molar mass of magnetite (Fe3O4)
+double M_Fe2O3   = 159.688*1e-3;   // kg/mol                  Molar mass of hematite (Fe2O3)
 double HfuFe     = 209*1e3;           // J/kg                 Heat of fusion to melt Fe
 double HfuFeO    = 7300*4.184/M_FeO;  // J/kg                 Heat of fusion to melt FeO
 double HfuFe3O4  = 596*1e3;           // J/kg                 Heat of fusion to melt Fe3O4
@@ -45,6 +46,10 @@ double TaFe3O4s  = 21310;          // K                       Activation tempera
 double qFeOs     = 3.787e6;        // J/kg
 double qFeOl     = 3.473e6;        // J/kg
 double qFe3O4s   = 4.841e6;        // J/kg
+double HformFe2O3s = -825.50;      // J/mol
+double qFe2O3s   = -HformFe2O3s/M_Fe2O3; //J/kg
+double HformFeOg = -251.04;
+double qFeOg     = -HformFeOg/M_FeO; //J/kg
 
 
 double nFeFeO   = M_Fe/M_FeO;
