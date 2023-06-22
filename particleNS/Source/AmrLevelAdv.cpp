@@ -64,7 +64,7 @@ int      iter                         = 0;
 int      printlevel                   = 0;
 int      advIter = 0;
 double   meltFe, meltFeO, meltFe3O4;
-int counter =0;
+int counter = 0;
 
 // std::unique_ptr<amrex::ParticleContainer<RealData::ncomps, IntData::ncomps>> AmrLevelAdv::particles =  nullptr;
 
