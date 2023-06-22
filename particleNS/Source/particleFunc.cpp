@@ -317,9 +317,9 @@ AmrLevelAdv::updateParticleInfo(MultiFab& Sborder, const double& dt, const doubl
         
         
     }
-    Redistribute();
+    // Redistribute();
   }
-//   Redistribute();
+  Redistribute();
 }
 
 void getSource(Vector<double>& qSource, Vector<double>& pSource, auto& arr, \
