@@ -29,6 +29,7 @@ extern double rhoFe3O4;          // kg/m^3               Solid-phase Fe3O4 densi
 extern double M_Fe;              // kg/mol               Molar mass of iron (Fe)
 extern double M_FeO;             // kg/mol               Molar mass of wustite (FeO)
 extern double M_Fe3O4;           // kg/mol               Molar mass of wustite (FeO)
+extern double M_Fe2O3;           // kg/mol               Molar mass of wustite (FeO)
 extern double HfuFe;             // J/kg                 Heat of fusion to melt Fe
 extern double HfuFeO;            // J/kg                 Heat of fusion to melt FeO
 extern double HfuFe3O4;          // J/kg                 Heat of fusion to melt Fe3O4
@@ -42,7 +43,7 @@ extern double nO2FeO;
 extern double nO2Fe3O4;
 extern double TpInitial;
 extern double M_O2, M_N2;
-extern double qFeOs,qFeOl,qFe3O4s,qFe2O3s;
+extern double qFeOs,qFeOl,qFe3O4s,qFe2O3s,qFeOg;
 
 extern double meltFe,meltFeO,meltFe3O4;
 
