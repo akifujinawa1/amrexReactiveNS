@@ -562,8 +562,8 @@ double Tg(const double& rho, const double& u, const double& v, \
         cp    = rho*(YO2*cpO2(Tg0)/M_O2+YN2*cpN2(Tg0)/M_N2);
         Tgn   = Tg0 + dE/cp;
         error = std::fabs(Tgn-Tg0)/Tg0;
-        // std::cout << "ener: " << ener << ", enthalpy guess: " << enthalpy << \
-        // ", p guess: " << pressure << ", Tgn: " << Tgn << ", error: " << error << std::endl;
+        std::cout << "ener: " << ener << ", enthalpy guess: " << enthalpy << \
+        ", p guess: " << pressure << ", Tgn: " << Tgn << ", error: " << error << std::endl;
         Tg0 = Tgn;
         iter += 1;
         if (iter > 20){
@@ -589,17 +589,17 @@ double muMix(const double& muO2, const double& muN2, const double& muFe, const d
     XFe = xGas[2];
     XFeO= xGas[3];
 
-    phiO2N2 = (1/sqrt(8.0))*(1/sqrt(1+(M_O2/M_N2)))*pow(1+sqrt(muO2/muN2)*pow(M_N2/M_O2,0.25),2);
-    phiO2Fe = (1/sqrt(8.0))*(1/sqrt(1+(M_O2/M_Fe)))*pow(1+sqrt(muO2/muFe)*pow(M_Fe/M_O2,0.25),2);
-    phiO2FeO= (1/sqrt(8.0))*(1/sqrt(1+(M_O2/M_FeO)))*pow(1+sqrt(muO2/muFeO)*pow(M_FeO/M_O2,0.25),2);
+    phiO2N2 = (1.0/sqrt(8.0))*(1.0/sqrt(1.0+(M_O2/M_N2)))*pow(1.0+sqrt(muO2/muN2)*pow(M_N2/M_O2,0.25),2.0);
+    phiO2Fe = (1.0/sqrt(8.0))*(1.0/sqrt(1.0+(M_O2/M_Fe)))*pow(1.0+sqrt(muO2/muFe)*pow(M_Fe/M_O2,0.25),2.0);
+    phiO2FeO= (1.0/sqrt(8.0))*(1.0/sqrt(1.0+(M_O2/M_FeO)))*pow(1.0+sqrt(muO2/muFeO)*pow(M_FeO/M_O2,0.25),2.0);
 
     phiN2O2 = (muN2/muO2)*(M_O2/M_N2)*phiO2N2;
-    phiN2Fe = (1/sqrt(8.0))*(1/sqrt(1+(M_N2/M_Fe)))*pow(1+sqrt(muN2/muFe)*pow(M_Fe/M_N2,0.25),2);
-    phiN2FeO = (1/sqrt(8.0))*(1/sqrt(1+(M_N2/M_FeO)))*pow(1+sqrt(muN2/muFeO)*pow(M_FeO/M_N2,0.25),2);
+    phiN2Fe = (1.0/sqrt(8.0))*(1.0/sqrt(1.0+(M_N2/M_Fe)))*pow(1.0+sqrt(muN2/muFe)*pow(M_Fe/M_N2,0.25),2.0);
+    phiN2FeO = (1.0/sqrt(8.0))*(1.0/sqrt(1.0+(M_N2/M_FeO)))*pow(1.0+sqrt(muN2/muFeO)*pow(M_FeO/M_N2,0.25),2.0);
 
     phiFeO2 = (muFe/muO2)*(M_O2/M_Fe)*phiO2Fe;
     phiFeN2 = (muFe/muN2)*(M_N2/M_Fe)*phiN2Fe;
-    phiFeFeO= (1/sqrt(8.0))*(1/sqrt(1+(M_Fe/M_FeO)))*pow(1+sqrt(muFe/muFeO)*pow(M_FeO/M_Fe,0.25),2);
+    phiFeFeO= (1.0/sqrt(8.0))*(1.0/sqrt(1+(M_Fe/M_FeO)))*pow(1.0+sqrt(muFe/muFeO)*pow(M_FeO/M_Fe,0.25),2.0);
 
     phiFeOO2 = (muFeO/muO2)*(M_O2/M_FeO)*phiO2FeO;
     phiFeON2 = (muFeO/muN2)*(M_N2/M_FeO)*phiN2FeO;
@@ -625,7 +625,7 @@ double muMix_O2N2(const double& muO2, const double& muN2, const double& YO2, con
     XO2 = (YO2/M_O2)/(YO2/M_O2+YN2/M_N2);
     XN2 = (YN2/M_N2)/(YO2/M_O2+YN2/M_N2);
 
-    phiO2N2 = (1/sqrt(8.0))*(1/sqrt(1+(M_O2/M_N2)))*pow(1+sqrt(muO2/muN2)*pow(M_N2/M_O2,0.25),2);
+    phiO2N2 = (1.0/sqrt(8.0))*(1.0/sqrt(1.0+(M_O2/M_N2)))*pow(1.0+sqrt(muO2/muN2)*pow(M_N2/M_O2,0.25),2.0);
     phiN2O2 = (muN2/muO2)*(M_O2/M_N2)*phiO2N2;
     
     a = XO2*muO2/(XO2+XN2*phiO2N2);
