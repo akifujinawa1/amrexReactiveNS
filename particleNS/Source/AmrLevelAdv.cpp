@@ -690,7 +690,25 @@ AmrLevelAdv::advance (Real time,
     }
   } //this closes the d=0 to d=spacedim loop for the EULER update
 
+  // Do particle update over half time step here
+  if (particle > 0){
+    // if ((enIC == 12)&&(pPosTp[2]>1600)){
+    //   Vector<double> pPosTp(3);
+    //   Vector<double> pReal(RealData::ncomps);
+    //   Vector<int> pInt(IntData::ncomps);
+    //   pPosTp = getParticleInfo(pReal,pInt);
+    //   Abort("ignition");
+    // }
+    // else {
+    updateParticleInfo(Sborder,dt/2.0,dX,dY);
+    // }
 
+    Sborder.FillBoundary(geom.periodicity());
+    FillDomainBoundary(Sborder,geom,BCVec);   // use this to fill cell-centred data outside domain (AMReX_BCUtil.H) -2023W2
+
+  }
+
+  
   // ____ VISCOUS ____ //
 
   for (int d = 0; d < amrex::SpaceDim ; d++)   
@@ -733,7 +751,7 @@ AmrLevelAdv::advance (Real time,
     //   Abort("ignition");
     // }
     // else {
-      updateParticleInfo(Sborder,dt,dX,dY);
+      updateParticleInfo(Sborder,dt/2.0,dX,dY);
     // }
 
     Sborder.FillBoundary(geom.periodicity());
