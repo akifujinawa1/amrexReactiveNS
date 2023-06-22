@@ -599,7 +599,7 @@ double muMix(const double& muO2, const double& muN2, const double& muFe, const d
 
     phiFeO2 = (muFe/muO2)*(M_O2/M_Fe)*phiO2Fe;
     phiFeN2 = (muFe/muN2)*(M_N2/M_Fe)*phiN2Fe;
-    phiFeFeO= (1.0/sqrt(8.0))*(1.0/sqrt(1+(M_Fe/M_FeO)))*pow(1.0+sqrt(muFe/muFeO)*pow(M_FeO/M_Fe,0.25),2.0);
+    phiFeFeO= (1.0/sqrt(8.0))*(1.0/sqrt(1.0+(M_Fe/M_FeO)))*pow(1.0+sqrt(muFe/muFeO)*pow(M_FeO/M_Fe,0.25),2.0);
 
     phiFeOO2 = (muFeO/muO2)*(M_O2/M_FeO)*phiO2FeO;
     phiFeON2 = (muFeO/muN2)*(M_N2/M_FeO)*phiN2FeO;
