@@ -132,6 +132,9 @@ void updateViscous(MultiFab& Sborder, Array<MultiFab, SpaceDim>& fluxes, Vector<
                                 for(int h = 0; h < NUM_STATE; h++)
                                 {
                                     arr(i,j,k,h) = arr(i,j,k,h) + (dt / dx) * (fluxArrVisc(i+iOffset, j, k,h) - fluxArrVisc(i,j,k,h));
+                                    if (arr(i,j,k,h) != arr(i,j,k,h)){
+                                        std::cout << "Nan found in diffusion calculation, variable h: " << h << std::endl;
+                                    }
                                 }
                             }
                             else { // y=direction update
