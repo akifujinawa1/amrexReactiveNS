@@ -1,0 +1,51 @@
+Host Name: cerberus3
+=== If no file names and line numbers are shown below, one can run
+            addr2line -Cpfie my_exefile my_line_address
+    to convert `my_line_address` (e.g., 0x4a6b) into file name and line number.
+    Or one can use amrex/Tools/Backtrace/parse_bt.py.
+
+=== Please note that the line number reported by addr2line may not be accurate.
+    One can use
+            readelf -wl my_exefile | grep my_line_address'
+    to find out the offset for that line.
+
+ 0: ./main1d.gnu.MPI.ex(+0x157bfd) [0x55df1b090bfd]
+    amrex::BLBackTrace::print_backtrace_info(_IO_FILE*) at /usr/include/x86_64-linux-gnu/bits/unistd.h:354
+ (inlined by) amrex::BLBackTrace::print_backtrace_info(_IO_FILE*) at /home/raid/af793/amrexReactiveNS/particleNS/Exec/UniformVelocity/../../../../amrex/Src/Base/AMReX_BLBackTrace.cpp:196
+
+ 1: ./main1d.gnu.MPI.ex(+0x159b65) [0x55df1b092b65]
+    amrex::BLBackTrace::handler(int) at /home/raid/af793/amrexReactiveNS/particleNS/Exec/UniformVelocity/../../../../amrex/Src/Base/AMReX_BLBackTrace.cpp:96
+
+ 2: ./main1d.gnu.MPI.ex(+0x65afd) [0x55df1af9eafd]
+    amrex::Assert_host(char const*, char const*, int, char const*) at /home/raid/af793/amrexReactiveNS/particleNS/Exec/UniformVelocity/../../../../amrex/Src/Base/AMReX.cpp:284
+
+ 3: ./main1d.gnu.MPI.ex(+0x1365af) [0x55df1b06f5af]
+    amrex::Assert(char const*, char const*, int, char const*) at /home/raid/af793/amrexReactiveNS/particleNS/Exec/UniformVelocity/../../../../amrex/Src/Base/AMReX.H:189
+ (inlined by) amrex::MFIter::Initialize() at /home/raid/af793/amrexReactiveNS/particleNS/Exec/UniformVelocity/../../../../amrex/Src/Base/AMReX_MFIter.cpp:270
+ (inlined by) amrex::MFIter::MFIter(amrex::FabArrayBase const&, amrex::IntVect const&, unsigned char) at /home/raid/af793/amrexReactiveNS/particleNS/Exec/UniformVelocity/../../../../amrex/Src/Base/AMReX_MFIter.cpp:72
+
+ 4: ./main1d.gnu.MPI.ex(+0x5b6d8) [0x55df1af946d8]
+    amrex::ParticleContainer<10, 4, 0, 0, std::allocator>::RedistributeCPU(int, int, int, int, bool) at /home/raid/af793/amrexReactiveNS/particleNS/Exec/UniformVelocity/../../../../amrex/Src/Particle/AMReX_ParticleContainerI.H:1452 (discriminator 5)
+
+ 5: ./main1d.gnu.MPI.ex(+0x51087) [0x55df1af8a087]
+    AmrLevelAdv::updateParticleInfo(amrex::MultiFab&, double const&, double const&, double const&) at /home/raid/af793/amrexReactiveNS/particleNS/Exec/UniformVelocity/../../Source/particleFunc.cpp:239 (discriminator 3)
+
+ 6: ./main1d.gnu.MPI.ex(+0x31294) [0x55df1af6a294]
+    amrex::Box::length(int) const at /home/raid/af793/amrexReactiveNS/particleNS/Exec/UniformVelocity/../../../../amrex/Src/Base/AMReX_Box.H:151 (discriminator 2)
+ (inlined by) amrex::Geometry::periodicity() const at /home/raid/af793/amrexReactiveNS/particleNS/Exec/UniformVelocity/../../../../amrex/Src/Base/AMReX_Geometry.H:399 (discriminator 2)
+ (inlined by) AmrLevelAdv::advance(double, double, int, int) at /home/raid/af793/amrexReactiveNS/particleNS/Exec/UniformVelocity/../../Source/AmrLevelAdv.cpp:706 (discriminator 2)
+
+ 7: ./main1d.gnu.MPI.ex(+0x1c08f9) [0x55df1b0f98f9]
+    amrex::Amr::timeStep(int, double, int, int, double) at /home/raid/af793/amrexReactiveNS/particleNS/Exec/UniformVelocity/../../../../amrex/Src/Amr/AMReX_Amr.cpp:2017
+
+ 8: ./main1d.gnu.MPI.ex(+0x1b7fb1) [0x55df1b0f0fb1]
+    amrex::Amr::coarseTimeStep(double) at /home/raid/af793/amrexReactiveNS/particleNS/Exec/UniformVelocity/../../../../amrex/Src/Amr/AMReX_Amr.cpp:2127
+
+ 9: ./main1d.gnu.MPI.ex(+0x265d5) [0x55df1af5f5d5]
+    main at /home/raid/af793/amrexReactiveNS/particleNS/Exec/UniformVelocity/../../Source/main.cpp:103
+
+10: /lib/x86_64-linux-gnu/libc.so.6(__libc_start_main+0xf3) [0x7fc91231b083]
+
+11: ./main1d.gnu.MPI.ex(+0x2b02e) [0x55df1af6402e]
+    ?? ??:0
+

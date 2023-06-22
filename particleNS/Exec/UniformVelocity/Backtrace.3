@@ -1,4 +1,4 @@
-Host Name: ironmontreal
+Host Name: cerberus3
 === If no file names and line numbers are shown below, one can run
             addr2line -Cpfie my_exefile my_line_address
     to convert `my_line_address` (e.g., 0x4a6b) into file name and line number.
@@ -9,45 +9,43 @@ Host Name: ironmontreal
             readelf -wl my_exefile | grep my_line_address'
     to find out the offset for that line.
 
- 0: ./main2d.gnu.DEBUG.MPI.ex(+0x2d2b40) [0x56237a3bfb40]
-    amrex::BLBackTrace::print_backtrace_info(_IO_FILE*) at /home/afujinawa/amrexReactiveNS/particleNS/Exec/UniformVelocity/../../../../amrex/Src/Base/AMReX_BLBackTrace.cpp:186
+ 0: ./main1d.gnu.MPI.ex(+0x157bfd) [0x56078857abfd]
+    amrex::BLBackTrace::print_backtrace_info(_IO_FILE*) at /usr/include/x86_64-linux-gnu/bits/unistd.h:354
+ (inlined by) amrex::BLBackTrace::print_backtrace_info(_IO_FILE*) at /home/raid/af793/amrexReactiveNS/particleNS/Exec/UniformVelocity/../../../../amrex/Src/Base/AMReX_BLBackTrace.cpp:196
 
- 1: ./main2d.gnu.DEBUG.MPI.ex(+0x2d2625) [0x56237a3bf625]
-    amrex::BLBackTrace::handler(int) at /home/afujinawa/amrexReactiveNS/particleNS/Exec/UniformVelocity/../../../../amrex/Src/Base/AMReX_BLBackTrace.cpp:96
+ 1: ./main1d.gnu.MPI.ex(+0x159b65) [0x56078857cb65]
+    amrex::BLBackTrace::handler(int) at /home/raid/af793/amrexReactiveNS/particleNS/Exec/UniformVelocity/../../../../amrex/Src/Base/AMReX_BLBackTrace.cpp:96
 
- 2: ./main2d.gnu.DEBUG.MPI.ex(+0x12f7d6) [0x56237a21c7d6]
-    amrex::ParallelDescriptor::Abort(int, bool) at /home/afujinawa/amrexReactiveNS/particleNS/Exec/UniformVelocity/../../../../amrex/Src/Base/AMReX_ParallelDescriptor.cpp:213
+ 2: ./main1d.gnu.MPI.ex(+0x65afd) [0x560788488afd]
+    amrex::Assert_host(char const*, char const*, int, char const*) at /home/raid/af793/amrexReactiveNS/particleNS/Exec/UniformVelocity/../../../../amrex/Src/Base/AMReX.cpp:284
 
- 3: ./main2d.gnu.DEBUG.MPI.ex(+0xae264) [0x56237a19b264]
-    amrex::Abort_host(char const*) at /home/afujinawa/amrexReactiveNS/particleNS/Exec/UniformVelocity/../../../../amrex/Src/Base/AMReX.cpp:248
+ 3: ./main1d.gnu.MPI.ex(+0x1365af) [0x5607885595af]
+    amrex::Assert(char const*, char const*, int, char const*) at /home/raid/af793/amrexReactiveNS/particleNS/Exec/UniformVelocity/../../../../amrex/Src/Base/AMReX.H:189
+ (inlined by) amrex::MFIter::Initialize() at /home/raid/af793/amrexReactiveNS/particleNS/Exec/UniformVelocity/../../../../amrex/Src/Base/AMReX_MFIter.cpp:270
+ (inlined by) amrex::MFIter::MFIter(amrex::FabArrayBase const&, amrex::IntVect const&, unsigned char) at /home/raid/af793/amrexReactiveNS/particleNS/Exec/UniformVelocity/../../../../amrex/Src/Base/AMReX_MFIter.cpp:72
 
- 4: ./main2d.gnu.DEBUG.MPI.ex(+0x82b4d) [0x56237a16fb4d]
-    amrex::Abort(char const*) at /home/afujinawa/amrexReactiveNS/particleNS/Exec/UniformVelocity/../../../../amrex/Src/Base/AMReX.H:163
- (inlined by) amrex::ParticleContainer_impl<amrex::Particle<10, 3>, 0, 0, std::allocator>::locateParticle(amrex::Particle<10, 3>&, amrex::ParticleLocData&, int, int, int, int) const at /home/afujinawa/amrexReactiveNS/particleNS/Exec/UniformVelocity/../../../../amrex/Src/Particle/AMReX_ParticleContainerI.H:344
+ 4: ./main1d.gnu.MPI.ex(+0x5b6d8) [0x56078847e6d8]
+    amrex::ParticleContainer<10, 4, 0, 0, std::allocator>::RedistributeCPU(int, int, int, int, bool) at /home/raid/af793/amrexReactiveNS/particleNS/Exec/UniformVelocity/../../../../amrex/Src/Particle/AMReX_ParticleContainerI.H:1452 (discriminator 5)
 
- 5: ./main2d.gnu.DEBUG.MPI.ex(+0x7e253) [0x56237a16b253]
-    amrex::ParticleContainer_impl<amrex::Particle<10, 3>, 0, 0, std::allocator>::RedistributeCPU(int, int, int, int, bool) at /home/afujinawa/amrexReactiveNS/particleNS/Exec/UniformVelocity/../../../../amrex/Src/Particle/AMReX_ParticleContainerI.H:1547 (discriminator 4)
+ 5: ./main1d.gnu.MPI.ex(+0x51087) [0x560788474087]
+    AmrLevelAdv::updateParticleInfo(amrex::MultiFab&, double const&, double const&, double const&) at /home/raid/af793/amrexReactiveNS/particleNS/Exec/UniformVelocity/../../Source/particleFunc.cpp:239 (discriminator 3)
 
- 6: ./main2d.gnu.DEBUG.MPI.ex(+0x78a92) [0x56237a165a92]
-    amrex::ParticleContainer_impl<amrex::Particle<10, 3>, 0, 0, std::allocator>::Redistribute(int, int, int, int, bool) at /home/afujinawa/amrexReactiveNS/particleNS/Exec/UniformVelocity/../../../../amrex/Src/Particle/AMReX_ParticleContainerI.H:1083
+ 6: ./main1d.gnu.MPI.ex(+0x31294) [0x560788454294]
+    amrex::Box::length(int) const at /home/raid/af793/amrexReactiveNS/particleNS/Exec/UniformVelocity/../../../../amrex/Src/Base/AMReX_Box.H:151 (discriminator 2)
+ (inlined by) amrex::Geometry::periodicity() const at /home/raid/af793/amrexReactiveNS/particleNS/Exec/UniformVelocity/../../../../amrex/Src/Base/AMReX_Geometry.H:399 (discriminator 2)
+ (inlined by) AmrLevelAdv::advance(double, double, int, int) at /home/raid/af793/amrexReactiveNS/particleNS/Exec/UniformVelocity/../../Source/AmrLevelAdv.cpp:706 (discriminator 2)
 
- 7: ./main2d.gnu.DEBUG.MPI.ex(+0x6f22b) [0x56237a15c22b]
-    AmrLevelAdv::updateParticleInfo(amrex::MultiFab&, double const&, double const&, double const&) at /home/afujinawa/amrexReactiveNS/particleNS/Exec/UniformVelocity/../../Source/particleFunc.cpp:205
+ 7: ./main1d.gnu.MPI.ex(+0x1c08f9) [0x5607885e38f9]
+    amrex::Amr::timeStep(int, double, int, int, double) at /home/raid/af793/amrexReactiveNS/particleNS/Exec/UniformVelocity/../../../../amrex/Src/Amr/AMReX_Amr.cpp:2017
 
- 8: ./main2d.gnu.DEBUG.MPI.ex(+0x1bde6) [0x56237a108de6]
-    AmrLevelAdv::advance(double, double, int, int) at /home/afujinawa/amrexReactiveNS/particleNS/Exec/UniformVelocity/../../Source/AmrLevelAdv.cpp:768
+ 8: ./main1d.gnu.MPI.ex(+0x1b7fb1) [0x5607885dafb1]
+    amrex::Amr::coarseTimeStep(double) at /home/raid/af793/amrexReactiveNS/particleNS/Exec/UniformVelocity/../../../../amrex/Src/Amr/AMReX_Amr.cpp:2127
 
- 9: ./main2d.gnu.DEBUG.MPI.ex(+0x4106e8) [0x56237a4fd6e8]
-    amrex::Amr::timeStep(int, double, int, int, double) at /home/afujinawa/amrexReactiveNS/particleNS/Exec/UniformVelocity/../../../../amrex/Src/Amr/AMReX_Amr.cpp:1987
+ 9: ./main1d.gnu.MPI.ex(+0x265d5) [0x5607884495d5]
+    main at /home/raid/af793/amrexReactiveNS/particleNS/Exec/UniformVelocity/../../Source/main.cpp:103
 
-10: ./main2d.gnu.DEBUG.MPI.ex(+0x410f44) [0x56237a4fdf44]
-    amrex::Amr::coarseTimeStep(double) at /home/afujinawa/amrexReactiveNS/particleNS/Exec/UniformVelocity/../../../../amrex/Src/Amr/AMReX_Amr.cpp:2097
+10: /lib/x86_64-linux-gnu/libc.so.6(__libc_start_main+0xf3) [0x7fac0e664083]
 
-11: ./main2d.gnu.DEBUG.MPI.ex(+0x4af53) [0x56237a137f53]
-    main at /home/afujinawa/amrexReactiveNS/particleNS/Exec/UniformVelocity/../../Source/main.cpp:111
-
-12: /lib/x86_64-linux-gnu/libc.so.6(__libc_start_main+0xf3) [0x7fdc148fc083]
-
-13: ./main2d.gnu.DEBUG.MPI.ex(+0x1683e) [0x56237a10383e]
+11: ./main1d.gnu.MPI.ex(+0x2b02e) [0x56078844e02e]
     ?? ??:0
 
