@@ -257,8 +257,13 @@ AmrLevelAdv::updateParticleInfo(MultiFab& Sborder, const double& dt, const doubl
 
         x  = p.pos(0);   //given in meters, lo.x is in cell count, so scale by dx to get meters
         i  = static_cast<int>(Math::floor(x/dx));
+<<<<<<< HEAD
 	        std::cout << "x-position: " << x << std::endl;
          std::cout << "position in x cell number is: " << x/dx << ", cell number is: " << i << std::endl;
+=======
+        std::cout << "x-position: " << x << std::endl;
+        std::cout << "position in x cell number is: " << x/dx << ", cell number is: " << i << std::endl;
+>>>>>>> ea22d39592687152f49112cf2630217c990e3f49
 
         if (spacedim == 2){
             y  = p.pos(1);
@@ -269,9 +274,15 @@ AmrLevelAdv::updateParticleInfo(MultiFab& Sborder, const double& dt, const doubl
 
         
         std::cout << "rho: " << arr(i,j,k,0) << std::endl;
+<<<<<<< HEAD
          std::cout << "x- and y-momentum: " << arr(i,j,k,1) << " " << arr(i,j,k,2) << std::endl;
          std::cout << "energy: " << arr(i,j,k,3) << std::endl;
          std::cout << "O2 and N2 concentration: " << arr(i,j,k,4) << " " << arr(i,j,k,5) << std::endl;
+=======
+        std::cout << "x- and y-momentum: " << arr(i,j,k,1) << " " << arr(i,j,k,2) << std::endl;
+        std::cout << "energy: " << arr(i,j,k,3) << std::endl;
+        std::cout << "O2 and N2 concentration: " << arr(i,j,k,4) << " " << arr(i,j,k,5) << std::endl;
+>>>>>>> ea22d39592687152f49112cf2630217c990e3f49
 
         for (int h = 0; h < NUM_STATE; h++){
             q[h] = arr(i,j,k,h);
@@ -386,7 +397,11 @@ void getSource(Vector<double>& qSource, Vector<double>& pSource, auto& arr, \
     Tp         = Tparticle(mFe,mFeO,mFe3O4,Hp,phaseFe,phaseFeO,phaseFe3O4,LFe,LFeO,LFe3O4);
     Tfilm      = filmAverage(Tp,Tgas);
 
+<<<<<<< HEAD
         std::cout << "Tp, Tg: " << Tp << " " << Tgas << "\n" << std::endl;
+=======
+    std::cout << "Tp, Tg: " << Tp << " " << Tgas << "\n" << std::endl;
+>>>>>>> ea22d39592687152f49112cf2630217c990e3f49
 
     // With the particle temperature known, we first compute the vapor pressures of gas-phase Fe and FeO
     // resulting from the gas-liquid equilibrium at the particle surface. If the particle temperature is 
@@ -408,11 +423,15 @@ void getSource(Vector<double>& qSource, Vector<double>& pSource, auto& arr, \
     XFep = pFe/(pO2+pN2+pFe+pFeO);
     XFeOp= pFeO/(pO2+pN2+pFe+pFeO);
 
-    // std::cout << "o2 n2 Xp: " << XO2p << " " << XN2p << std::endl;
+    std::cout << "o2 n2 Xp: " << XO2p << " " << XN2p << std::endl;
 
     pfilm = filmAverage(pO2+pN2+pFe+pFeO,p);
 
+<<<<<<< HEAD
      std::cout << "film pressure: " << pfilm << std::endl;
+=======
+    std::cout << "film pressure: " << pfilm << std::endl;
+>>>>>>> ea22d39592687152f49112cf2630217c990e3f49
 
     yGas = getMassFractions(XO2p, XN2p, XFep, XFeOp);
     YO2p = yGas[gases::O2];
@@ -430,7 +449,7 @@ void getSource(Vector<double>& qSource, Vector<double>& pSource, auto& arr, \
     Mfilm    = 1.0/(YO2film/M_O2+YN2film/M_N2+YFefilm/M_Fe+YFeOfilm/M_FeO);
     rhofilm  = pfilm*Mfilm/(R*Tfilm);
 
-    // std::cout << "rhofilm " << rhofilm << std::endl;
+    std::cout << "rhofilm " << rhofilm << std::endl;
 
     // Calculate necessary particle parameters here:
     vTot = mFe/rhoFe + mFeO/rhoFeO + mFe3O4/rhoFe3O4;    // total particle volume, m^3
@@ -512,8 +531,13 @@ void getSource(Vector<double>& qSource, Vector<double>& pSource, auto& arr, \
     dmdt = getOxidationRates(mFe,mFeO,mFe3O4,Tp,rp);
     mdotO2k = dmdt[1]*nO2FeO + dmdt[2]*nO2Fe3O4;     // total kinetic rate of O2 consumption, kg/s
 
+<<<<<<< HEAD
         std::cout << "kinetic rate: " << mdotO2k << ", diffusion rate: " << mdotO2d << std::endl;
      std::cout << "fraction of Fe mass remaining: " << mFe/mFe0 << std::endl;
+=======
+    std::cout << "kinetic rate: " << mdotO2k << ", diffusion rate: " << mdotO2d << std::endl;
+    std::cout << "fraction of Fe mass remaining: " << mFe/mFe0 << std::endl;
+>>>>>>> ea22d39592687152f49112cf2630217c990e3f49
     if (mFe/mFe0 > 0.01){
         if (mdotO2d > mdotO2k){ // if the molecular diffusion rate is FASTER than the kinetic rate of O2 consumption
             // reaction is kinetically-controlled
