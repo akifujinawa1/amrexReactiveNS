@@ -259,7 +259,7 @@ AmrLevelAdv::updateParticleInfo(MultiFab& Sborder, const double& dt, const doubl
         x  = p.pos(0);   //given in meters, lo.x is in cell count, so scale by dx to get meters
         i  = static_cast<int>(Math::floor(x/dx));
         // std::cout << "x-position: " << x << std::endl;
-        std::cout << "cell number is: " << i << std::endl;
+        // std::cout << "cell number is: " << i << std::endl;
 
         if (spacedim == 2){
             y  = p.pos(1);
@@ -276,6 +276,11 @@ AmrLevelAdv::updateParticleInfo(MultiFab& Sborder, const double& dt, const doubl
 
         for (int h = 0; h < NUM_STATE; h++){
             q[h] = arr(i,j,k,h);
+            if (arr(i,j,k,h) != arr(i,j,k,h)){
+                std::cout << "Nan found in updateParticle for gas-phase, variable h: " << h << std::endl;
+                std::cout << "i,j,k: " << i << " " << j << " " << k << std::endl;
+                std::cout << "grid_id: " << grid_id << ", tile_id: " << tile_id << std::endl;
+            }
         }
         for (int h = 0; h < RealData::ncomps; h++){
             pReal[h] = p.rdata(h);
@@ -388,7 +393,7 @@ void getSource(Vector<double>& qSource, Vector<double>& pSource, auto& arr, \
     Tp         = Tparticle(mFe,mFeO,mFe3O4,Hp,phaseFe,phaseFeO,phaseFe3O4,LFe,LFeO,LFe3O4);
     Tfilm      = filmAverage(Tp,Tgas);
 
-    std::cout << "Tp, Tg: " << Tp << " " << Tgas << "\n" << std::endl;
+    // std::cout << "Tp, Tg: " << Tp << " " << Tgas << "\n" << std::endl;
 
     // With the particle temperature known, we first compute the vapor pressures of gas-phase Fe and FeO
     // resulting from the gas-liquid equilibrium at the particle surface. If the particle temperature is 

@@ -412,7 +412,7 @@ double diffusiveSpeed(const Vector<double>& qL, const Vector<double>& qR){
         return 2.0*2.0e-5;
     }
 
-    std::cout << "mu: " << mu_avg << ", D: " << maxD << ", max speed" << maxSpeed << std::endl;
+    // std::cout << "mu: " << mu_avg << ", D: " << maxD << ", max speed" << maxSpeed << std::endl;
 
     return maxSpeed;
 
