@@ -61,7 +61,8 @@ AmrLevelAdv::initParticles (const MultiFab& S_new)
     Real patch = 0;
     int totalParIter = 0;
 
-    for (MFIter mfi(S_new); mfi.isValid(); ++mfi)
+    // for (MFIter mfi(S_new); mfi.isValid(); ++mfi)
+    for (MFIter mfi = MakeMFIter(lev); mfi.isValid(); ++mfi){
     {
         Real Np = 0;
         const Box& bx = mfi.tilebox();
@@ -236,7 +237,8 @@ AmrLevelAdv::updateParticleInfo(MultiFab& Sborder, const double& dt, const doubl
 
 //   std::cout << "in updateParticleInfo" << std::endl;
 
-  for (MFIter mfi(Sborder); mfi.isValid(); ++mfi){
+//   for (MFIter mfi(Sborder); mfi.isValid(); ++mfi){
+  for (MFIter mfi = MakeMFIter(lev); mfi.isValid(); ++mfi){
 //   for (MFIter mfi = MakeMFIter(lev); mfi.isValid(); ++mfi){
 
     const int grid_id = mfi.index();
@@ -269,7 +271,7 @@ AmrLevelAdv::updateParticleInfo(MultiFab& Sborder, const double& dt, const doubl
         }
 
         
-        std::cout << "rho: " << arr(i,j,k,0) << std::endl;
+        // std::cout << "rho: " << arr(i,j,k,0) << std::endl;
         // std::cout << "x- and y-momentum: " << arr(i,j,k,1) << " " << arr(i,j,k,2) << std::endl;
         // std::cout << "energy: " << arr(i,j,k,3) << std::endl;
         // std::cout << "O2 and N2 concentration: " << arr(i,j,k,4) << " " << arr(i,j,k,5) << std::endl;
