@@ -324,6 +324,14 @@ AmrLevelAdv::updateParticleInfo(MultiFab& Sborder, const double& dt, const doubl
             vCell = dx*interDist*interDist;
             for (int h = 0; h < NUM_STATE; h++){
                 arr(i,j,k,h) = arr(i,j,k,h) + dt*(1.0/vCell)*qSource[h];
+                if (arr(i,j,k,h) != arr(i,j,k,h)){
+                    std::cout << "rho rhou rhov e o2 n2" << arr(i,j,k,0) << " " << arr(i,j,k,1) << \
+                    " " << arr(i,j,k,2) << " " << arr(i,j,k,3) << " " << arr(i,j,k,4) << " " << arr(i,j,k,5) << std::endl;
+                    std::cout << "qSrc: rho rhou rhov e o2 n2" << qSource[0] << " " << qSource[1] << \
+                    " " << qSource[2] << " " << qSource[3] << " " << qSource[4] << " " << qSource[5] << std::endl;
+                    std::cout << "Nan found in particle to gas update, variable h: " << h << std::endl;
+                    Abort("nan found");
+                }
             }
         }
         
