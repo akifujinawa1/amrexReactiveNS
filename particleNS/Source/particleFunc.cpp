@@ -514,7 +514,7 @@ void getSource(Vector<double>& qSource, Vector<double>& pSource, auto& arr, \
     ShSt = ShO2*log(1.0+Bm)/Bm;
 
     // Calculate external transport rates
-    mdotO2  = 2*pi*rp*ShSt*rhoO2g*DO2*(XO2-XO2p);               // mass transport rate of O2 from the bulk gas to the particle, kg/s
+    mdotO2  = std::max(2*pi*rp*ShSt*rhoO2g*DO2*(XO2-XO2p),0.0);               // mass transport rate of O2 from the bulk gas to the particle, kg/s
     mdotFe  = 2*pi*rp*ShFe*rhoFeg*DFe*XFep;
     mdotFeO = 2*pi*rp*ShFeO*rhoFeOg*DFeO*XFeOp;
     
@@ -534,7 +534,12 @@ void getSource(Vector<double>& qSource, Vector<double>& pSource, auto& arr, \
 
     // std::cout << "kinetic rate: " << mdotO2k << ", diffusion rate: " << mdotO2d << std::endl;
     // std::cout << "fraction of Fe mass remaining: " << mFe/mFe0 << std::endl;
-    if (mFe/mFe0 > 0.01){
+
+    // To prevent unboundedness, we only allow the particles to consume oxygen and release heat if
+    // there is more than 1% of the initial Fe mass, and more than 1% of the ambient oxygen mole fraction
+    // in the gas cell.
+
+    if ((mFe/mFe0 > 0.01)&&(XO2/0.21 > 0.01)){ 
         if (mdotO2d > mdotO2k){ // if the molecular diffusion rate is FASTER than the kinetic rate of O2 consumption
             // reaction is kinetically-controlled
             pSource[RealData::mFe] = dmdt[0];
