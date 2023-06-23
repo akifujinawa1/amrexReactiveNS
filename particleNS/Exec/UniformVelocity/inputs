@@ -17,7 +17,7 @@ adv.fourier        = 0.2     # fourier number for diffusive system
 enIC               = 14       # 1:Toro1, 2:Toro2, ..., 5:Toro5, 6:Cylindrical explosion, 7:Unaligned discontinuity
 
 # SYSTEM OF EQUATIONS AND METHODS
-euler              = 2         # 0:No advection, 1:HLLC, 2:MUSCL
+euler              = 0         # 0:No advection, 1:HLLC, 2:MUSCL
 viscous            = 1         # 0:No diffusion, 1:Central
 source             = 0         # 0:No source terms, 1:RK4 subcycle
 particle           = 2         # 0:No particle source terms, 1:Euler subcycle one-way, 2:Two-way PIC
