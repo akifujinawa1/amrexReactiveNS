@@ -9,37 +9,37 @@ Host Name: cerberus3
             readelf -wl my_exefile | grep my_line_address'
     to find out the offset for that line.
 
- 0: ./main1d.gnu.MPI.ex(+0x157d2d) [0x559ee67f6d2d]
+ 0: ./main1d.gnu.MPI.ex(+0x157abd) [0x5596ff66cabd]
     amrex::BLBackTrace::print_backtrace_info(_IO_FILE*) at /usr/include/x86_64-linux-gnu/bits/unistd.h:354
  (inlined by) amrex::BLBackTrace::print_backtrace_info(_IO_FILE*) at /home/raid/af793/amrexReactiveNS/particleNS/Exec/UniformVelocity/../../../../amrex/Src/Base/AMReX_BLBackTrace.cpp:196
 
- 1: ./main1d.gnu.MPI.ex(+0x159c95) [0x559ee67f8c95]
+ 1: ./main1d.gnu.MPI.ex(+0x159a25) [0x5596ff66ea25]
     amrex::BLBackTrace::handler(int) at /home/raid/af793/amrexReactiveNS/particleNS/Exec/UniformVelocity/../../../../amrex/Src/Base/AMReX_BLBackTrace.cpp:96
 
- 2: ./main1d.gnu.MPI.ex(+0x5c239) [0x559ee66fb239]
+ 2: ./main1d.gnu.MPI.ex(+0x5bfc9) [0x5596ff570fc9]
     amrex::ParticleContainer<10, 4, 0, 0, std::allocator>::RedistributeCPU(int, int, int, int, bool) at /home/raid/af793/amrexReactiveNS/particleNS/Exec/UniformVelocity/../../../../amrex/Src/Particle/AMReX_ParticleContainerI.H:1521 (discriminator 4)
 
- 3: ./main1d.gnu.MPI.ex(+0x511dc) [0x559ee66f01dc]
+ 3: ./main1d.gnu.MPI.ex(+0x510d8) [0x5596ff5660d8]
     std::vector<int, std::allocator<int> >::~vector() at /usr/include/c++/9/bits/stl_vector.h:677
  (inlined by) amrex::Vector<int, std::allocator<int> >::~Vector() at /home/raid/af793/amrexReactiveNS/particleNS/Exec/UniformVelocity/../../../../amrex/Src/Base/AMReX_Vector.H:25
  (inlined by) AmrLevelAdv::updateParticleInfo(amrex::MultiFab&, double const&, double const&, double const&) at /home/raid/af793/amrexReactiveNS/particleNS/Exec/UniformVelocity/../../Source/particleFunc.cpp:235
 
- 4: ./main1d.gnu.MPI.ex(+0x31294) [0x559ee66d0294]
+ 4: ./main1d.gnu.MPI.ex(+0x31294) [0x5596ff546294]
     amrex::Box::length(int) const at /home/raid/af793/amrexReactiveNS/particleNS/Exec/UniformVelocity/../../../../amrex/Src/Base/AMReX_Box.H:151 (discriminator 2)
  (inlined by) amrex::Geometry::periodicity() const at /home/raid/af793/amrexReactiveNS/particleNS/Exec/UniformVelocity/../../../../amrex/Src/Base/AMReX_Geometry.H:399 (discriminator 2)
  (inlined by) AmrLevelAdv::advance(double, double, int, int) at /home/raid/af793/amrexReactiveNS/particleNS/Exec/UniformVelocity/../../Source/AmrLevelAdv.cpp:706 (discriminator 2)
 
- 5: ./main1d.gnu.MPI.ex(+0x1c0a29) [0x559ee685fa29]
+ 5: ./main1d.gnu.MPI.ex(+0x1c07b9) [0x5596ff6d57b9]
     amrex::Amr::timeStep(int, double, int, int, double) at /home/raid/af793/amrexReactiveNS/particleNS/Exec/UniformVelocity/../../../../amrex/Src/Amr/AMReX_Amr.cpp:2017
 
- 6: ./main1d.gnu.MPI.ex(+0x1b80e1) [0x559ee68570e1]
+ 6: ./main1d.gnu.MPI.ex(+0x1b7e71) [0x5596ff6cce71]
     amrex::Amr::coarseTimeStep(double) at /home/raid/af793/amrexReactiveNS/particleNS/Exec/UniformVelocity/../../../../amrex/Src/Amr/AMReX_Amr.cpp:2127
 
- 7: ./main1d.gnu.MPI.ex(+0x265d5) [0x559ee66c55d5]
+ 7: ./main1d.gnu.MPI.ex(+0x265d5) [0x5596ff53b5d5]
     main at /home/raid/af793/amrexReactiveNS/particleNS/Exec/UniformVelocity/../../Source/main.cpp:103
 
- 8: /lib/x86_64-linux-gnu/libc.so.6(__libc_start_main+0xf3) [0x7f5289654083]
+ 8: /lib/x86_64-linux-gnu/libc.so.6(__libc_start_main+0xf3) [0x7f43e9c75083]
 
- 9: ./main1d.gnu.MPI.ex(+0x2b02e) [0x559ee66ca02e]
+ 9: ./main1d.gnu.MPI.ex(+0x2b02e) [0x5596ff54002e]
     ?? ??:0
 
