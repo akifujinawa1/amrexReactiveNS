@@ -70,6 +70,9 @@ void updateViscous(MultiFab& Sborder, Array<MultiFab, SpaceDim>& fluxes, Vector<
                                 {
                                     qL[h]   = arr(i-1,j,k,h);   // cell to the left of cell i
                                     qR[h]   = arr(i  ,j,k,h);   // cell i 
+                                    if (qR[h] != qR[h]){
+                                        std::cout << "Nan found in cell value, variable h: " << h << std::endl;
+                                    }
                                     if (amrex::SpaceDim == 2)
                                     {
                                         qLlo[h] = arr(i-1,j-1,k,h);   // cell to the left lower diagonal of cell i
