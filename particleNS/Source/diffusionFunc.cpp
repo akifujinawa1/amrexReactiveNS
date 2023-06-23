@@ -83,7 +83,10 @@ void updateViscous(MultiFab& Sborder, Array<MultiFab, SpaceDim>& fluxes, Vector<
                                     getViscFlux1D(viscSlice,qL,qR,dx);
                                     for(int h = 0; h < NUM_STATE; h++)
                                     {
-                                    fluxArrVisc(i,j,k,h) = viscSlice[h]; // this is the viscous flux function for the left interface of cell i
+                                        fluxArrVisc(i,j,k,h) = viscSlice[h]; // this is the viscous flux function for the left interface of cell i
+                                        if (viscSlice[h] != viscSlice[h]){
+                                            std::cout << "Nan found in viscous flux calculation, variable h: " << h << std::endl;
+                                        }
                                     }
                                 }
                                 else { // x-direction viscous flux calculation if domain is 2-D

@@ -373,8 +373,8 @@ void getSource(Vector<double>& qSource, Vector<double>& pSource, auto& arr, \
     rhov   = arr(i,j,k,2);
     energy = arr(i,j,k,3);
     rhoYO2 = arr(i,j,k,4);
-    rhoYN2 = rho-rhoYO2;
-    // rhoYN2 = arr(i,j,k,5);
+    // rhoYN2 = rho-rhoYO2;
+    rhoYN2 = arr(i,j,k,5);
 
     std::cout << "rho rhou ener O2 N2: " << rho << " " << rhou << " " << energy << " " << rhoYO2 << " " << rhoYN2 << std::endl;
 
