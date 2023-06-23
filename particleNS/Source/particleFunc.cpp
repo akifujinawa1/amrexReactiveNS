@@ -329,14 +329,15 @@ AmrLevelAdv::updateParticleInfo(MultiFab& Sborder, const double& dt, const doubl
                 // " " << qSource[2] << " " << qSource[3] << " " << qSource[4] << " " << qSource[5] << std::endl;
                     
                     
-                // if (arr(i,j,k,h) != arr(i,j,k,h)){
-                //     std::cout << "Nan BEFORE applying LagSource, \n rho rhou rhov e o2 n2" << arr(i,j,k,0) << " " << arr(i,j,k,1) << \
-                //     " " << arr(i,j,k,2) << " " << arr(i,j,k,3) << " " << arr(i,j,k,4) << " " << arr(i,j,k,5) << std::endl;
-                //     std::cout << "qSrc: rho rhou rhov e o2 n2" << qSource[0] << " " << qSource[1] << \
-                //     " " << qSource[2] << " " << qSource[3] << " " << qSource[4] << " " << qSource[5] << std::endl;
-                //     std::cout << "Nan found after getSource, before particle to gas update, variable h: " << h << std::endl;
-                //     Abort("nan found");
-                // }
+                if (qSource[h] != qSource[h]){
+                    std::cout << "Nan BEFORE applying LagSource in qSource, \nrho rhou rhov e o2 n2" << arr(i,j,k,0) << " " << arr(i,j,k,1) << \
+                    " " << arr(i,j,k,2) << " " << arr(i,j,k,3) << " " << arr(i,j,k,4) << " " << arr(i,j,k,5) << std::endl;
+                    std::cout << "qSrc: rho rhou rhov e o2 n2" << qSource[0] << " " << qSource[1] << \
+                    " " << qSource[2] << " " << qSource[3] << " " << qSource[4] << " " << qSource[5] << std::endl;
+                    Abort("nan found");
+                }
+                
+                
                 arr(i,j,k,h) = arr(i,j,k,h) + dt*(1.0/vCell)*qSource[h];
                 if (arr(i,j,k,h) != arr(i,j,k,h)){
                     std::cout << "Nan AFTER applying LagSource, \n rho rhou rhov e o2 n2" << arr(i,j,k,0) << " " << arr(i,j,k,1) << \
