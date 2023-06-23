@@ -373,7 +373,8 @@ void getSource(Vector<double>& qSource, Vector<double>& pSource, auto& arr, \
     rhov   = arr(i,j,k,2);
     energy = arr(i,j,k,3);
     rhoYO2 = arr(i,j,k,4);
-    rhoYN2 = arr(i,j,k,5);
+    rhoYN2 = rho-rhoYO2;
+    // rhoYN2 = arr(i,j,k,5);
 
     std::cout << "rho rhou ener O2 N2: " << rho << " " << rhou << " " << energy << " " << rhoYO2 << " " << rhoYN2 << std::endl;
 
@@ -424,11 +425,11 @@ void getSource(Vector<double>& qSource, Vector<double>& pSource, auto& arr, \
     XFep = pFe/(pO2+pN2+pFe+pFeO);
     XFeOp= pFeO/(pO2+pN2+pFe+pFeO);
 
-    // std::cout << "o2 n2 Xp: " << XO2p << " " << XN2p << std::endl;
+    std::cout << "o2 n2 Xp: " << XO2p << " " << XN2p << std::endl;
 
     pfilm = filmAverage(pO2+pN2+pFe+pFeO,p);
 
-    // std::cout << "film pressure: " << pfilm << std::endl;
+    std::cout << "film pressure: " << pfilm << std::endl;
 
     yGas = getMassFractions(XO2p, XN2p, XFep, XFeOp);
     YO2p = yGas[gases::O2];
@@ -436,7 +437,7 @@ void getSource(Vector<double>& qSource, Vector<double>& pSource, auto& arr, \
     YFep = yGas[gases::Fe];
     YFeOp= yGas[gases::FeO];
 
-    // std::cout << "o2 n2 Yp: " << YO2p << " " << YN2p << std::endl;
+    std::cout << "o2 n2 Yp: " << YO2p << " " << YN2p << std::endl;
 
     // Calculate boundary-layer averaged mass fractions and density:
     YO2film = filmAverage(YO2p,YO2);
