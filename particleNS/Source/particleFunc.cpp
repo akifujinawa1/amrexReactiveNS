@@ -180,7 +180,7 @@ AmrLevelAdv::getParticleInfo(Vector<double>& pReal, Vector<int>& pInt)
 //   std::cout << "in getParticleInfo" << std::endl;
 
     for (MFIter mfi = MakeMFIter(lev); mfi.isValid(); ++mfi){
-    // for (MFIter mfi(S_new); mfi.isValid(); ++mfi)
+    // for (MFIter mfi(S_new); mfi.isValid(); ++mfi)    
     // {
   
     const int grid_id = mfi.index();
@@ -557,7 +557,7 @@ void getSource(Vector<double>& qSource, Vector<double>& pSource, auto& arr, \
                 dmFeOformdt   = mdotO2d/nO2FeO;
                 dmFe3O4formdt = 0;
             }
-            pSource[RealData::mFe] = -pSource[RealData::mFeO]*nFeFeO - pSource[RealData::mFe3O4]*nFeFe3O4;
+            pSource[RealData::mFe] = - pSource[RealData::mFeO]*nFeFeO - pSource[RealData::mFe3O4]*nFeFe3O4;
             // std::cout << "diffusion-controlled" << std::endl;
         }
     }
@@ -594,8 +594,9 @@ void getSource(Vector<double>& qSource, Vector<double>& pSource, auto& arr, \
     qSource[gasVar::rho]    = dmO2dt;
     qSource[gasVar::rhou]   = -(mFe+mFeO+mFe3O4)*dupdt;
     qSource[gasVar::rhov]   = -(mFe+mFeO+mFe3O4)*dvpdt;
-    qSource[gasVar::E]      = -dHpdt + qFeO*dmFeOformdt + qFe3O4s*dmFe3O4formdt + dHgOxidt;
+    qSource[gasVar::E]      = -dHpdt + dHgOxidt;  // + qFeO*dmFeOformdt + qFe3O4s*dmFe3O4formdt
     qSource[gasVar::rhoYO2] = dmO2dt;
+    qSource[gasVar::rhoYN2] = 0;
 
 
     // Must assess phase transition here. If the particle temperature reaches a melting point temperature
