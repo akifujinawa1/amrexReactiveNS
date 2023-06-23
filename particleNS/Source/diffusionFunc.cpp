@@ -166,11 +166,11 @@ void getViscFlux1D(Vector<double>& viscSlice, const Vector<double>& qL,\
     double rhoL, uL, vL, enerL, epsL, TL, YO2L, YN2L, pL, rhoR, uR, vR, enerR, epsR, TR, YO2R, YN2R, pR;
     double dudx, dTdx, dYO2dx, dYN2dx, uAvg, TAvg, pAvg, rhoAvg, YO2Avg, YN2Avg;
     double mu_avg, k_avg;
-    Vector<double> mixDiffCoeffs;
+    Vector<double> mixDiffCoeffs(gases::ncomps);
     
 
-    Vector<double> primL;
-    Vector<double> primR;
+    Vector<double> primL(NUM_STATE);
+    Vector<double> primR(NUM_STATE);
 
     primL   = getPrim(qL);
     primR   = getPrim(qR);
@@ -232,14 +232,14 @@ void getViscFlux2D(Vector<double>& viscSlice, const Vector<double>& qL, const Ve
     // double mu = 3e-5;
     // double k  = 1.4;
     double mu_avg, k_avg;
-    Vector<double> mixDiffCoeffs;
+    Vector<double> mixDiffCoeffs(gases::ncomps);
 
-    Vector<double> primL;
-    Vector<double> primR;
-    Vector<double> primLlo;
-    Vector<double> primRlo;
-    Vector<double> primLhi;
-    Vector<double> primRhi;
+    Vector<double> primL(NUM_STATE);
+    Vector<double> primR(NUM_STATE);
+    Vector<double> primLlo(NUM_STATE);
+    Vector<double> primRlo(NUM_STATE);
+    Vector<double> primLhi(NUM_STATE);
+    Vector<double> primRhi(NUM_STATE);
 
     primL   = getPrim(qL);
     primR   = getPrim(qR);
@@ -371,11 +371,11 @@ double diffusiveSpeed(const Vector<double>& qL, const Vector<double>& qR){
     double rhoL, uL, vL, enerL, epsL, TL, YO2L, YN2L, pL, rhoR, uR, vR, enerR, epsR, TR, YO2R, YN2R, pR;
     double uAvg, TAvg, rhoAvg, pAvg, YO2Avg, YN2Avg;
     double mu_avg, k_avg;
-    Vector<double> mixDiffCoeffs;
     double maxLeft, maxRight;
-    
-    Vector<double> primL;
-    Vector<double> primR;
+
+    Vector<double> mixDiffCoeffs(NUM_STATE);
+    Vector<double> primL(NUM_STATE);
+    Vector<double> primR(NUM_STATE);
 
     primL   = getPrim(qL);
     primR   = getPrim(qR);
