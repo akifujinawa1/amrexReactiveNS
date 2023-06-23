@@ -6,6 +6,9 @@
 #ifndef AMREX_USE_MPI
 #define AMREX_USE_MPI 1
 #endif
+#ifndef AMREX_GPU_MAX_THREADS
+#define AMREX_GPU_MAX_THREADS 0
+#endif
 #ifndef BL_SPACEDIM
 #define BL_SPACEDIM 1
 #endif
