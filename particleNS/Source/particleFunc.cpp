@@ -232,11 +232,11 @@ AmrLevelAdv::updateParticleInfo(MultiFab& Sborder, const double& dt, const doubl
   const int lev = 0;
   Real x, y, lx, ly, vCell;
   int  i=0, j=0, k=0;
-  Vector<double> q(NUM_STATE);
+  Vector<double> q(NUM_STATE,0);
   Vector<double> qSource(NUM_STATE,0);
   Vector<double> pSource(RealData::ncomps,0);
-  Vector<double> pReal(RealData::ncomps);
-  Vector<int>    pInt(IntData::ncomps);
+  Vector<double> pReal(RealData::ncomps,0);
+  Vector<int>    pInt(IntData::ncomps,0);
 
 //   std::cout << "in updateParticleInfo" << std::endl;
 
