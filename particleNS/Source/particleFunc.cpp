@@ -61,8 +61,8 @@ AmrLevelAdv::initParticles (const MultiFab& S_new)
     Real patch = 0;
     int totalParIter = 0;
 
-    // for (MFIter mfi(S_new); mfi.isValid(); ++mfi)
-    for (MFIter mfi = MakeMFIter(lev); mfi.isValid(); ++mfi){
+    for (MFIter mfi(S_new); mfi.isValid(); ++mfi)
+    //    for (MFIter mfi = MakeMFIter(lev); mfi.isValid(); ++mfi)
     {
         Real Np = 0;
         const Box& bx = mfi.tilebox();
@@ -179,8 +179,8 @@ AmrLevelAdv::getParticleInfo(Vector<double>& pReal, Vector<int>& pInt)
 
 //   std::cout << "in getParticleInfo" << std::endl;
 
-  for (MFIter mfi = MakeMFIter(lev); mfi.isValid(); ++mfi){
-
+    for (MFIter mfi = MakeMFIter(lev); mfi.isValid(); ++mfi){
+  
     const int grid_id = mfi.index();
     const int tile_id = mfi.LocalTileIndex();
     auto& particle_tile = GetParticles(lev)[std::make_pair(grid_id,tile_id)];

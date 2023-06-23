@@ -407,9 +407,9 @@ AmrLevelAdv::initData ()
       }
     }
   } // closes mfi patch loop
-
-  initParticles(S_new);
-
+  if (particle > 0){
+    initParticles(S_new);
+  }
   // Abort("particles initialized ");
 
   if (verbose) {
