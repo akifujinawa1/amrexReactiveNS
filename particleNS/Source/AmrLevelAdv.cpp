@@ -733,7 +733,12 @@ AmrLevelAdv::advance (Real time,
     //   Abort("ignition");
     // }
     // else {
-      updateParticleInfo(Sborder,dt,dX,dY);
+      int subcycle = 20;
+      double dt_sub = dt/subcycle;
+      for (int i = 0; i < subcycle; i++){
+        updateParticleInfo(Sborder,dt_sub,dX,dY);
+      }
+      
     // }
 
     Sborder.FillBoundary(geom.periodicity());
