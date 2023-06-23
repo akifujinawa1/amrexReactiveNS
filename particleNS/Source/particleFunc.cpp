@@ -591,6 +591,8 @@ void getSource(Vector<double>& qSource, Vector<double>& pSource, auto& arr, \
 
     dHgOxidt = (mdotFe/M_Fe)*(0.5*qFe2O3s*M_Fe2O3) + (mdotFeO/M_FeO)*(0.5*qFe2O3s*M_Fe2O3-qFeOg*M_FeO); 
 
+    std::cout << "dmO2dt: " << dmO2dt << ", dupdt: " << dupdt << ", dHgOxidt: " << dHgOxidt << std::endl;
+
     qSource[gasVar::rho]    = dmO2dt;
     qSource[gasVar::rhou]   = -(mFe+mFeO+mFe3O4)*dupdt;
     qSource[gasVar::rhov]   = -(mFe+mFeO+mFe3O4)*dvpdt;
