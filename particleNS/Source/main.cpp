@@ -28,6 +28,7 @@ int timing;           // whether to run timing exercise or not
 int conv;             // whether to run convergence study or not
 int Da;               // Damkohler number, ratio of chemical to flow timescale
 int particle;         // =0 if no particles, =1 if enabled
+int Nsub;
 double TpInitial;
 double TgInitial;
 double dp0;           // initial particle size
@@ -66,6 +67,7 @@ main (int   argc,
         pp.query("TpInitial",TpInitial);
         pp.query("TgInitial",TgInitial);
         pp.query("stop_time",stop_time);
+        pp.query("Nsub",Nsub);
 
         std::cout << "end time is: " << stop_time << std::endl;
     }

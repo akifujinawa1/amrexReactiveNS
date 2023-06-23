@@ -25,6 +25,7 @@ enLimiter          = 1         # 0:Superbee, 1:vanLeer, 2:vanAlbada, 3:minbee
 
 # PARTICLE
 dp0                = 0.000010     # Initial particle diameter
+Nsub               = 20       #subcycling frequency
 TgInitial          = 300
 TpInitial          = 300
 

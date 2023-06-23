@@ -36,6 +36,7 @@ extern   int       gCells;
 extern   int       conv; 
 extern   int       Da;
 extern   int       particle;
+extern   int       Nsub;
 extern   double       Gamma;           // ratio of specific heats -
 extern   double       R;               // univeral gas constant   J/K/mol
 extern   double       one_atm_Pa;      // one atmosphere          Pa
@@ -734,10 +735,10 @@ AmrLevelAdv::advance (Real time,
     // }
     // else {
       // int subcycle = 20;
-      // double dt_sub = dt/subcycle;
-      // for (int i = 0; i < subcycle; i++){
+      double dt_sub = dt/Nsub;
+      for (int i = 0; i < Nsub; i++){
         updateParticleInfo(Sborder,dt,dX,dY);
-      // }
+      }
       
     // }
 
