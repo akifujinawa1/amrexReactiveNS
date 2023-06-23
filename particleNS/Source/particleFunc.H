@@ -28,8 +28,7 @@ double cpFe3O4L(const double& Tp);
 double Tparticle(const double& mFe, const double& mFeO, const double& mFe3O4, const double& Hp, \
                  int& phaseFe, int& phaseFeO, int& phaseFe3O4, \
                  const double& LFe, const double& LFeO, const double& LFe3O4);
-void getSource(Vector<double>& qSource, Vector<double>& pSource, auto& arr, \
-               const int& i, const int& j, const int& k, Vector<double>& pReal, \
+void getSource(Vector<double>& qSource, Vector<double>& pSource, const Vector<double>& q, Vector<double>& pReal, \
                Vector<int>& pInt, const double& dt, const double& dx, const double& dy);
 
 Vector<double> getOxidationRates(const double& mFe, const double& mFeO, const double& mFe3O4, \

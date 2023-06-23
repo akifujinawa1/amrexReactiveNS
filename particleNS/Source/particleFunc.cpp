@@ -296,7 +296,7 @@ AmrLevelAdv::updateParticleInfo(MultiFab& Sborder, const double& dt, const doubl
             pInt[h] = p.idata(h);
         }
 
-        getSource(qSource,pSource,arr,i,j,k,pReal,pInt,dt,dx,dy);
+        getSource(qSource,pSource,q,pReal,pInt,dt,dx,dy);
 
         p.rdata(RealData::Hp)     = pReal[RealData::Hp];
         // p.rdata(RealData::LFe)    = pReal[RealData::LFe];
@@ -342,8 +342,7 @@ AmrLevelAdv::updateParticleInfo(MultiFab& Sborder, const double& dt, const doubl
   Redistribute();
 }
 
-void getSource(Vector<double>& qSource, Vector<double>& pSource, auto& arr, \
-               const int& i, const int& j, const int& k, Vector<double>& pReal, \
+void getSource(Vector<double>& qSource, Vector<double>& pSource, const Vector<double>& q, Vector<double>& pReal, \
                Vector<int>& pInt, const double& dt, const double& dx, const double& dy){
     
     // Declare particle and gas variables
@@ -377,13 +376,12 @@ void getSource(Vector<double>& qSource, Vector<double>& pSource, auto& arr, \
     Real dupdt=0, dvpdt=0, dHpdt=0, dmO2dt=0, dmFeOformdt=0, dmFe3O4formdt=0, dHgOxidt=0; //, dHpdt, dmFedt, dmFeOdt, dmFe3O4dt;
     Vector<double> dmdt(3);
 
-    rho    = arr(i,j,k,0);
-    rhou   = arr(i,j,k,1);
-    rhov   = arr(i,j,k,2);
-    energy = arr(i,j,k,3);
-    rhoYO2 = arr(i,j,k,4);
-    // rhoYN2 = rho-rhoYO2;
-    rhoYN2 = arr(i,j,k,5);
+    rho    = q[gasVar::rho];
+    rhou   = q[gasVar::rhou];
+    rhov   = q[gasVar::rhov];
+    energy = q[gasVar::E];
+    rhoYO2 = q[gasVar::rhoYO2];
+    rhoYN2 = q[gasVar::rhoYN2];
 
     // std::cout << "rho rhou ener O2 N2: " << rho << " " << rhou << " " << energy << " " << rhoYO2 << " " << rhoYN2 << std::endl;
 
@@ -616,7 +614,12 @@ void getSource(Vector<double>& qSource, Vector<double>& pSource, auto& arr, \
 
     qSource[gasVar::rho]    = dmO2dt;
     qSource[gasVar::rhou]   = -(mFe+mFeO+mFe3O4)*dupdt;
-    qSource[gasVar::rhov]   = -(mFe+mFeO+mFe3O4)*dvpdt;
+    if (spacedim == 1){
+        qSource[gasVar::rhov]   = 0;
+    }
+    else {
+        qSource[gasVar::rhov]   = -(mFe+mFeO+mFe3O4)*dvpdt;
+    }
     qSource[gasVar::E]      = -dHpdt + dHgOxidt;  // + qFeO*dmFeOformdt + qFe3O4s*dmFe3O4formdt
     qSource[gasVar::rhoYO2] = dmO2dt;
     qSource[gasVar::rhoYN2] = 0;
