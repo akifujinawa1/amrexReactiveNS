@@ -17,8 +17,8 @@ adv.fourier        = 0.8     # fourier number for diffusive system
 enIC               = 14       # 1:Toro1, 2:Toro2, ..., 5:Toro5, 6:Cylindrical explosion, 7:Unaligned discontinuity
 
 # SYSTEM OF EQUATIONS AND METHODS
-euler              = 0         # 0:No advection, 1:HLLC, 2:MUSCL
-viscous            = 1         # 0:No diffusion, 1:Central
+euler              = 2         # 0:No advection, 1:HLLC, 2:MUSCL
+viscous            = 0         # 0:No diffusion, 1:Central
 source             = 0         # 0:No source terms, 1:RK4 subcycle
 particle           = 2         # 0:No particle source terms, 1:Euler subcycle one-way, 2:Two-way PIC
 enLimiter          = 1         # 0:Superbee, 1:vanLeer, 2:vanAlbada, 3:minbee
@@ -50,7 +50,7 @@ amr.check_int               = 10    # number of timesteps between checkpoints
 # NOTE - VisIt (recommended), Paraview or amrvis are needed to visualise data.  AMReX outputs boxlib format
 #        data; see lab CAMReX wiki for instructions on plotting.  Using a base name of plt ensures
 #	 visualisation knows the current cycle (iteration) as well as time - see AMReX documentation for more.
-amr.plot_files_output = 1              # 0 will disable plot files
+amr.plot_files_output = 0              # 0 will disable plot files
 amr.plot_file         = detonation/plt    # root name of plot file
 amr.plot_int          = 1               # number of timesteps between plot files, plot_per allows fixed timesteps
 

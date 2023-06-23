@@ -9,37 +9,36 @@ Host Name: cerberus3
             readelf -wl my_exefile | grep my_line_address'
     to find out the offset for that line.
 
- 0: ./main1d.gnu.MPI.ex(+0x15790d) [0x5630fe4fd90d]
-    amrex::BLBackTrace::print_backtrace_info(_IO_FILE*) at /usr/include/x86_64-linux-gnu/bits/unistd.h:354
- (inlined by) amrex::BLBackTrace::print_backtrace_info(_IO_FILE*) at /home/raid/af793/amrexReactiveNS/particleNS/Exec/UniformVelocity/../../../../amrex/Src/Base/AMReX_BLBackTrace.cpp:196
+ 0: /lsc/zeushome/af793/amrexReactiveNS/particleNS/Exec/UniformVelocity/main1d.gnu.DEBUG.MPI.ex(+0x26f41e) [0x5555557c341e]
+    amrex::BLBackTrace::print_backtrace_info(_IO_FILE*) at /home/afujinawa/amrexReactiveNS/particleNS/Exec/UniformVelocity/../../../../amrex/Src/Base/AMReX_BLBackTrace.cpp:186
 
- 1: ./main1d.gnu.MPI.ex(+0x159875) [0x5630fe4ff875]
-    amrex::BLBackTrace::handler(int) at /home/raid/af793/amrexReactiveNS/particleNS/Exec/UniformVelocity/../../../../amrex/Src/Base/AMReX_BLBackTrace.cpp:96
+ 1: /lsc/zeushome/af793/amrexReactiveNS/particleNS/Exec/UniformVelocity/main1d.gnu.DEBUG.MPI.ex(+0x26ef03) [0x5555557c2f03]
+    amrex::BLBackTrace::handler(int) at /home/afujinawa/amrexReactiveNS/particleNS/Exec/UniformVelocity/../../../../amrex/Src/Base/AMReX_BLBackTrace.cpp:96
 
- 2: ./main1d.gnu.MPI.ex(+0x5be69) [0x5630fe401e69]
-    amrex::ParticleContainer<10, 4, 0, 0, std::allocator>::RedistributeCPU(int, int, int, int, bool) at /home/raid/af793/amrexReactiveNS/particleNS/Exec/UniformVelocity/../../../../amrex/Src/Particle/AMReX_ParticleContainerI.H:1521 (discriminator 4)
+ 2: /lsc/zeushome/af793/amrexReactiveNS/particleNS/Exec/UniformVelocity/main1d.gnu.DEBUG.MPI.ex(+0x125056) [0x555555679056]
+    amrex::ParallelDescriptor::Abort(int, bool) at /home/afujinawa/amrexReactiveNS/particleNS/Exec/UniformVelocity/../../../../amrex/Src/Base/AMReX_ParallelDescriptor.cpp:213
 
- 3: ./main1d.gnu.MPI.ex(+0x51020) [0x5630fe3f7020]
-    std::vector<int, std::allocator<int> >::~vector() at /usr/include/c++/9/bits/stl_vector.h:677
- (inlined by) amrex::Vector<int, std::allocator<int> >::~Vector() at /home/raid/af793/amrexReactiveNS/particleNS/Exec/UniformVelocity/../../../../amrex/Src/Base/AMReX_Vector.H:25
- (inlined by) AmrLevelAdv::updateParticleInfo(amrex::MultiFab&, double const&, double const&, double const&) at /home/raid/af793/amrexReactiveNS/particleNS/Exec/UniformVelocity/../../Source/particleFunc.cpp:239
+ 3: /lsc/zeushome/af793/amrexReactiveNS/particleNS/Exec/UniformVelocity/main1d.gnu.DEBUG.MPI.ex(+0xa4dbe) [0x5555555f8dbe]
+    amrex::Abort_host(char const*) at /home/afujinawa/amrexReactiveNS/particleNS/Exec/UniformVelocity/../../../../amrex/Src/Base/AMReX.cpp:248
 
- 4: ./main1d.gnu.MPI.ex(+0x31294) [0x5630fe3d7294]
-    amrex::Box::length(int) const at /home/raid/af793/amrexReactiveNS/particleNS/Exec/UniformVelocity/../../../../amrex/Src/Base/AMReX_Box.H:151 (discriminator 2)
- (inlined by) amrex::Geometry::periodicity() const at /home/raid/af793/amrexReactiveNS/particleNS/Exec/UniformVelocity/../../../../amrex/Src/Base/AMReX_Geometry.H:399 (discriminator 2)
- (inlined by) AmrLevelAdv::advance(double, double, int, int) at /home/raid/af793/amrexReactiveNS/particleNS/Exec/UniformVelocity/../../Source/AmrLevelAdv.cpp:706 (discriminator 2)
+ 4: /lsc/zeushome/af793/amrexReactiveNS/particleNS/Exec/UniformVelocity/main1d.gnu.DEBUG.MPI.ex(+0x5c71d) [0x5555555b071d]
+    amrex::Abort(char const*) at /home/afujinawa/amrexReactiveNS/particleNS/Exec/UniformVelocity/../../../../amrex/Src/Base/AMReX.H:163
+ (inlined by) updateViscous(amrex::MultiFab&, std::array<amrex::MultiFab, 1ul>&, amrex::Vector<double, std::allocator<double> >&, amrex::Vector<double, std::allocator<double> >&, amrex::Vector<double, std::allocator<double> >&, amrex::Vector<double, std::allocator<double> >&, amrex::Vector<double, std::allocator<double> >&, amrex::Vector<double, std::allocator<double> >&, amrex::Vector<double, std::allocator<double> >&, int const&, double const&, double const&, double const&, int const&, int const&) at /home/afujinawa/amrexReactiveNS/particleNS/Exec/UniformVelocity/../../Source/diffusionFunc.cpp:75
 
- 5: ./main1d.gnu.MPI.ex(+0x1c0609) [0x5630fe566609]
-    amrex::Amr::timeStep(int, double, int, int, double) at /home/raid/af793/amrexReactiveNS/particleNS/Exec/UniformVelocity/../../../../amrex/Src/Amr/AMReX_Amr.cpp:2017
+ 5: /lsc/zeushome/af793/amrexReactiveNS/particleNS/Exec/UniformVelocity/main1d.gnu.DEBUG.MPI.ex(+0x1a639) [0x55555556e639]
+    AmrLevelAdv::advance(double, double, int, int) at /home/afujinawa/amrexReactiveNS/particleNS/Exec/UniformVelocity/../../Source/AmrLevelAdv.cpp:698
 
- 6: ./main1d.gnu.MPI.ex(+0x1b7cc1) [0x5630fe55dcc1]
-    amrex::Amr::coarseTimeStep(double) at /home/raid/af793/amrexReactiveNS/particleNS/Exec/UniformVelocity/../../../../amrex/Src/Amr/AMReX_Amr.cpp:2127
+ 6: /lsc/zeushome/af793/amrexReactiveNS/particleNS/Exec/UniformVelocity/main1d.gnu.DEBUG.MPI.ex(+0x351be2) [0x5555558a5be2]
+    amrex::Amr::timeStep(int, double, int, int, double) at /home/afujinawa/amrexReactiveNS/particleNS/Exec/UniformVelocity/../../../../amrex/Src/Amr/AMReX_Amr.cpp:1987
 
- 7: ./main1d.gnu.MPI.ex(+0x265c5) [0x5630fe3cc5c5]
-    main at /home/raid/af793/amrexReactiveNS/particleNS/Exec/UniformVelocity/../../Source/main.cpp:103
+ 7: /lsc/zeushome/af793/amrexReactiveNS/particleNS/Exec/UniformVelocity/main1d.gnu.DEBUG.MPI.ex(+0x35243e) [0x5555558a643e]
+    amrex::Amr::coarseTimeStep(double) at /home/afujinawa/amrexReactiveNS/particleNS/Exec/UniformVelocity/../../../../amrex/Src/Amr/AMReX_Amr.cpp:2097
 
- 8: /lib/x86_64-linux-gnu/libc.so.6(__libc_start_main+0xf3) [0x7fadb8a92083]
+ 8: /lsc/zeushome/af793/amrexReactiveNS/particleNS/Exec/UniformVelocity/main1d.gnu.DEBUG.MPI.ex(+0x46373) [0x55555559a373]
+    main at /home/afujinawa/amrexReactiveNS/particleNS/Exec/UniformVelocity/../../Source/main.cpp:103
 
- 9: ./main1d.gnu.MPI.ex(+0x2b01e) [0x5630fe3d101e]
+ 9: /lib/x86_64-linux-gnu/libc.so.6(__libc_start_main+0xf3) [0x7ffff764f083]
+
+10: /lsc/zeushome/af793/amrexReactiveNS/particleNS/Exec/UniformVelocity/main1d.gnu.DEBUG.MPI.ex(+0x1683e) [0x55555556a83e]
     ?? ??:0
 
