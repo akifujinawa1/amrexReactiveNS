@@ -180,11 +180,14 @@ AmrLevelAdv::getParticleInfo(Vector<double>& pReal, Vector<int>& pInt)
 //   std::cout << "in getParticleInfo" << std::endl;
 
     for (MFIter mfi = MakeMFIter(lev); mfi.isValid(); ++mfi){
+    // for (MFIter mfi(S_new); mfi.isValid(); ++mfi)
+    // {
   
     const int grid_id = mfi.index();
     const int tile_id = mfi.LocalTileIndex();
     auto& particle_tile = GetParticles(lev)[std::make_pair(grid_id,tile_id)];
     auto& particles = particle_tile.GetArrayOfStructs();
+    
     const int np = particles.numParticles();
     // std::cout << "number of particles in grid in getParticleInfo, within advance: " << np << std::endl;
 
@@ -237,8 +240,8 @@ AmrLevelAdv::updateParticleInfo(MultiFab& Sborder, const double& dt, const doubl
 
 //   std::cout << "in updateParticleInfo" << std::endl;
 
-//   for (MFIter mfi(Sborder); mfi.isValid(); ++mfi){
-  for (MFIter mfi = MakeMFIter(lev); mfi.isValid(); ++mfi){
+  for (MFIter mfi(Sborder); mfi.isValid(); ++mfi){
+//   for (MFIter mfi = MakeMFIter(lev); mfi.isValid(); ++mfi){
 //   for (MFIter mfi = MakeMFIter(lev); mfi.isValid(); ++mfi){
 
     const int grid_id = mfi.index();
