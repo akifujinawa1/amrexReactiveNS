@@ -70,7 +70,9 @@ void updateViscous(MultiFab& Sborder, Array<MultiFab, SpaceDim>& fluxes, Vector<
                                 {
                                     qL[h]   = arr(i-1,j,k,h);   // cell to the left of cell i
                                     qR[h]   = arr(i  ,j,k,h);   // cell i 
-                                    if (qR[h] != qR[h]){
+                                    if (qL[h] != qL[h]){
+                                        std::cout << "rho rhou rhov e o2 n2" << arr(i-1,j,k,0) << " " << arr(i-1,j,k,1) << \
+                                        " " << arr(i-1,j,k,2) << " " << arr(i-1,j,k,3) << " " << arr(i-1,j,k,4) << " " << arr(i-1,j,k,5) << std::endl;
                                         std::cout << "Nan found in cell value, variable h: " << h << std::endl;
                                         Abort("nan found");
                                     }
