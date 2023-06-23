@@ -343,7 +343,7 @@ void getSource(Vector<double>& qSource, Vector<double>& pSource, auto& arr, \
 
     // Declare variables used for vapor pressure calculation
     Real pFe=0, pFeO=0, pO2=0, pN2=0, XO2=0, XN2=0, XFep=0, XFeOp=0, XO2p=0, XN2p=0, YFep=0, YFeOp=0, YO2p=0, YN2p=0;
-    Vector<double> yGas;
+    Vector<double> yGas(gases::ncomps);
 
     // Declare variables used for drag calculation
     Real Tp=0, vTot=0, rp=0, dp=0, rhop=0, Re=0, mu=0, uRel=0, vRel=0, CD=0;
