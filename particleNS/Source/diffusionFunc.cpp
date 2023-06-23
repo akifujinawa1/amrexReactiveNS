@@ -373,10 +373,10 @@ double diffusiveSpeed(const Vector<double>& qL, const Vector<double>& qR){
 
     double rhoL, uL, vL, enerL, epsL, TL, YO2L, YN2L, pL, rhoR, uR, vR, enerR, epsR, TR, YO2R, YN2R, pR;
     double uAvg, TAvg, rhoAvg, pAvg, YO2Avg, YN2Avg;
-    double mu_avg, k_avg;
+    double mu_avg;
     double maxLeft, maxRight;
 
-    Vector<double> mixDiffCoeffs(NUM_STATE);
+    Vector<double> mixDiffCoeffs(gases::ncomps);
     Vector<double> primL(NUM_STATE);
     Vector<double> primR(NUM_STATE);
 
@@ -412,10 +412,9 @@ double diffusiveSpeed(const Vector<double>& qL, const Vector<double>& qR){
     mixDiffCoeffs = getMixDiffCoeffs(TAvg,pAvg,YO2Avg,YN2Avg,0.0,0.0);
     double maxD   = std::max(mixDiffCoeffs[gases::O2],mixDiffCoeffs[gases::N2]);
     mu_avg = muMix_O2N2(muO2(TAvg),muN2(TAvg),YO2Avg,YN2Avg); // consider only the O2-N2 gas mixture
-    k_avg  = kMix_O2N2(kO2(TAvg),kN2(TAvg),YO2Avg,YN2Avg);
 
     
-    double maxSpeed = 2*std::max(mu_avg/rhoR,maxD);
+    double maxSpeed = 2*std::max(mu_avg/rhoAvg,maxD);
 
     if (enIC == 8){
         return 2.0*2.0e-5;
