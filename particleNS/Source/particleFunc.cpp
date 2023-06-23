@@ -342,27 +342,26 @@ void getSource(Vector<double>& qSource, Vector<double>& pSource, auto& arr, \
     Real rho, rhou, rhov, energy, rhoYO2, rhoYN2, u, v, p, Tgas, YO2, YN2;
 
     // Declare variables used for vapor pressure calculation
-    Real pFe=0, pFeO=0, pO2=0, pN2, XO2, XN2, XFep, XFeOp, XO2p, XN2p, YFep, YFeOp, YO2p, YN2p;
+    Real pFe=0, pFeO=0, pO2=0, pN2=0, XO2=0, XN2=0, XFep=0, XFeOp=0, XO2p=0, XN2p=0, YFep=0, YFeOp=0, YO2p=0, YN2p=0;
     Vector<double> yGas;
 
     // Declare variables used for drag calculation
-    Real Tp, vTot, rp, dp, rhop, Re, mu, uRel, vRel, CD;
-    Real rhoFel, rhoFeOl;
+    Real Tp=0, vTot=0, rp=0, dp=0, rhop=0, Re=0, mu=0, uRel=0, vRel=0, CD=0;
+    Real rhoFel=rhoFe, rhoFeOl=rhoFeO;
 
     // Declare variables used for evaporation calculations
     Real mdotFe=0, mdotFeO=0, mdotFeOevap=0, qFeO;
 
     // Declare variables used for heat transfer calculations
-    Real Nu, Ap, epsilon, SB, kgas, conv, rad, Pr, NuSt, evap;
+    Real Nu=0, Ap=0, epsilon=0, SB=0, kgas=0, conv=0, rad=0, Pr=0, NuSt=0, evap=0;
 
     // Declare variables for external transport rates
-    Real DO2, DFe, DFeO, rhoO2g, rhoFeg, rhoFeOg, ScO2, ScFe, ScFeO, ShO2, ShFe, ShFeO;
-    Real mdotO2, mdotO2k, mdotO2d, ShSt, cpgas, phi, Bm, Bt, Le, psi;
-    Vector<double> xGas;
-    Vector<double> mixDiffCoeffs;
+    Real DO2=0, DFe=0, DFeO=0, rhoO2g=0, rhoFeg=0, rhoFeOg=0, ScO2=0, ScFe=0, ScFeO=0, ShO2=0, ShFe=0, ShFeO=0;
+    Real mdotO2=0, mdotO2k=0, mdotO2d=0, ShSt=0, cpgas=0, phi=0, Bm=0, Bt=0, Le=0, psi=0;
+    Vector<double> mixDiffCoeffs(gases::ncomps);
 
     // Declare boundary-layer averaged quantities
-    Real pfilm, Tfilm, YO2film, YN2film, YFefilm, YFeOfilm, rhofilm, Mfilm;
+    Real pfilm=0, Tfilm=0, YO2film=0, YN2film=0, YFefilm=0, YFeOfilm=0, rhofilm=0, Mfilm=0;
 
     // Declare source terms
     Real dupdt=0, dvpdt=0, dHpdt=0, dmO2dt=0, dmFeOformdt=0, dmFe3O4formdt=0, dHgOxidt=0; //, dHpdt, dmFedt, dmFeOdt, dmFe3O4dt;
@@ -450,7 +449,7 @@ void getSource(Vector<double>& qSource, Vector<double>& pSource, auto& arr, \
     std::cout << "rhofilm " << rhofilm << std::endl;
 
     // Calculate necessary particle parameters here:
-    vTot = mFe/rhoFe + mFeO/rhoFeO + mFe3O4/rhoFe3O4;    // total particle volume, m^3
+    vTot = mFe/rhoFel + mFeO/rhoFeOl + mFe3O4/rhoFe3O4;    // total particle volume, m^3
     rp   = pow(3.0*vTot*0.25/pi,1.0/3.0);                // particle outer radius, m
     dp   = 2*rp;                                     
     rhop = (mFe+mFeO+mFe3O4)/vTot;                       // average particle density, kg/m^3
