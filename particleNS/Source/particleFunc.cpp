@@ -408,11 +408,11 @@ void getSource(Vector<double>& qSource, Vector<double>& pSource, auto& arr, \
     // resulting from the gas-liquid equilibrium at the particle surface. If the particle temperature is 
     // below the melting point of Fe3O4, the vapor pressure is zero (use initialized value).
     if (Tp > 1870){
-        pFe  = one_atm_Pa*pow(10.0,6.041-2.095*1e4.0/Tp);  // vapor pressure of Fe evaporating from liquid FeO
-        pFeO = one_atm_Pa*pow(10.0,5.962-2.175*1e4.0/Tp);  // vapor pressure of FeO evaporating from liquid FeO
-        pO2  = one_atm_Pa*pow(10.0,5.361-2.016*1e4.0/Tp);  // vapor pressure of O2 released from liquid FeO
+        pFe  = one_atm_Pa*pow(10.0,6.041-2.095*1e4/Tp);  // vapor pressure of Fe evaporating from liquid FeO
+        pFeO = one_atm_Pa*pow(10.0,5.962-2.175*1e4/Tp);  // vapor pressure of FeO evaporating from liquid FeO
+        pO2  = one_atm_Pa*pow(10.0,5.361-2.016*1e4/Tp);  // vapor pressure of O2 released from liquid FeO
         rhoFeOl = 4.35*1.0e3;
-        rhoFel  = 1e3.0*(8.523-(8.358e-4.0)*Tp);
+        rhoFel  = 1e3*(8.523-(8.358e-4)*Tp);
     }
     XO2 = (YO2/M_O2)/(YO2/M_O2+YN2/M_N2);  // mole fraction of O2 in gas-phase 
     XN2 = (YN2/M_N2)/(YO2/M_O2+YN2/M_N2);  // mole fraction of N2 in gas-phase 
