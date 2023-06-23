@@ -285,6 +285,7 @@ AmrLevelAdv::updateParticleInfo(MultiFab& Sborder, const double& dt, const doubl
                 std::cout << "Nan found in updateParticle for gas-phase, variable h: " << h << std::endl;
                 std::cout << "i,j,k: " << i << " " << j << " " << k << std::endl;
                 std::cout << "grid_id: " << grid_id << ", tile_id: " << tile_id << std::endl;
+                Abort("nan found");
             }
         }
         for (int h = 0; h < RealData::ncomps; h++){

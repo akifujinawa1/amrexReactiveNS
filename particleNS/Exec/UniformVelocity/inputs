@@ -6,8 +6,8 @@ stop_time = 0.04
 # geometry.is_periodic =  1 1 1               # Boolean flag for periodic boundaries all round
 geometry.coord_sys   =  0                     # 0 -> Cartesian geometry
 geometry.prob_lo     =  0  0  0           #-1.0  -1.0  -1.0       # Physical minimum extents       # 0.0  0.0  0.0    
-geometry.prob_hi     =  0.00256 0.00064 0.0         # Physical maximum extents
-amr.n_cell           =  256 64 0            # Number of cells in each dimension
+geometry.prob_hi     =  0.00512 0.0 0.0         # Physical maximum extents
+amr.n_cell           =  512 0 0            # Number of cells in each dimension
 
 # TIME STEP CONTROL
 adv.cfl            = 0.8     # cfl number for hyperbolic system
@@ -17,10 +17,10 @@ adv.fourier        = 0.8     # fourier number for diffusive system
 enIC               = 14       # 1:Toro1, 2:Toro2, ..., 5:Toro5, 6:Cylindrical explosion, 7:Unaligned discontinuity
 
 # SYSTEM OF EQUATIONS AND METHODS
-euler              = 2         # 0:No advection, 1:HLLC, 2:MUSCL
+euler              = 0         # 0:No advection, 1:HLLC, 2:MUSCL
 viscous            = 1         # 0:No diffusion, 1:Central
 source             = 0         # 0:No source terms, 1:RK4 subcycle
-particle           = 0         # 0:No particle source terms, 1:Euler subcycle one-way, 2:Two-way PIC
+particle           = 2         # 0:No particle source terms, 1:Euler subcycle one-way, 2:Two-way PIC
 enLimiter          = 1         # 0:Superbee, 1:vanLeer, 2:vanAlbada, 3:minbee
 
 # PARTICLE

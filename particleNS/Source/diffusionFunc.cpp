@@ -72,6 +72,7 @@ void updateViscous(MultiFab& Sborder, Array<MultiFab, SpaceDim>& fluxes, Vector<
                                     qR[h]   = arr(i  ,j,k,h);   // cell i 
                                     if (qR[h] != qR[h]){
                                         std::cout << "Nan found in cell value, variable h: " << h << std::endl;
+                                        Abort("nan found");
                                     }
                                     if (amrex::SpaceDim == 2)
                                     {
@@ -89,6 +90,7 @@ void updateViscous(MultiFab& Sborder, Array<MultiFab, SpaceDim>& fluxes, Vector<
                                         fluxArrVisc(i,j,k,h) = viscSlice[h]; // this is the viscous flux function for the left interface of cell i
                                         if (viscSlice[h] != viscSlice[h]){
                                             std::cout << "Nan found in viscous flux calculation, variable h: " << h << std::endl;
+                                            Abort("nan found");
                                         }
                                     }
                                 }
@@ -140,6 +142,7 @@ void updateViscous(MultiFab& Sborder, Array<MultiFab, SpaceDim>& fluxes, Vector<
                                     arr(i,j,k,h) = arr(i,j,k,h) + (dt / dx) * (fluxArrVisc(i+iOffset, j, k,h) - fluxArrVisc(i,j,k,h));
                                     if (arr(i,j,k,h) != arr(i,j,k,h)){
                                         std::cout << "Nan found in diffusion calculation, variable h: " << h << std::endl;
+                                        Abort("nan found");
                                     }
                                 }
                             }
