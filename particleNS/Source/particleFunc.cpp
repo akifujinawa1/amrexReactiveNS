@@ -539,7 +539,7 @@ void getSource(Vector<double>& qSource, Vector<double>& pSource, auto& arr, \
     // there is more than 1% of the initial Fe mass, and more than 1% of the ambient oxygen mole fraction
     // in the gas cell.
 
-    if ((mFe/mFe0 > 0.01)&&(XO2/0.21 > 0.01)){ 
+    if ((mFe/mFe0 > 0.01)&&(rhoYO2/(0.2769*0.2329) > 0.01)){ 
         if (mdotO2d > mdotO2k){ // if the molecular diffusion rate is FASTER than the kinetic rate of O2 consumption
             // reaction is kinetically-controlled
             pSource[RealData::mFe] = dmdt[0];
