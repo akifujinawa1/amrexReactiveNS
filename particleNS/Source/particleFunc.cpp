@@ -264,7 +264,8 @@ AmrLevelAdv::updateParticleInfo(MultiFab& Sborder, const double& dt, const doubl
         x  = p.pos(0);   //given in meters, lo.x is in cell count, so scale by dx to get meters
         i  = static_cast<int>(Math::floor(x/dx));
         // std::cout << "x-position: " << x << std::endl;
-        // std::cout << "cell number is: " << i << std::endl;
+        std::cout << "cell number is: " << i << std::endl;
+        std::cout << "lo.x and hi.x are: " << lo.x << ", " << hi.x << std::endl; 
 
         if (spacedim == 2){
             y  = p.pos(1);
@@ -274,10 +275,10 @@ AmrLevelAdv::updateParticleInfo(MultiFab& Sborder, const double& dt, const doubl
         }
 
         
-        // std::cout << "rho: " << arr(i,j,k,0) << std::endl;
-        // std::cout << "x- and y-momentum: " << arr(i,j,k,1) << " " << arr(i,j,k,2) << std::endl;
-        // std::cout << "energy: " << arr(i,j,k,3) << std::endl;
-        // std::cout << "O2 and N2 concentration: " << arr(i,j,k,4) << " " << arr(i,j,k,5) << std::endl;
+        std::cout << "rho: " << arr(i,j,k,0) << std::endl;
+        std::cout << "x- and y-momentum: " << arr(i,j,k,1) << " " << arr(i,j,k,2) << std::endl;
+        std::cout << "energy: " << arr(i,j,k,3) << std::endl;
+        std::cout << "O2 and N2 concentration: " << arr(i,j,k,4) << " " << arr(i,j,k,5) << std::endl;
 
         for (int h = 0; h < NUM_STATE; h++){
             q[h] = arr(i,j,k,h);

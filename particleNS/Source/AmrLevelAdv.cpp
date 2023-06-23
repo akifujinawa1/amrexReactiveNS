@@ -733,11 +733,11 @@ AmrLevelAdv::advance (Real time,
     //   Abort("ignition");
     // }
     // else {
-      int subcycle = 20;
-      double dt_sub = dt/subcycle;
-      for (int i = 0; i < subcycle; i++){
-        updateParticleInfo(Sborder,dt_sub,dX,dY);
-      }
+      // int subcycle = 20;
+      // double dt_sub = dt/subcycle;
+      // for (int i = 0; i < subcycle; i++){
+        updateParticleInfo(Sborder,dt,dX,dY);
+      // }
       
     // }
 
