@@ -417,7 +417,7 @@ double diffusiveSpeed(const Vector<double>& qL, const Vector<double>& qR){
     k_avg  = kMix_O2N2(kO2(TAvg),kN2(TAvg),YO2Avg,YN2Avg);
     cp_avg = cpMix(cpO2(TAvg),cpN2(TAvg),YO2Avg,YN2Avg);
     
-    double maxSpeed = 2*std::max(mu_avg/rhoAvg,k_avg/(rhoAvg*cp_avg));
+    double maxSpeed = 2*std::max(std::max(mu_avg/rhoAvg,k_avg/(rhoAvg*cp_avg)),maxD);
 
     if (enIC == 8){
         return 2.0*2.0e-5;
