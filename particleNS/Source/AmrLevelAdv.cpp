@@ -846,7 +846,7 @@ AmrLevelAdv::estTimeStep (Real)
 
             // std::cout << "Wavespeed: " << sMax << ", Diffusive speed: " << sMaxDiff << std::endl;
                    
-            i++; // we skip a cell each iteration in the for loop as we use two cells to compute the max wavespeed -2023W2
+            // i++; // we skip a cell each iteration in the for loop as we use two cells to compute the max wavespeed -2023W2
           }
         }
       }
