@@ -407,7 +407,7 @@ void getSource(Vector<double>& qSource, Vector<double>& pSource, const Vector<do
     Tgas = Tg(rho,u,v,YO2,YN2,energy);
     p    = pressure(rho,YO2,YN2,Tgas);
 
-    std::cout << "Tgas, p: " << Tgas << " " << p << std::endl;
+    // std::cout << "Tgas, p: " << Tgas << " " << p << std::endl;
 
     up     = pReal[RealData::u];
     vp     = pReal[RealData::v];
@@ -628,8 +628,8 @@ void getSource(Vector<double>& qSource, Vector<double>& pSource, const Vector<do
 
     // std::cout << "mFe: " << mFe << ", mFeO: " << mFeO << ", mFe3O4: " << mFe3O4 << std::endl;
     // std::cout << "dupdt: " << dupdt << ", dvpdt: " << dvpdt << std::endl;
-    std::cout << "conv loss: " << conv << ", rad loss: " << rad << ", mO2gain: " << -dmO2dt*hO2(Tp)/M_O2 << std::endl;
-    std::cout << "energy source for gas: " << -dHpdt << std::endl;
+    // std::cout << "conv loss: " << conv << ", rad loss: " << rad << ", mO2gain: " << -dmO2dt*hO2(Tp)/M_O2 << std::endl;
+    // std::cout << "energy source for gas: " << -dHpdt << std::endl;
 
     qSource[gasVar::rho]    = dmO2dt;
     qSource[gasVar::rhou]   = -(mFe+mFeO+mFe3O4)*dupdt;
