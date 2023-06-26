@@ -6,6 +6,7 @@
 #include <cmath>
 
 extern double dp0;
+extern double delta0;
 
 // Gas-phase constants
 
@@ -68,10 +69,10 @@ double deltaFe3O4 = 0.05*delta0;
 
 double rFeO0      = rp0*(1-deltaFe3O4);
 double rFe0       = rp0*(1-delta0);
-extern const double mFe0       = rhoFe*(4.0/3.0)*pi*pow(rFe0,3.0);
-extern const double mFeO0      = rhoFeO*(4.0/3.0)*pi*(pow(rFeO0,3.0)-pow(rFe0,3.0));
-extern const double mFe3O40    = rhoFe3O4*(4.0/3.0)*pi*(pow(rp0,3.0)-pow(rFeO0,3.0));
-extern const double interDist  = pow(1.0e3*(mFe0+mFeO0+mFe3O40)/1100.0,1.0/3.0);
+double mFe0       = rhoFe*(4.0/3.0)*pi*pow(rFe0,3.0);
+double mFeO0      = rhoFeO*(4.0/3.0)*pi*(pow(rFeO0,3.0)-pow(rFe0,3.0));
+double mFe3O40    = rhoFe3O4*(4.0/3.0)*pi*(pow(rp0,3.0)-pow(rFeO0,3.0));
+double interDist  = pow(1.0e3*(mFe0+mFeO0+mFe3O40)/1100.0,1.0/3.0);
 
 
 // Constants for multi-species diffusion of O2, N2, Fe, FeO
