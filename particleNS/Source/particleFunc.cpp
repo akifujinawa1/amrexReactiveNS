@@ -241,8 +241,6 @@ AmrLevelAdv::updateParticleInfo(MultiFab& Sborder, const double& dt, const doubl
 //   std::cout << "in updateParticleInfo" << std::endl;
 
   for (MFIter mfi(Sborder); mfi.isValid(); ++mfi){
-//   for (MFIter mfi = MakeMFIter(lev); mfi.isValid(); ++mfi){
-//   for (MFIter mfi = MakeMFIter(lev); mfi.isValid(); ++mfi){
 
     const int grid_id = mfi.index();
     const int tile_id = mfi.LocalTileIndex();
@@ -273,7 +271,6 @@ AmrLevelAdv::updateParticleInfo(MultiFab& Sborder, const double& dt, const doubl
             // std::cout << "y-position: " << y << std::endl;
             // std::cout << "position in y cell number is: " << y/dy << ", cell number is: " << j << std::endl;
         }
-
         
         // std::cout << "rho: " << arr(i,j,k,0) << std::endl;
         // std::cout << "x- and y-momentum: " << arr(i,j,k,1) << " " << arr(i,j,k,2) << std::endl;
@@ -282,7 +279,7 @@ AmrLevelAdv::updateParticleInfo(MultiFab& Sborder, const double& dt, const doubl
 
         for (int h = 0; h < NUM_STATE; h++){
             q[h] = arr(i,j,k,h);
-            if (arr(i,j,k,h) != arr(i,j,k,h)){
+            if (q[h] != q[h]){
                 std::cout << "Nan found in updateParticle for gas-phase, variable h: " << h << std::endl;
                 std::cout << "i,j,k: " << i << " " << j << " " << k << std::endl;
                 std::cout << "grid_id: " << grid_id << ", tile_id: " << tile_id << std::endl;
@@ -299,9 +296,6 @@ AmrLevelAdv::updateParticleInfo(MultiFab& Sborder, const double& dt, const doubl
         getSource(qSource,pSource,q,pReal,pInt,dt,dx,dy);
 
         p.rdata(RealData::Hp)     = pReal[RealData::Hp];
-        // p.rdata(RealData::LFe)    = pReal[RealData::LFe];
-        // p.rdata(RealData::LFeO)   = pReal[RealData::LFeO];
-        // p.rdata(RealData::LFe3O4) = pReal[RealData::LFe3O4];
         p.idata(IntData::Fe)      = pInt[IntData::Fe];
         p.idata(IntData::FeO)     = pInt[IntData::FeO];
         p.idata(IntData::Fe3O4)   = pInt[IntData::Fe3O4];
@@ -313,21 +307,10 @@ AmrLevelAdv::updateParticleInfo(MultiFab& Sborder, const double& dt, const doubl
         for (int h = 0; h < RealData::ncomps; h++){
             p.rdata(h) = p.rdata(h) + dt*pSource[h];
         }
-        // if (p.pos(0) < 0){
-        //     p.id() = -1;
-        // }
-        // else if (p.pos(0)/dx + 2 > n_cell){
-        //     p.rdata(RealData::u) = -p.rdata(RealData::u);
-        // }
 
         if (particle == 2){ // if we enable two-way coupling
             vCell = dx*interDist*interDist;
             for (int h = 0; h < NUM_STATE; h++){
-                // std::cout << "Gas: rho rhou rhov e o2 n2" << arr(i,j,k,0) << " " << arr(i,j,k,1) << \
-                // " " << arr(i,j,k,2) << " " << arr(i,j,k,3) << " " << arr(i,j,k,4) << " " << arr(i,j,k,5) << std::endl;
-                // std::cout << "Source: rho rhou rhov e o2 n2" << qSource[0] << " " << qSource[1] << \
-                // " " << qSource[2] << " " << qSource[3] << " " << qSource[4] << " " << qSource[5] << std::endl;
-                    
                     
                 if (qSource[h] != qSource[h]){
                     std::cout << "Nan BEFORE applying LagSource in qSource, \nrho rhou rhov e o2 n2" << arr(i,j,k,0) << " " << arr(i,j,k,1) << \
@@ -341,11 +324,13 @@ AmrLevelAdv::updateParticleInfo(MultiFab& Sborder, const double& dt, const doubl
                 arr(i,j,k,h) = q[h];
 
                 if (arr(i,j,k,h) != arr(i,j,k,h)){
+                    std::cout << "cell number: " << i << std::endl;
+                    std::cout << "dt: " << dt << ", vCell: " << vCell << std::endl;
                     std::cout << "Gas variables before update, \nrho rhou rhov e o2 n2" << q[0] << " " << q[1] << \
                     " " << q[2] << " " << q[3] << " " << q[4] << " " << q[5] << std::endl;
-                    std::cout << "Nan AFTER applying LagSource, \n rho rhou rhov e o2 n2" << arr(i,j,k,0) << " " << arr(i,j,k,1) << \
+                    std::cout << "Nan AFTER applying LagSource, \nrho rhou rhov e o2 n2" << arr(i,j,k,0) << " " << arr(i,j,k,1) << \
                     " " << arr(i,j,k,2) << " " << arr(i,j,k,3) << " " << arr(i,j,k,4) << " " << arr(i,j,k,5) << std::endl;
-                    std::cout << "qSrc: rho rhou rhov e o2 n2" << qSource[0] << " " << qSource[1] << \
+                    std::cout << "qSrc: rho rhou rhov e o2 n2\n" << qSource[0] << " " << qSource[1] << \
                     " " << qSource[2] << " " << qSource[3] << " " << qSource[4] << " " << qSource[5] << std::endl;
                     std::cout << "Nan found in particle to gas update, variable h: " << h << std::endl;
                     Abort("nan found after particle to gas update");
