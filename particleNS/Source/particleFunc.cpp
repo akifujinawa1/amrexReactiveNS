@@ -325,6 +325,7 @@ AmrLevelAdv::updateParticleInfo(MultiFab& Sborder, const double& dt, const doubl
 
                 if (arr(i,j,k,h) != arr(i,j,k,h)){
                     std::cout << "cell number: " << i << std::endl;
+                    std::cout << "dx: " << dx << ", interDist: " << interDist << std::endl;
                     std::cout << "dt: " << dt << ", vCell: " << vCell << std::endl;
                     std::cout << "Gas variables before update, \nrho rhou rhov e o2 n2" << q[0] << " " << q[1] << \
                     " " << q[2] << " " << q[3] << " " << q[4] << " " << q[5] << std::endl;
