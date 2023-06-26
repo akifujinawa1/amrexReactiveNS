@@ -29,21 +29,21 @@ color = colors
 fig2,ax2 = plt.subplots(nrows=2,ncols=1,figsize=(8,8*yratio))
 
 data0  = np.loadtxt('output/txt/1Dflame/isobaric/field/00.txt')
-data1  = np.loadtxt('output/txt/1Dflame/isobaric/field/500.txt')
-data2  = np.loadtxt('output/txt/1Dflame/isobaric/field/1000.txt')
-data3  = np.loadtxt('output/txt/1Dflame/isobaric/field/1500.txt')
-data4  = np.loadtxt('output/txt/1Dflame/isobaric/field/2000.txt')
-data5  = np.loadtxt('output/txt/1Dflame/isobaric/field/2500.txt')
-data6  = np.loadtxt('output/txt/1Dflame/isobaric/field/3000.txt')
+data1  = np.loadtxt('output/txt/1Dflame/isobaric/field/1500.txt')
+data2  = np.loadtxt('output/txt/1Dflame/isobaric/field/3000.txt')
+data3  = np.loadtxt('output/txt/1Dflame/isobaric/field/4500.txt')
+data4  = np.loadtxt('output/txt/1Dflame/isobaric/field/6000.txt')
+data5  = np.loadtxt('output/txt/1Dflame/isobaric/field/7500.txt')
+data6  = np.loadtxt('output/txt/1Dflame/isobaric/field/9000.txt')
 
 
 ax2[0].scatter(data0[:,0],data0[:,1],c='black',s=5,label='$t=t_0\;\mathrm{ms}$') 
-ax2[0].scatter(data1[:,0],data1[:,1],c=color[0],s=5,label='$t=0.5\mathrm{ms}$') 
-ax2[0].scatter(data2[:,0],data2[:,1],c=color[1],s=5,label='$t=1.0\mathrm{ms}$') 
-ax2[0].scatter(data3[:,0],data3[:,1],c=color[2],s=5,label='$t=1.5\mathrm{ms}$') 
-ax2[0].scatter(data4[:,0],data4[:,1],c=color[3],s=5,label='$t=2.0\mathrm{ms}$') 
-ax2[0].scatter(data5[:,0],data5[:,1],c=color[4],s=5,label='$t=2.5\mathrm{ms}$') 
-ax2[0].scatter(data6[:,0],data6[:,1],c=color[5],s=5,label='$t=3.0\mathrm{ms}$') 
+ax2[0].scatter(data1[:,0],data1[:,1],c=color[0],s=5,label='$t=1.5\mathrm{ms}$') 
+ax2[0].scatter(data2[:,0],data2[:,1],c=color[1],s=5,label='$t=3.0\mathrm{ms}$') 
+ax2[0].scatter(data3[:,0],data3[:,1],c=color[2],s=5,label='$t=4.5\mathrm{ms}$') 
+ax2[0].scatter(data4[:,0],data4[:,1],c=color[3],s=5,label='$t=6.0\mathrm{ms}$') 
+ax2[0].scatter(data5[:,0],data5[:,1],c=color[4],s=5,label='$t=7.5\mathrm{ms}$') 
+ax2[0].scatter(data6[:,0],data6[:,1],c=color[5],s=5,label='$t=9.0\mathrm{ms}$') 
 
 ax2[1].scatter(data0[:,0],data0[:,2],c='black',s=5,label='$t=t_0\;\mathrm{ms}$') 
 ax2[1].scatter(data1[:,0],data1[:,2],c=color[0],s=5,label='$t=0.5\mathrm{ms}$') 
@@ -72,7 +72,7 @@ ax2[1].set_xlabel(r'$\mathrm{x}\;[\mathrm{m}]$', fontsize=20)
 # ax[1,0].set_ylim(0,1.01)
 # ax[1,1].set_ylim(1.391,1.401)
 
-ax2[1].legend(ncol=2, loc="lower right")
+ax2[0].legend(ncol=1, loc="top right", fontsize = 12)
 
 
 # plt.legend()
