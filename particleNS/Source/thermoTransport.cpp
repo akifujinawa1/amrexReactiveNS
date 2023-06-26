@@ -546,7 +546,7 @@ double getMavg(const double& YO2, const double& YN2){
 
 double Tg(const double& rho, const double& u, const double& v, \
           const double& YO2, const double& YN2, const double& ener){
-    double Tg0=300,tol=1e-5,error=1;
+    double Tg0=300,tol=1e-4,error=1;
     double dE,E,Eest,vT,Mavg,cp,Tgn,iter=0;
 
     Mavg = getMavg(YO2,YN2);
@@ -562,8 +562,8 @@ double Tg(const double& rho, const double& u, const double& v, \
         cp    = rho*(YO2*cpO2(Tg0)/M_O2+YN2*cpN2(Tg0)/M_N2);
         Tgn   = Tg0 + dE/cp;
         error = std::fabs(Tgn-Tg0)/std::fabs(Tgn);
-        Print() << "rho: " << rho << ", ener: " << ener << ", enthalpy guess: " << enthalpy << \
-        ", p guess: " << pressure << ", Tgn: " << Tgn << ", error: " << error << std::endl;
+        // Print() << "rho: " << rho << ", ener: " << ener << ", enthalpy guess: " << enthalpy << \
+        // ", p guess: " << pressure << ", Tgn: " << Tgn << ", error: " << error << std::endl;
         Tg0 = Tgn;
         iter += 1;
         if (iter > 20){
