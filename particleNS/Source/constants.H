@@ -5,14 +5,11 @@
 #include <math.h>
 #include <cmath>
 
-extern double dp0;
-extern double delta0;
 
 // Gas-phase constants
 
 double Gamma = 1.4;
 double R     = 8.31446261815324;   // J/K/mol
-// double Pr    = 0.75;               // dimensionless
 double one_atm_Pa = 101325.0;      // pa
 
 double M_O2  = 31.9988*1e-3;       // molecular mass of O2 in kg/mol
@@ -63,7 +60,7 @@ double nFeFe3O4 = 3.0*M_Fe/M_Fe3O4;
 double nO2FeO   = 0.5*M_O2/M_FeO;
 double nO2Fe3O4 = 2.0*M_O2/M_Fe3O4;   
 
-double rp0        = 0.5*dp0;
+double rp0        = 0.5*1.0e-5;
 double deltaFeO   = 0.95*delta0;
 double deltaFe3O4 = 0.05*delta0;
 
