@@ -134,7 +134,8 @@ void updateViscous(MultiFab& Sborder, Array<MultiFab, SpaceDim>& fluxes, Vector<
                                     arr(i,j,k,h) = arr(i,j,k,h) + (dt / dx) * (fluxArrVisc(i,j,k,h) - fluxArrVisc(i+iOffset,j,k,h));
                                     if (arr(i,j,k,h) != arr(i,j,k,h)){
                                         std::cout << "Nan found in diffusion calculation, variable h: " << h << std::endl;
-                                        Abort("nan found in diffusion calculation");                                    }
+                                        Abort("nan found in diffusion calculation");
+                                    }
                                 }
                                 if (i == 7){
                                     std::cout << "Cell 7, New rho rhou rhov e o2 n2\n" << arr(i,j,k,0) << " " << arr(i,j,k,1) << \

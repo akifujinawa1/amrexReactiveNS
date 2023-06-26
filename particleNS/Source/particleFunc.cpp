@@ -398,7 +398,7 @@ void getSource(Vector<double>& qSource, Vector<double>& pSource, const Vector<do
     rhoYO2 = q[gasVar::rhoYO2];
     rhoYN2 = q[gasVar::rhoYN2];
 
-    // std::cout << "rho rhou ener O2 N2: " << rho << " " << rhou << " " << energy << " " << rhoYO2/rho << " " << rhoYN2/rho << std::endl;
+    std::cout << "rho rhou ener O2 N2: " << rho << " " << rhou << " " << energy << " " << rhoYO2/rho << " " << rhoYN2/rho << std::endl;
 
     u    = rhou/rho;
     v    = rhov/rho;
@@ -407,7 +407,7 @@ void getSource(Vector<double>& qSource, Vector<double>& pSource, const Vector<do
     Tgas = Tg(rho,u,v,YO2,YN2,energy);
     p    = pressure(rho,YO2,YN2,Tgas);
 
-    // std::cout << "Tgas, p: " << Tgas << " " << p << std::endl;
+    std::cout << "Tgas, p: " << Tgas << " " << p << std::endl;
 
     up     = pReal[RealData::u];
     vp     = pReal[RealData::v];
