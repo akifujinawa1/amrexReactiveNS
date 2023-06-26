@@ -3,7 +3,7 @@
 
 #include "AMReX_Vector.H"
 
-void particleInit(double& mFe0, double& mFeO0, double& mFe3O40, double& energy0);
+void particleInit(double& energy0);
 double Cdrag(double Re);
 double Hparticle(const double& mFe, const double& mFeO, const double& mFe3O4, const double& Tp, \
                  const int& phaseFe, const int& phaseFeO, const int& phaseFe3O4);
