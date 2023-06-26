@@ -1,0 +1,54 @@
+# ------------------  INPUTS TO MAIN PROGRAM  -------------------
+stop_time = 0.04
+
+# PROBLEM SIZE & GEOMETRY
+# NOTE - although this example is 2D, 3D data can be specified safely; the z-components are ignored
+# geometry.is_periodic =  1 1 1               # Boolean flag for periodic boundaries all round
+geometry.coord_sys   =  0                     # 0 -> Cartesian geometry
+geometry.prob_lo     =  0  0  0           #-1.0  -1.0  -1.0       # Physical minimum extents       # 0.0  0.0  0.0    
+geometry.prob_hi     =  0.00512 0.0 0.0         # Physical maximum extents
+amr.n_cell           =  512 0 0            # Number of cells in each dimension
+
+# TIME STEP CONTROL
+adv.cfl            = 0.8     # cfl number for hyperbolic system
+adv.fourier        = 0.8     # fourier number for diffusive system
+
+# TEST CASE: This value sets the initial condition to be used.
+enIC               = 14       # 1:Toro1, 2:Toro2, ..., 5:Toro5, 6:Cylindrical explosion, 7:Unaligned discontinuity
+
+         # 0:Superbee, 1:vanLeer, 2:vanAlbada, 3:minbee
+
+# PARTICLE
+dp0                = 0.000010     # Initial particle diameter
+TgInitial          = 300
+TpInitial          = 300
+
+# VERBOSITY - controls the number of messages output to screen
+adv.v              = 1       # verbosity in Adv
+amr.v              = 1       # verbosity in Amr (recommended, else progress of code is not output)
+timing             = 0       # whether to print computational time or not (1 prints, 0 doesn't)
+conv               = 0       # printing files for convergence or not
+
+# REFINEMENT / REGRIDDING
+amr.max_level       = 0       # maximum level number allowed
+amr.ref_ratio       = 2 2 2 2 # refinement ratio
+amr.regrid_int      = 1       # how often to regrid (number of coarse timesteps between regrid)
+amr.blocking_factor = 4       # block factor in grid generation
+amr.max_grid_size   = 64
+
+# CHECKPOINT FILES
+amr.checkpoint_files_output = 0     # 0 will disable checkpoint files
+amr.check_file              = chk   # root name of checkpoint file
+amr.check_int               = 10    # number of timesteps between checkpoints
+
+# PLOTFILES
+# NOTE - VisIt (recommended), Paraview or amrvis are needed to visualise data.  AMReX outputs boxlib format
+#        data; see lab CAMReX wiki for instructions on plotting.  Using a base name of plt ensures
+#	 visualisation knows the current cycle (iteration) as well as time - see AMReX documentation for more.
+amr.plot_files_output = 1              # 0 will disable plot files
+amr.plot_file         = detonation/plt    # root name of plot file
+amr.plot_int          = 1               # number of timesteps between plot files, plot_per allows fixed timesteps
+
+# PROBIN FILENAME - This file contains AMR refinement criteria
+amr.probin_file = prbn/1
+

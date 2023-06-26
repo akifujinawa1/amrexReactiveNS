@@ -1,4 +1,4 @@
-Host Name: cerberus3
+Host Name: cerberus1
 === If no file names and line numbers are shown below, one can run
             addr2line -Cpfie my_exefile my_line_address
     to convert `my_line_address` (e.g., 0x4a6b) into file name and line number.
@@ -9,33 +9,31 @@ Host Name: cerberus3
             readelf -wl my_exefile | grep my_line_address'
     to find out the offset for that line.
 
- 0: ./main1d.gnu.MPI.ex(+0x1584ad) [0x55bd1b7514ad]
+ 0: ./main1d.gnu.MPI.ex(+0x158c6d) [0x561ba6293c6d]
     amrex::BLBackTrace::print_backtrace_info(_IO_FILE*) at /usr/include/x86_64-linux-gnu/bits/unistd.h:354
  (inlined by) amrex::BLBackTrace::print_backtrace_info(_IO_FILE*) at /home/raid/af793/amrexReactiveNS/particleNS/Exec/UniformVelocity/../../../../amrex/Src/Base/AMReX_BLBackTrace.cpp:196
 
- 1: ./main1d.gnu.MPI.ex(+0x15a415) [0x55bd1b753415]
+ 1: ./main1d.gnu.MPI.ex(+0x15abd5) [0x561ba6295bd5]
     amrex::BLBackTrace::handler(int) at /home/raid/af793/amrexReactiveNS/particleNS/Exec/UniformVelocity/../../../../amrex/Src/Base/AMReX_BLBackTrace.cpp:96
 
- 2: ./main1d.gnu.MPI.ex(+0x48ae3) [0x55bd1b641ae3]
-    amrex::Abort(char const*) at /home/raid/af793/amrexReactiveNS/particleNS/Exec/UniformVelocity/../../../../amrex/Src/Base/AMReX.H:161
- (inlined by) updateViscous(amrex::MultiFab&, std::array<amrex::MultiFab, 1ul>&, amrex::Vector<double, std::allocator<double> >&, amrex::Vector<double, std::allocator<double> >&, amrex::Vector<double, std::allocator<double> >&, amrex::Vector<double, std::allocator<double> >&, amrex::Vector<double, std::allocator<double> >&, amrex::Vector<double, std::allocator<double> >&, amrex::Vector<double, std::allocator<double> >&, int const&, double const&, double const&, double const&, int const&, int const&) at /home/raid/af793/amrexReactiveNS/particleNS/Exec/UniformVelocity/../../Source/diffusionFunc.cpp:75
+ 2: ./main1d.gnu.MPI.ex(+0x548cb) [0x561ba618f8cb]
+    amrex::Abort(char const*) at /home/raid/af793/amrexReactiveNS/particleNS/Exec/UniformVelocity/../../../../amrex/Src/Base/AMReX.H:163
+ (inlined by) AmrLevelAdv::updateParticleInfo(amrex::MultiFab&, double const&, double const&, double const&) at /home/raid/af793/amrexReactiveNS/particleNS/Exec/UniformVelocity/../../Source/particleFunc.cpp:348
 
- 3: ./main1d.gnu.MPI.ex(+0x310ad) [0x55bd1b62a0ad]
-    amrex::Box::length(int) const at /home/raid/af793/amrexReactiveNS/particleNS/Exec/UniformVelocity/../../../../amrex/Src/Base/AMReX_Box.H:151
- (inlined by) amrex::Geometry::periodicity() const at /home/raid/af793/amrexReactiveNS/particleNS/Exec/UniformVelocity/../../../../amrex/Src/Base/AMReX_Geometry.H:399
- (inlined by) AmrLevelAdv::advance(double, double, int, int) at /home/raid/af793/amrexReactiveNS/particleNS/Exec/UniformVelocity/../../Source/AmrLevelAdv.cpp:701
+ 3: ./main1d.gnu.MPI.ex(+0x310d4) [0x561ba616c0d4]
+    AmrLevelAdv::advance(double, double, int, int) at /home/raid/af793/amrexReactiveNS/particleNS/Exec/UniformVelocity/../../Source/AmrLevelAdv.cpp:719 (discriminator 2)
 
- 4: ./main1d.gnu.MPI.ex(+0x1c11a9) [0x55bd1b7ba1a9]
+ 4: ./main1d.gnu.MPI.ex(+0x1c1969) [0x561ba62fc969]
     amrex::Amr::timeStep(int, double, int, int, double) at /home/raid/af793/amrexReactiveNS/particleNS/Exec/UniformVelocity/../../../../amrex/Src/Amr/AMReX_Amr.cpp:2017
 
- 5: ./main1d.gnu.MPI.ex(+0x1b8861) [0x55bd1b7b1861]
+ 5: ./main1d.gnu.MPI.ex(+0x1b9021) [0x561ba62f4021]
     amrex::Amr::coarseTimeStep(double) at /home/raid/af793/amrexReactiveNS/particleNS/Exec/UniformVelocity/../../../../amrex/Src/Amr/AMReX_Amr.cpp:2127
 
- 6: ./main1d.gnu.MPI.ex(+0x26855) [0x55bd1b61f855]
-    main at /home/raid/af793/amrexReactiveNS/particleNS/Exec/UniformVelocity/../../Source/main.cpp:103
+ 6: ./main1d.gnu.MPI.ex(+0x268ed) [0x561ba61618ed]
+    main at /home/raid/af793/amrexReactiveNS/particleNS/Exec/UniformVelocity/../../Source/main.cpp:105
 
- 7: /lib/x86_64-linux-gnu/libc.so.6(__libc_start_main+0xf3) [0x7f646324c083]
+ 7: /lib/x86_64-linux-gnu/libc.so.6(__libc_start_main+0xf3) [0x7f70ca95d083]
 
- 8: ./main1d.gnu.MPI.ex(+0x2b2ae) [0x55bd1b6242ae]
+ 8: ./main1d.gnu.MPI.ex(+0x2b33e) [0x561ba616633e]
     ?? ??:0
 
