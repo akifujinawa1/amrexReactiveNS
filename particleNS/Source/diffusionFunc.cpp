@@ -137,18 +137,18 @@ void updateViscous(MultiFab& Sborder, Array<MultiFab, SpaceDim>& fluxes, Vector<
                                         Abort("nan found in diffusion calculation");
                                     }
                                 }
-                                if (i == 7){
-                                    std::cout << "Cell 7, New rho rhou rhov e o2 n2\n" << arr(i,j,k,0) << " " << arr(i,j,k,1) << \
-                                    " " << arr(i,j,k,2) << " " << arr(i,j,k,3) << " " << arr(i,j,k,4) << " " << arr(i,j,k,5) << std::endl;
-                                }
-                                if (i == 8){
-                                    std::cout << "Cell 8, New rho rhou rhov e o2 n2\n" << arr(i,j,k,0) << " " << arr(i,j,k,1) << \
-                                    " " << arr(i,j,k,2) << " " << arr(i,j,k,3) << " " << arr(i,j,k,4) << " " << arr(i,j,k,5) << std::endl;
-                                }
-                                if (i == 9){
-                                    std::cout << "Cell 9, New rho rhou rhov e o2 n2\n" << arr(i,j,k,0) << " " << arr(i,j,k,1) << \
-                                    " " << arr(i,j,k,2) << " " << arr(i,j,k,3) << " " << arr(i,j,k,4) << " " << arr(i,j,k,5) << std::endl;
-                                }
+                                // if (i == 7){
+                                //     std::cout << "Cell 7, New rho rhou rhov e o2 n2\n" << arr(i,j,k,0) << " " << arr(i,j,k,1) << \
+                                //     " " << arr(i,j,k,2) << " " << arr(i,j,k,3) << " " << arr(i,j,k,4) << " " << arr(i,j,k,5) << std::endl;
+                                // }
+                                // if (i == 8){
+                                //     std::cout << "Cell 8, New rho rhou rhov e o2 n2\n" << arr(i,j,k,0) << " " << arr(i,j,k,1) << \
+                                //     " " << arr(i,j,k,2) << " " << arr(i,j,k,3) << " " << arr(i,j,k,4) << " " << arr(i,j,k,5) << std::endl;
+                                // }
+                                // if (i == 9){
+                                //     std::cout << "Cell 9, New rho rhou rhov e o2 n2\n" << arr(i,j,k,0) << " " << arr(i,j,k,1) << \
+                                //     " " << arr(i,j,k,2) << " " << arr(i,j,k,3) << " " << arr(i,j,k,4) << " " << arr(i,j,k,5) << std::endl;
+                                // }
                             }
                             else { // y=direction update
                                 for(int h = 0; h < NUM_STATE; h++)

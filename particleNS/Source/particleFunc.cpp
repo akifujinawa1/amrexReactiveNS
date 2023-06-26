@@ -398,7 +398,7 @@ void getSource(Vector<double>& qSource, Vector<double>& pSource, const Vector<do
     rhoYO2 = q[gasVar::rhoYO2];
     rhoYN2 = q[gasVar::rhoYN2];
 
-    std::cout << "rho rhou ener O2 N2: " << rho << " " << rhou << " " << energy << " " << rhoYO2/rho << " " << rhoYN2/rho << std::endl;
+    // std::cout << "rho rhou ener O2 N2: " << rho << " " << rhou << " " << energy << " " << rhoYO2/rho << " " << rhoYN2/rho << std::endl;
 
     u    = rhou/rho;
     v    = rhov/rho;
@@ -628,7 +628,8 @@ void getSource(Vector<double>& qSource, Vector<double>& pSource, const Vector<do
 
     // std::cout << "mFe: " << mFe << ", mFeO: " << mFeO << ", mFe3O4: " << mFe3O4 << std::endl;
     // std::cout << "dupdt: " << dupdt << ", dvpdt: " << dvpdt << std::endl;
-    // std::cout << "dmO2dt: " << dmO2dt << ", dupdt: " << dupdt << ", dHgOxidt: " << dHgOxidt << std::endl;
+    std::cout << "conv loss: " << conv << ", rad loss: " << rad << ", mO2gain: " << -dmO2dt*hO2(Tp)/M_O2 << std::endl;
+    std::cout << "energy source for gas: " << -dHpdt << std::endl;
 
     qSource[gasVar::rho]    = dmO2dt;
     qSource[gasVar::rhou]   = -(mFe+mFeO+mFe3O4)*dupdt;
@@ -641,7 +642,6 @@ void getSource(Vector<double>& qSource, Vector<double>& pSource, const Vector<do
     qSource[gasVar::E]      = -dHpdt + dHgOxidt;  // + qFeO*dmFeOformdt + qFe3O4s*dmFe3O4formdt
     qSource[gasVar::rhoYO2] = dmO2dt;
     qSource[gasVar::rhoYN2] = 0;
-
 
     // Must assess phase transition here. If the particle temperature reaches a melting point temperature
     // (FeO:1650, Fe:1809, Fe3O4:1870 K) for the first time, we assign the particle enthalpy at that instance
