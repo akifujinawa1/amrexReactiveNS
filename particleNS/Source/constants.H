@@ -4,6 +4,8 @@
 // #include <cmath>
 #include <math.h>
 
+extern double dp0;
+
 // Gas-phase constants
 
 double Gamma = 1.4;
@@ -56,6 +58,17 @@ double nFeFeO   = M_Fe/M_FeO;
 double nFeFe3O4 = 3.0*M_Fe/M_Fe3O4;
 double nO2FeO   = 0.5*M_O2/M_FeO;
 double nO2Fe3O4 = 2.0*M_O2/M_Fe3O4;   
+
+double rp0        = 0.5*dp0;
+double deltaFeO   = 0.95*delta0;
+double deltaFe3O4 = 0.05*delta0;
+
+double rFeO0      = rp0*(1-deltaFe3O4);
+double rFe0       = rp0*(1-delta0);
+const double mFe0       = rhoFe*(4.0/3.0)*pi*pow(rFe0,3.0);
+const double mFeO0      = rhoFeO*(4.0/3.0)*pi*(pow(rFeO0,3.0)-pow(rFe0,3.0));
+const double mFe3O40    = rhoFe3O4*(4.0/3.0)*pi*(pow(rp0,3.0)-pow(rFeO0,3.0));
+const double interDist  = pow(1.0e3*(mFe0+mFeO0+mFe3O40)/1100.0,1.0/3.0);
 
 
 // Constants for multi-species diffusion of O2, N2, Fe, FeO

@@ -44,11 +44,9 @@ extern double nO2Fe3O4;
 extern double TpInitial;
 extern double M_O2, M_N2;
 extern double qFeOs,qFeOl,qFe3O4s,qFe2O3s,qFeOg;
-
 extern double meltFe,meltFeO,meltFe3O4;
+extern const double mFe0,mFeO0,mFe3O40,interDist;
 
-double mFe0;
-double interDist;
 
 using namespace amrex;
 
@@ -132,7 +130,7 @@ AmrLevelAdv::initParticles (const MultiFab& S_new)
                 p.pos(1) = y_coord[i];
             }
 
-            double mFeO0,mFe3O40,energy0;
+            // double mFeO0,mFe3O40,energy0;
             particleInit(mFe0,mFeO0,mFe3O40,energy0);
             
             if (enIC==14){
@@ -550,7 +548,7 @@ void getSource(Vector<double>& qSource, Vector<double>& pSource, const Vector<do
     // there is more than 1% of the initial Fe mass, and more than 1% of the ambient oxygen mole fraction
     // in the gas cell.
 
-    if ((mFe/mFe0 > 0.01)&&(rhoYO2/(0.2769*0.2329) > 0.01)){ 
+    if ((mFe/mFe0 > 0.01)&&(YO2/(0.2329) > 0.01)){ 
         if (mdotO2d > mdotO2k){ // if the molecular diffusion rate is FASTER than the kinetic rate of O2 consumption
             // reaction is kinetically-controlled
             pSource[RealData::mFe] = dmdt[0];
@@ -729,21 +727,21 @@ AmrLevelAdv::printParticleInfo()
 void particleInit(double& mFe0, double& mFeO0, double& mFe3O40, double& energy0){
 
     int    phaseFe=0, phaseFeO=0, phaseFe3O4=0;
-    double deltaFeO, deltaFe3O4, rp0, rFeO0, rFe0;
+    // double deltaFeO, deltaFe3O4, rp0, rFeO0, rFe0;
 
     double Tp = TpInitial;
 
-    rp0        = 0.5*dp0;
-    deltaFeO   = 0.95*delta0;
-    deltaFe3O4 = 0.05*delta0;
+    // rp0        = 0.5*dp0;
+    // deltaFeO   = 0.95*delta0;
+    // deltaFe3O4 = 0.05*delta0;
 
-    rFeO0      = rp0*(1-deltaFe3O4);
-    rFe0       = rp0*(1-delta0);
-    mFe0       = rhoFe*(4.0/3.0)*pi*pow(rFe0,3.0);
-    mFeO0      = rhoFeO*(4.0/3.0)*pi*(pow(rFeO0,3.0)-pow(rFe0,3.0));
-    mFe3O40    = rhoFe3O4*(4.0/3.0)*pi*(pow(rp0,3.0)-pow(rFeO0,3.0));
+    // rFeO0      = rp0*(1-deltaFe3O4);
+    // rFe0       = rp0*(1-delta0);
+    // mFe0       = rhoFe*(4.0/3.0)*pi*pow(rFe0,3.0);
+    // mFeO0      = rhoFeO*(4.0/3.0)*pi*(pow(rFeO0,3.0)-pow(rFe0,3.0));
+    // mFe3O40    = rhoFe3O4*(4.0/3.0)*pi*(pow(rp0,3.0)-pow(rFeO0,3.0));
 
-    interDist  = pow(1.0e3*(mFe0+mFeO0+mFe3O40)/1100,1.0/3.0);
+    // interDist  = pow(1.0e3*(mFe0+mFeO0+mFe3O40)/1100.0,1.0/3.0);
 
     energy0    = Hparticle(mFe0,mFeO0,mFe3O40,Tp,phaseFe,phaseFeO,phaseFe3O4);
 
