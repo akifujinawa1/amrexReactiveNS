@@ -546,7 +546,7 @@ double getMavg(const double& YO2, const double& YN2){
 
 double Tg(const double& rho, const double& u, const double& v, \
           const double& YO2, const double& YN2, const double& ener){
-    double Tg0=300,tol=1e-3,error=1;
+    double Tg0=300,tol=1e-5,error=1;
     double dE,E,Eest,vT,Mavg,cp,Tgn,iter=0;
 
     Mavg = getMavg(YO2,YN2);

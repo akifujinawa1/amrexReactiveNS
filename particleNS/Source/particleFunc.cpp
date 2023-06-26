@@ -1577,7 +1577,7 @@ double Tparticle(const double& mFe, const double& mFeO, const double& mFe3O4, co
     // based on the true enthalpy value, and the temperature-dependent polynomial fits for enthalpy and heat capacity
     // of each species in the particle.
 
-    double Tp0=300,tol=1e-3,error=1;
+    double Tp0=300,tol=1e-5,error=1;
     double dH,cp,iter=0;
 
     // std::cout << "particle enthalpy " << Hp << std::endl;
