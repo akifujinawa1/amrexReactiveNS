@@ -565,7 +565,7 @@ double Tg(const double& rho, const double& u, const double& v, \
         iter += 1;
         if (iter > 100){
             std::cout << "rho, u, v, YO2, YN2, ener:\n" << rho << " " << u << " " << v << " " << YO2 << \
-            " " << YN2 << " " ener << std::endl;
+            " " << YN2 << " " << ener << std::endl;
             std::cout << "enthalpy guess: " << enthalpy << \
             ", p guess: " << pressure << ", Tgn: " << Tgn << ", error: " << error << std::endl;
             Abort("Gas temperature iteration does not converge"); 
