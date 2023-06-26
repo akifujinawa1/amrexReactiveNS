@@ -2,8 +2,8 @@
 
 
 
-rm output/txt/1Dflame/isobaric/field/*.*
-rm output/txt/1Dflame/isobaric/particle/*.*
+rm output/txt/1Dflame/isobaric/field/*0.*
+rm output/txt/1Dflame/isobaric/particle/*0.*
 
 make DIM=1 USE_MPI=TRUE -j6
 
