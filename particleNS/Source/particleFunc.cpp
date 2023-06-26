@@ -130,7 +130,7 @@ AmrLevelAdv::initParticles (const MultiFab& S_new)
                 p.pos(1) = y_coord[i];
             }
 
-            // double mFeO0,mFe3O40,energy0;
+            double energy0;
             particleInit(mFe0,mFeO0,mFe3O40,energy0);
             
             if (enIC==14){

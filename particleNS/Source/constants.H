@@ -3,6 +3,7 @@
 
 // #include <cmath>
 #include <math.h>
+#include <cmath>
 
 extern double dp0;
 
@@ -52,6 +53,8 @@ double HformFe2O3s = -825.50;      // J/mol
 double qFe2O3s   = -HformFe2O3s/M_Fe2O3; //J/kg
 double HformFeOg = -251.04;
 double qFeOg     = -HformFeOg/M_FeO; //J/kg
+
+double pi    = M_PI;
 
 
 double nFeFeO   = M_Fe/M_FeO;
@@ -103,7 +106,7 @@ double M_N2Fe   = 2.0/(1.0/(1e3*M_Fe) + 1.0/(1e3*M_N2));
 double M_FeFeO  = 2.0/(1.0/(1e3*M_Fe) + 1.0/(1e3*M_FeO));
 double M_N2FeO  = 2.0/(1.0/(1e3*M_N2) + 1.0/(1e3*M_FeO));
 
-double pi    = M_PI;
+
 double M     = 21; //placeholder value for source.cpp
 double A     = 6.85*1e9;           // m3/kgs
 double q     = 43.28;              // must be scaled RT0/M
