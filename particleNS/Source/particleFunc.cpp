@@ -337,9 +337,11 @@ AmrLevelAdv::updateParticleInfo(MultiFab& Sborder, const double& dt, const doubl
                     Abort("nan found before applying lagrangian source");
                 }
                 
-                
                 arr(i,j,k,h) = arr(i,j,k,h) + dt*(1.0/vCell)*qSource[h];
+
                 if (arr(i,j,k,h) != arr(i,j,k,h)){
+                    std::cout << "Gas variables before update, \nrho rhou rhov e o2 n2" << q[0] << " " << q[1] << \
+                    " " << q[2] << " " << q[3] << " " << q[4] << " " << q[5] << std::endl;
                     std::cout << "Nan AFTER applying LagSource, \n rho rhou rhov e o2 n2" << arr(i,j,k,0) << " " << arr(i,j,k,1) << \
                     " " << arr(i,j,k,2) << " " << arr(i,j,k,3) << " " << arr(i,j,k,4) << " " << arr(i,j,k,5) << std::endl;
                     std::cout << "qSrc: rho rhou rhov e o2 n2" << qSource[0] << " " << qSource[1] << \
