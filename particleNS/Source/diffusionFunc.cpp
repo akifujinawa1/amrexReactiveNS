@@ -70,12 +70,6 @@ void updateViscous(MultiFab& Sborder, Array<MultiFab, SpaceDim>& fluxes, Vector<
                                 {
                                     qL[h]   = arr(i-1,j,k,h);   // cell to the left of cell i
                                     qR[h]   = arr(i  ,j,k,h);   // cell i 
-                                    if (qL[h] != qL[h]){
-                                        std::cout << "rho rhou rhov e o2 n2" << arr(i-1,j,k,0) << " " << arr(i-1,j,k,1) << \
-                                        " " << arr(i-1,j,k,2) << " " << arr(i-1,j,k,3) << " " << arr(i-1,j,k,4) << " " << arr(i-1,j,k,5) << std::endl;
-                                        std::cout << "Nan found in cell value, variable h: " << h << std::endl;
-                                        Abort("nan found");
-                                    }
                                     if (amrex::SpaceDim == 2)
                                     {
                                         qLlo[h] = arr(i-1,j-1,k,h);   // cell to the left lower diagonal of cell i
@@ -84,16 +78,12 @@ void updateViscous(MultiFab& Sborder, Array<MultiFab, SpaceDim>& fluxes, Vector<
                                         qRhi[h] = arr(i  ,j+1,k,h);   // cell to the right higher diagonal of cell i 
                                     }
                                 }
-
+                                
                                 if (amrex::SpaceDim == 1){ // x-direction viscous flux calculation in 1-D
                                     getViscFlux1D(viscSlice,qL,qR,dx);
                                     for(int h = 0; h < NUM_STATE; h++)
                                     {
                                         fluxArrVisc(i,j,k,h) = viscSlice[h]; // this is the viscous flux function for the left interface of cell i
-                                        if (viscSlice[h] != viscSlice[h]){
-                                            std::cout << "Nan found in viscous flux calculation, variable h: " << h << std::endl;
-                                            Abort("nan found");
-                                        }
                                     }
                                 }
                                 else { // x-direction viscous flux calculation if domain is 2-D
@@ -141,17 +131,28 @@ void updateViscous(MultiFab& Sborder, Array<MultiFab, SpaceDim>& fluxes, Vector<
                             if (d == 0){ // x-direction update
                                 for(int h = 0; h < NUM_STATE; h++)
                                 {
-                                    arr(i,j,k,h) = arr(i,j,k,h) + (dt / dx) * (fluxArrVisc(i+iOffset, j, k,h) - fluxArrVisc(i,j,k,h));
+                                    arr(i,j,k,h) = arr(i,j,k,h) + (dt / dx) * (fluxArrVisc(i,j,k,h) - fluxArrVisc(i+iOffset,j,k,h));
                                     if (arr(i,j,k,h) != arr(i,j,k,h)){
                                         std::cout << "Nan found in diffusion calculation, variable h: " << h << std::endl;
-                                        Abort("nan found");
-                                    }
+                                        Abort("nan found in diffusion calculation");                                    }
+                                }
+                                if (i == 7){
+                                    std::cout << "Cell 7, New rho rhou rhov e o2 n2\n" << arr(i,j,k,0) << " " << arr(i,j,k,1) << \
+                                    " " << arr(i,j,k,2) << " " << arr(i,j,k,3) << " " << arr(i,j,k,4) << " " << arr(i,j,k,5) << std::endl;
+                                }
+                                if (i == 8){
+                                    std::cout << "Cell 8, New rho rhou rhov e o2 n2\n" << arr(i,j,k,0) << " " << arr(i,j,k,1) << \
+                                    " " << arr(i,j,k,2) << " " << arr(i,j,k,3) << " " << arr(i,j,k,4) << " " << arr(i,j,k,5) << std::endl;
+                                }
+                                if (i == 9){
+                                    std::cout << "Cell 9, New rho rhou rhov e o2 n2\n" << arr(i,j,k,0) << " " << arr(i,j,k,1) << \
+                                    " " << arr(i,j,k,2) << " " << arr(i,j,k,3) << " " << arr(i,j,k,4) << " " << arr(i,j,k,5) << std::endl;
                                 }
                             }
                             else { // y=direction update
                                 for(int h = 0; h < NUM_STATE; h++)
                                 {
-                                    arr(i,j,k,h) = arr(i,j,k,h) + (dt / dy) * (fluxArrViscY(i, j+jOffset, k,h) - fluxArrViscY(i,j,k,h));
+                                    arr(i,j,k,h) = arr(i,j,k,h) - (dt / dy) * (fluxArrViscY(i, j+jOffset, k,h) - fluxArrViscY(i,j,k,h));
                                 }
                             }
                            
@@ -171,9 +172,8 @@ void getViscFlux1D(Vector<double>& viscSlice, const Vector<double>& qL,\
     double rhoL, uL, vL, enerL, epsL, TL, YO2L, YN2L, pL, rhoR, uR, vR, enerR, epsR, TR, YO2R, YN2R, pR;
     double dudx, dTdx, dYO2dx, dYN2dx, uAvg, TAvg, pAvg, rhoAvg, YO2Avg, YN2Avg;
     double mu_avg, k_avg;
-    Vector<double> mixDiffCoeffs(gases::ncomps);
-    
 
+    Vector<double> mixDiffCoeffs(gases::ncomps);
     Vector<double> primL(NUM_STATE);
     Vector<double> primR(NUM_STATE);
 
@@ -198,10 +198,10 @@ void getViscFlux1D(Vector<double>& viscSlice, const Vector<double>& qL,\
     YN2R  = primR[5];
     TR    = Tg(rhoR,uR,vR,YO2R,YN2R,enerR);
 
-    dudx = (uR-uL)/dx;
-    dTdx = (TR-TL)/dx;
-    dYO2dx = (YO2R-YO2L)/dx;
-    dYN2dx = (YN2R-YN2L)/dx;
+    dudx = (uL-uR)/dx;
+    dTdx = (TL-TR)/dx;
+    dYO2dx = (YO2L-YO2R)/dx;
+    dYN2dx = (YN2L-YN2R)/dx;
     uAvg = (uR+uL)/2.0;
     TAvg = (TR+TL)/2.0;
     pAvg = (pR+pL)/2.0;
@@ -212,7 +212,8 @@ void getViscFlux1D(Vector<double>& viscSlice, const Vector<double>& qL,\
     mu_avg = muMix_O2N2(muO2(TAvg),muN2(TAvg),YO2Avg,YN2Avg); // consider only the O2-N2 gas mixture
     k_avg  = kMix_O2N2(kO2(TAvg),kN2(TAvg),YO2Avg,YN2Avg);
 
-
+    // std::cout << "rho, T, p, YO2, YN2: " << rhoAvg << " " << TAvg << " " << pAvg << " " << YO2Avg << " " << YN2Avg << std::endl; 
+    // std::cout << "mu, k, DO2, DN2: " << mu_avg << " " << k_avg << " " << mixDiffCoeffs[gases::O2] << " " << mixDiffCoeffs[gases::N2] << std::endl;
 
     viscSlice[0] = 0;
     viscSlice[1] = (4.0/3.0)*mu_avg*dudx;
@@ -416,14 +417,25 @@ double diffusiveSpeed(const Vector<double>& qL, const Vector<double>& qR){
     mu_avg = muMix_O2N2(muO2(TAvg),muN2(TAvg),YO2Avg,YN2Avg); // consider only the O2-N2 gas mixture
     k_avg  = kMix_O2N2(kO2(TAvg),kN2(TAvg),YO2Avg,YN2Avg);
     cp_avg = cpMix(cpO2(TAvg),cpN2(TAvg),YO2Avg,YN2Avg);
+    double heat = k_avg/(rhoAvg*cp_avg);
     
     double maxSpeed = 2*std::max(std::max(mu_avg/rhoAvg,k_avg/(rhoAvg*cp_avg)),maxD);
+
+    // if (maxSpeed == mu_avg/rhoAvg){
+    //     std::cout << "momentum limiting" << std::endl;
+    // }
+    // else if (maxSpeed == k_avg/(rhoAvg*cp_avg)){
+    //     std::cout << "heat limiting" << std::endl;
+    // }
+    // else {
+    //     std::cout << "species limiting" << std::endl;
+    // }
 
     if (enIC == 8){
         return 2.0*2.0e-5;
     }
 
-    // std::cout << "mu: " << mu_avg << ", D: " << maxD << ", max speed" << maxSpeed << std::endl;
+    // std::cout << "mu/rho: " << mu_avg/rhoAvg << ", heat: " << heat << ", D: " << maxD << ", max speed" << maxSpeed << std::endl;
 
     return maxSpeed;
 

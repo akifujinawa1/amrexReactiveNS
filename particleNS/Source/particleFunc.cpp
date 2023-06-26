@@ -334,7 +334,7 @@ AmrLevelAdv::updateParticleInfo(MultiFab& Sborder, const double& dt, const doubl
                     " " << arr(i,j,k,2) << " " << arr(i,j,k,3) << " " << arr(i,j,k,4) << " " << arr(i,j,k,5) << std::endl;
                     std::cout << "qSrc: rho rhou rhov e o2 n2" << qSource[0] << " " << qSource[1] << \
                     " " << qSource[2] << " " << qSource[3] << " " << qSource[4] << " " << qSource[5] << std::endl;
-                    Abort("nan found");
+                    Abort("nan found before applying lagrangian source");
                 }
                 
                 
@@ -345,7 +345,7 @@ AmrLevelAdv::updateParticleInfo(MultiFab& Sborder, const double& dt, const doubl
                     std::cout << "qSrc: rho rhou rhov e o2 n2" << qSource[0] << " " << qSource[1] << \
                     " " << qSource[2] << " " << qSource[3] << " " << qSource[4] << " " << qSource[5] << std::endl;
                     std::cout << "Nan found in particle to gas update, variable h: " << h << std::endl;
-                    Abort("nan found");
+                    Abort("nan found after particle to gas update");
                 }
             }
         }
@@ -398,7 +398,7 @@ void getSource(Vector<double>& qSource, Vector<double>& pSource, const Vector<do
     rhoYO2 = q[gasVar::rhoYO2];
     rhoYN2 = q[gasVar::rhoYN2];
 
-    // std::cout << "rho rhou ener O2 N2: " << rho << " " << rhou << " " << energy << " " << rhoYO2 << " " << rhoYN2 << std::endl;
+    // std::cout << "rho rhou ener O2 N2: " << rho << " " << rhou << " " << energy << " " << rhoYO2/rho << " " << rhoYN2/rho << std::endl;
 
     u    = rhou/rho;
     v    = rhov/rho;
@@ -555,6 +555,7 @@ void getSource(Vector<double>& qSource, Vector<double>& pSource, const Vector<do
 
     // std::cout << "kinetic rate: " << mdotO2k << ", diffusion rate: " << mdotO2d << std::endl;
     // std::cout << "fraction of Fe mass remaining: " << mFe/mFe0 << std::endl;
+    // std::cout << "fraction of o2 mass fraction remaining: " << YO2/(0.2329) << std::endl;
 
     // To prevent unboundedness, we only allow the particles to consume oxygen and release heat if
     // there is more than 1% of the initial Fe mass, and more than 1% of the ambient oxygen mole fraction
@@ -1598,7 +1599,7 @@ double Tparticle(const double& mFe, const double& mFeO, const double& mFe3O4, co
         dH    = Hp - Hparticle(mFe, mFeO, mFe3O4, Tp0, phaseFe, phaseFeO, phaseFe3O4);
         cp    = cpparticle(mFe, mFeO, mFe3O4, Tp0, phaseFe, phaseFeO, phaseFe3O4);
         Tpn   = Tp0 + dH/cp;
-        error = std::fabs(Tpn-Tp0)/Tpn;
+        error = std::fabs(Tpn-Tp0)/std::fabs(Tpn);
         Tp0 = Tpn;
         iter += 1;
         // std::cout << "Tpn: " << Tpn << std::endl;

@@ -561,8 +561,8 @@ double Tg(const double& rho, const double& u, const double& v, \
         // dE    = E - (Hgas(rho,YO2,YN2,Tg0)-rho*(R/Mavg)*Tg0); //
         cp    = rho*(YO2*cpO2(Tg0)/M_O2+YN2*cpN2(Tg0)/M_N2);
         Tgn   = Tg0 + dE/cp;
-        error = std::fabs(Tgn-Tg0)/Tgn;
-        // std::cout << "ener: " << ener << ", enthalpy guess: " << enthalpy << \
+        error = std::fabs(Tgn-Tg0)/std::fabs(Tgn);
+        // std::cout << "rho: " << rho << ", ener: " << ener << ", enthalpy guess: " << enthalpy << \
         // ", p guess: " << pressure << ", Tgn: " << Tgn << ", error: " << error << std::endl;
         Tg0 = Tgn;
         iter += 1;

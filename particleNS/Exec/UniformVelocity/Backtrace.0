@@ -1,0 +1,39 @@
+Host Name: ironmontreal
+=== If no file names and line numbers are shown below, one can run
+            addr2line -Cpfie my_exefile my_line_address
+    to convert `my_line_address` (e.g., 0x4a6b) into file name and line number.
+    Or one can use amrex/Tools/Backtrace/parse_bt.py.
+
+=== Please note that the line number reported by addr2line may not be accurate.
+    One can use
+            readelf -wl my_exefile | grep my_line_address'
+    to find out the offset for that line.
+
+ 0: ./main1d.gnu.MPI.ex(+0x15b19d) [0x56347d6bb19d]
+    amrex::BLBackTrace::print_backtrace_info(_IO_FILE*) at /usr/include/x86_64-linux-gnu/bits/unistd.h:354
+ (inlined by) amrex::BLBackTrace::print_backtrace_info(_IO_FILE*) at /home/afujinawa/amrexReactiveNS/particleNS/Exec/UniformVelocity/../../../../amrex/Src/Base/AMReX_BLBackTrace.cpp:196
+
+ 1: ./main1d.gnu.MPI.ex(+0x15cfe5) [0x56347d6bcfe5]
+    amrex::BLBackTrace::handler(int) at /home/afujinawa/amrexReactiveNS/particleNS/Exec/UniformVelocity/../../../../amrex/Src/Base/AMReX_BLBackTrace.cpp:96
+
+ 2: ./main1d.gnu.MPI.ex(+0x55af5) [0x56347d5b5af5]
+    amrex::Abort(char const*) at /home/afujinawa/amrexReactiveNS/particleNS/Exec/UniformVelocity/../../../../amrex/Src/Base/AMReX.H:161
+ (inlined by) AmrLevelAdv::updateParticleInfo(amrex::MultiFab&, double const&, double const&, double const&) at /home/afujinawa/amrexReactiveNS/particleNS/Exec/UniformVelocity/../../Source/particleFunc.cpp:337
+
+ 3: ./main1d.gnu.MPI.ex(+0x310a0) [0x56347d5910a0]
+    AmrLevelAdv::advance(double, double, int, int) at /home/afujinawa/amrexReactiveNS/particleNS/Exec/UniformVelocity/../../Source/AmrLevelAdv.cpp:719 (discriminator 2)
+
+ 4: ./main1d.gnu.MPI.ex(+0x1c0d89) [0x56347d720d89]
+    amrex::Amr::timeStep(int, double, int, int, double) at /home/afujinawa/amrexReactiveNS/particleNS/Exec/UniformVelocity/../../../../amrex/Src/Amr/AMReX_Amr.cpp:1987
+
+ 5: ./main1d.gnu.MPI.ex(+0x1c4e31) [0x56347d724e31]
+    amrex::Amr::coarseTimeStep(double) at /home/afujinawa/amrexReactiveNS/particleNS/Exec/UniformVelocity/../../../../amrex/Src/Amr/AMReX_Amr.cpp:2097
+
+ 6: ./main1d.gnu.MPI.ex(+0x25ffd) [0x56347d585ffd]
+    main at /home/afujinawa/amrexReactiveNS/particleNS/Exec/UniformVelocity/../../Source/main.cpp:105
+
+ 7: /lib/x86_64-linux-gnu/libc.so.6(__libc_start_main+0xf3) [0x7f758b1d9083]
+
+ 8: ./main1d.gnu.MPI.ex(+0x2ab8e) [0x56347d58ab8e]
+    ?? ??:0
+

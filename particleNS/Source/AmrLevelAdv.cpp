@@ -65,6 +65,7 @@ int      iter                         = 0;
 int      printlevel                   = 0;
 int      advIter = 0;
 double   meltFe, meltFeO, meltFe3O4;
+double   dt_super;
 int counter = 0;
 
 // std::unique_ptr<amrex::ParticleContainer<RealData::ncomps, IntData::ncomps>> AmrLevelAdv::particles =  nullptr;
@@ -330,6 +331,38 @@ AmrLevelAdv::initData ()
           {
             // Implement new initial conditions here, take IC from FV_func.cpp,
             // which are converted to conserved variables, apply to arr(i,j,k,NUM_STATES) -2023W2
+            if (enIC == 7){
+              // Use this to set spatial profile of oxygen concentration
+
+              double yO2 = exp(-100*(x-0.5)*(x-0.5));
+              double yN2 = 1-yO2;
+              double mAvg = getMavg(yO2,yN2);
+              double Tgas = 500.0*sin(10.0*x)+1000.0;
+              double pressure = 101325.0;
+              double rho =  one_atm_Pa/((R/mAvg)*Tgas);
+
+              double ener = energy(rho, 0.0, 0.0, Tgas, yO2, yN2, pressure);
+              
+              // density
+              arr(i,j,k,0) = one_atm_Pa/((R/mAvg)*Tgas);
+
+              // x-momentum
+              arr(i,j,k,1) = 0.0;
+
+              // y-momentum
+              arr(i,j,k,2) = 0.0;
+
+              // energy
+              arr(i,j,k,3) = ener;
+
+              // density*O2 mass frac
+              arr(i,j,k,4) = arr(i,j,k,0)*yO2;
+
+              // density*unburned fuel mass fraction
+              arr(i,j,k,5) = arr(i,j,k,0)*yN2;
+
+              // std::cout << "x: " << x << "Density: " << arr(i,j,k,0) << " Temperature: " << T << " Energy: " << arr(i,j,k,3) << std::endl; 
+            } 
             if (enIC == 8){
               // Use this to set spatial profile of oxygen concentration
 
@@ -662,6 +695,39 @@ AmrLevelAdv::advance (Real time,
     dY = dx[1];
   }
 
+  // ____ PARTICLE ____ //
+
+  // we want the particles to interact with the Sborder MultiFab
+
+  
+  if (particle > 0){
+    // if ((enIC == 12)&&(pPosTp[2]>1600)){
+    //   Vector<double> pPosTp(3);
+    //   Vector<double> pReal(RealData::ncomps);
+    //   Vector<int> pInt(IntData::ncomps);
+    //   pPosTp = getParticleInfo(pReal,pInt);
+    //   Abort("ignition");
+    // }
+    // else {
+      // int subcycle = 20;
+      // double dt_sub = dt/Nsub;
+      // dt_super = 1.0e-7;
+      // for (int i = 0; i < Nsub; i++){
+      //   updateParticleInfo(Sborder,dt_super,dX,dY);
+      // }
+      double dt_sub = dt/Nsub;
+      for (int i = 0; i < Nsub; i++){
+        updateParticleInfo(Sborder,dt_sub,dX,dY);
+      }
+      
+    // }
+
+    Sborder.FillBoundary(geom.periodicity());
+    FillDomainBoundary(Sborder,geom,BCVec);   // use this to fill cell-centred data outside domain (AMReX_BCUtil.H) -2023W2
+    
+  }
+  
+
 
   // We update the cell-centred values in a dimensionally-split manner, using an inviscid-viscous-source splitting 
 
@@ -669,8 +735,18 @@ AmrLevelAdv::advance (Real time,
 
   for (int d = 0; d < amrex::SpaceDim ; d++)   
   {
-    updateEuler(Sborder, fluxes, qL, qR, fluxvals, d, dt, dX, dY, euler);
+    // double dt_total=0;
+    // double dt_sub = dt;
+    // while (dt_total < dt_super){
+    //   dt_total+=dt_sub;
+    //   if (dt_total > dt_super){
+    //     dt_sub = dt_super - (dt_total - dt);
+    //   }
+    //   updateEuler(Sborder, fluxes, qL, qR, fluxvals, d, dt_sub, dX, dY, euler);
+    // }
 
+    updateEuler(Sborder, fluxes, qL, qR, fluxvals, d, dt, dX, dY, euler);
+    
     Sborder.FillBoundary(geom.periodicity());
     FillDomainBoundary(Sborder,geom,BCVec);   // use this to fill cell-centred data outside domain (AMReX_BCUtil.H) -2023W2
     
@@ -696,6 +772,17 @@ AmrLevelAdv::advance (Real time,
 
   for (int d = 0; d < amrex::SpaceDim ; d++)   
   {
+    // double dt_total=0;
+    // double dt_sub = dt;
+    // while (dt_total < dt_super){
+    //   dt_total+=dt_sub;
+    //   if (dt_total > dt_super){
+    //     dt_sub = dt_super - (dt_total - dt);
+    //   }
+    //    updateViscous(Sborder, fluxes, qL, qR, qLlo, qRlo, qLhi, qRhi, viscSlice, \
+    //             d, dt_sub, dX, dY, amrex::SpaceDim, viscous);
+    // }
+    
     updateViscous(Sborder, fluxes, qL, qR, qLlo, qRlo, qLhi, qRhi, viscSlice, \
                 d, dt, dX, dY, amrex::SpaceDim, viscous);
     
@@ -720,32 +807,6 @@ AmrLevelAdv::advance (Real time,
   } //this closes the d=0 to d=spacedim loop for the EULER update
 
 
-  // ____ PARTICLE ____ //
-
-  // we want the particles to interact with the Sborder MultiFab
-
-  
-  if (particle > 0){
-    // if ((enIC == 12)&&(pPosTp[2]>1600)){
-    //   Vector<double> pPosTp(3);
-    //   Vector<double> pReal(RealData::ncomps);
-    //   Vector<int> pInt(IntData::ncomps);
-    //   pPosTp = getParticleInfo(pReal,pInt);
-    //   Abort("ignition");
-    // }
-    // else {
-      // int subcycle = 20;
-      double dt_sub = dt/Nsub;
-      for (int i = 0; i < Nsub; i++){
-        updateParticleInfo(Sborder,dt,dX,dY);
-      }
-      
-    // }
-
-    Sborder.FillBoundary(geom.periodicity());
-    FillDomainBoundary(Sborder,geom,BCVec);   // use this to fill cell-centred data outside domain (AMReX_BCUtil.H) -2023W2
-    
-  }
   
 
 
