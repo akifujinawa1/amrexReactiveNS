@@ -699,7 +699,7 @@ AmrLevelAdv::advance (Real time,
 
   // we want the particles to interact with the Sborder MultiFab
 
-  std::cout << "Particle int is: " << particle << std::endl;
+  // std::cout << "Particle int is: " << particle << std::endl;
   
   if (particle > 0){
     // if ((enIC == 12)&&(pPosTp[2]>1600)){
