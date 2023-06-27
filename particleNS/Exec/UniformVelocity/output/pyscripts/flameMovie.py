@@ -33,13 +33,13 @@ color = colors
 tfinal = 40000
 
 frames = 400
-fps = 20
-duration = frames/fps
+fpsval = 20
+duration = frames/fpsval
 
-scale = (tfinal/frames)/(fps/frames)
+scale = (tfinal/frames)/(fpsval/frames)
  
 # matplot subplot
-fig, ax = plt.subplots(nrows=2,ncols=1,figsize=(8,8*yratio))  #fig2,ax2 = plt.subplots(nrows=2,ncols=1,figsize=(8,8*yratio))
+fig, ax = plt.subplots(nrows=2,ncols=1,figsize=(8,8*yratio),dpi=288)  #fig2,ax2 = plt.subplots(nrows=2,ncols=1,figsize=(8,8*yratio))
 plt.subplots_adjust(left=0.14, bottom=0.15, right=0.90, top=0.94, wspace=0.20, hspace=0.20)
 
 iter = 0;
@@ -78,7 +78,7 @@ def make_frame(t):
 animation = VideoClip(make_frame, duration = duration)
  
 # displaying animation with auto play and looping
-animation.ipython_display(fps = 20, loop = True, autoplay = True)
+animation.ipython_display(fps = fpsval, loop = True, autoplay = True)
 
 
 
