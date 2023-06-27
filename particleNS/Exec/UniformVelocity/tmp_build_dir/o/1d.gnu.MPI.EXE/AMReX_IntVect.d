@@ -4,8 +4,6 @@ tmp_build_dir/o/1d.gnu.MPI.EXE/AMReX_IntVect.o: \
  tmp_build_dir/s/1d.gnu.MPI.EXE/AMReX_Config.H \
  ../../../../amrex/Src/Base/AMReX_INT.H \
  ../../../../amrex/Src/Base/AMReX_ccse-mpi.H \
- /usr/lib/x86_64-linux-gnu/openmpi/include/mpi.h \
- /usr/lib/x86_64-linux-gnu/openmpi/include/mpi_portable_platform.h \
  ../../../../amrex/Src/Base/AMReX_SPACE.H \
  ../../../../amrex/Src/Base/AMReX_Array.H \
  ../../../../amrex/Src/Base/AMReX.H \
@@ -50,10 +48,6 @@ tmp_build_dir/s/1d.gnu.MPI.EXE/AMReX_Config.H:
 ../../../../amrex/Src/Base/AMReX_INT.H:
 
 ../../../../amrex/Src/Base/AMReX_ccse-mpi.H:
-
-/usr/lib/x86_64-linux-gnu/openmpi/include/mpi.h:
-
-/usr/lib/x86_64-linux-gnu/openmpi/include/mpi_portable_platform.h:
 
 ../../../../amrex/Src/Base/AMReX_SPACE.H:
 

@@ -42,7 +42,7 @@ dataNingHi  = np.loadtxt('output/txt/particleCombustion/dataNingTpHi.txt')
 
 ax2.plot(data[:,0],data[:,1],c='red',linewidth=1,label='$T_\mathrm{p,0}=1270\;\mathrm{K}$') 
 ax2.plot(dataRef[:,0],dataRef[:,1],c='black',linewidth=1,label='$\mathrm{Ref.}$') 
-ax2.plot(1e-3*(dataNing[2:80,0]+1.99634281),dataNing[2:80,1],c='black',linestyle='dotted',linewidth=1,label='$\mathrm{Exp.,\;Ning\;}et\;al.}$') 
+ax2.plot(1e-3*(dataNing[2:80,0]+2.4834281),dataNing[2:80,1],c='black',linestyle='dotted',linewidth=1,label='$\mathrm{Exp.,\;Ning\;}et\;al.}$') 
 # ax2.fill_between(1e-3*(dataNingLo[0:80,0]+3.218259281),dataNingLo[0:80,1],dataNingHi[0:80,1]) 
 
 # # set labels
@@ -55,7 +55,7 @@ ax2.plot(1e-3*(dataNing[2:80,0]+1.99634281),dataNing[2:80,1],c='black',linestyle
 # ax.set_ylabel(r'$Y_\mathrm{O_2}$', fontsize=20)
 # ax.set_xlabel(r'$x$', fontsize=20)
 ax2.set_ylabel(r'$T_\mathrm{p}\;[\mathrm{K}]$', fontsize=20)
-ax2.set_xlabel(r'$\mathrm{twslme}\;[\mathrm{s}]$', fontsize=20)
+ax2.set_xlabel(r'$\mathrm{time}\;[\mathrm{s}]$', fontsize=20)
 
 ax2.set_ylim(1200,2750)
 ax2.set_xlim(0,0.035)
@@ -71,6 +71,7 @@ ax2.set_xlim(0,0.035)
 # ax[1,1].set_ylim(1.391,1.401)
 
 ax2.legend(loc="lower right")
+plt.subplots_adjust(left=0.12, bottom=0.15, right=0.90, top=0.94, wspace=0.20, hspace=0.20)
 
 
 plt.legend()
@@ -79,4 +80,4 @@ plt.show()
 # plt2.legend()
 # plt2.show()
 
-# fig2.savefig('output/plots/particleCombustion/combustion.pdf')
+fig2.savefig('output/plots/particleCombustion/combustion.pdf')

@@ -699,6 +699,7 @@ AmrLevelAdv::advance (Real time,
 
   // we want the particles to interact with the Sborder MultiFab
 
+  std::cout << "Particle int is: " << particle << std::endl;
   
   if (particle > 0){
     // if ((enIC == 12)&&(pPosTp[2]>1600)){
@@ -717,7 +718,7 @@ AmrLevelAdv::advance (Real time,
       // }
       double dt_sub = dt/Nsub;
       for (int i = 0; i < Nsub; i++){
-        updateParticleInfo(Sborder,dt_sub,dX,dY);
+        updateParticleInfo(Sborder,dt,dX,dY);
       }
       
     // }
@@ -926,7 +927,7 @@ AmrLevelAdv::estTimeStep (Real)
       dt_est = std::min(dt_est, fourier*dx[d]*dx[d]/sMaxDiff);
     }    
     else { // if we are solving neither (only the particle)
-      dt_est = 1e-7;
+      dt_est = 1e-6;
     }
 
   }

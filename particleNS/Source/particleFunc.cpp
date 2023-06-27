@@ -67,6 +67,8 @@ AmrLevelAdv::initParticles (const MultiFab& S_new)
         const Box& bx = mfi.tilebox();
         const Dim3 lo = lbound(bx);
         const Dim3 hi = ubound(bx);
+        const Real* dx = geom.CellSize();
+        double dX = dx[0];
 
         std::ifstream locations;
 
@@ -97,8 +99,8 @@ AmrLevelAdv::initParticles (const MultiFab& S_new)
             {
                 if ((x_txt < hi.x)&&(x_txt >= lo.x)) {
                     if ((y_txt < hi.y)&&(y_txt >= lo.y)){
-                        x_coord.push_back (x_txt*dp0);
-                        y_coord.push_back (y_txt*dp0);
+                        x_coord.push_back (x_txt*dX);
+                        y_coord.push_back (y_txt*dX);
                         Np += 1;
                         // std::cout << "x, y from locations: " << x_txt << " " << y_txt << std::endl;
                     }
@@ -109,16 +111,14 @@ AmrLevelAdv::initParticles (const MultiFab& S_new)
             while (locations >> x_txt)
             {
                 if ((x_txt < hi.x)&&(x_txt >= lo.x)) {
-                    x_coord.push_back (x_txt*dp0);
+                    x_coord.push_back (x_txt*dX);
                     Np += 1;
-                    // std::cout << "x, y from locations: " << x_txt << " " << y_txt << std::endl;
+                    std::cout << "x from location: " << x_txt << std::endl;
                 }
             }
         }
 
-        
-
-        // std::cout << "total number of particles in this patch: "  << Np << std::endl;
+        std::cout << "total number of particles in this patch: "  << Np << std::endl;
         
         for (int i = 0; i < Np; i++){
 
@@ -127,6 +127,7 @@ AmrLevelAdv::initParticles (const MultiFab& S_new)
             p.cpu()  = ParallelDescriptor::MyProc();
             
             p.pos(0) = x_coord[i];
+            std::cout << "particle position: " << p.pos(0) << std::endl;
             if (spacedim == 2){
                 p.pos(1) = y_coord[i];
             }
@@ -237,7 +238,8 @@ AmrLevelAdv::updateParticleInfo(MultiFab& Sborder, const double& dt, const doubl
   Vector<double> pReal(RealData::ncomps,0);
   Vector<int>    pInt(IntData::ncomps,0);
 
-//   std::cout << "in updateParticleInfo" << std::endl;
+  
+  std::cout << "in updateParticleInfo" << std::endl;
 
   for (MFIter mfi(Sborder); mfi.isValid(); ++mfi){
 
@@ -246,7 +248,7 @@ AmrLevelAdv::updateParticleInfo(MultiFab& Sborder, const double& dt, const doubl
     auto& particle_tile = GetParticles(lev)[std::make_pair(grid_id,tile_id)];
     auto& particles = particle_tile.GetArrayOfStructs();
     const int np = particles.numParticles();
-    // std::cout << "number of particles in grid in updateParticleInfo, within advance: " << np << std::endl;
+    std::cout << "number of particles in grid in updateParticleInfo, within advance: " << np << std::endl;
 
     // Access S_border multifab information here
     const Box& bx = mfi.tilebox();
@@ -261,20 +263,20 @@ AmrLevelAdv::updateParticleInfo(MultiFab& Sborder, const double& dt, const doubl
         x  = p.pos(0);   //given in meters, lo.x is in cell count, so scale by dx to get meters
         i  = static_cast<int>(Math::floor(x/dx));
         // std::cout << "x-position: " << x << std::endl;
-        // std::cout << "cell number is: " << i << std::endl;
+        std::cout << "cell number is: " << i << std::endl;
         // std::cout << "lo.x and hi.x are: " << lo.x << ", " << hi.x << std::endl; 
 
         if (spacedim == 2){
             y  = p.pos(1);
-            j  = static_cast<int>(Math::floor(y/dy));
+            j  = static_cast<int>(Math::floor(y/dx));
             // std::cout << "y-position: " << y << std::endl;
             // std::cout << "position in y cell number is: " << y/dy << ", cell number is: " << j << std::endl;
         }
         
-        // std::cout << "rho: " << arr(i,j,k,0) << std::endl;
-        // std::cout << "x- and y-momentum: " << arr(i,j,k,1) << " " << arr(i,j,k,2) << std::endl;
-        // std::cout << "energy: " << arr(i,j,k,3) << std::endl;
-        // std::cout << "O2 and N2 concentration: " << arr(i,j,k,4) << " " << arr(i,j,k,5) << std::endl;
+        std::cout << "rho: " << arr(i,j,k,0) << std::endl;
+        std::cout << "x- and y-momentum: " << arr(i,j,k,1) << " " << arr(i,j,k,2) << std::endl;
+        std::cout << "energy: " << arr(i,j,k,3) << std::endl;
+        std::cout << "O2 and N2 concentration: " << arr(i,j,k,4) << " " << arr(i,j,k,5) << std::endl;
 
         for (int h = 0; h < NUM_STATE; h++){
             q[h] = arr(i,j,k,h);
@@ -413,7 +415,9 @@ void getSource(Vector<double>& qSource, Vector<double>& pSource, const Vector<do
     Tp         = Tparticle(mFe,mFeO,mFe3O4,Hp,phaseFe,phaseFeO,phaseFe3O4,LFe,LFeO,LFe3O4);
     Tfilm      = filmAverage(Tp,Tgas);
 
-    // std::cout << "Tp, Tg: " << Tp << " " << Tgas << "\n" << std::endl;
+    std::cout << "mFe, mFeO: " << mFe << " " << mFeO << "\n" << std::endl;
+    std::cout << "mFe3O4, Hp: " << mFe3O4 << " " << Hp << "\n" << std::endl;
+    std::cout << "Tp, Tg: " << Tp << " " << Tgas << "\n" << std::endl;
 
     // With the particle temperature known, we first compute the vapor pressures of gas-phase Fe and FeO
     // resulting from the gas-liquid equilibrium at the particle surface. If the particle temperature is 
