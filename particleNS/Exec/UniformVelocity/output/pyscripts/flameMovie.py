@@ -30,7 +30,7 @@ mpl.rcParams['axes.spines.top'] = False
 colors = ['#9B0909', '#7E301E', '#B42E0F', '#FE3C0F', '#fe770f', '#F35D0D']
 color = colors
 
-tfinal = 40000
+tfinal = 100000
 
 frames = 400
 fpsval = 20

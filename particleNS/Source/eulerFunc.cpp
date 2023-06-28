@@ -692,7 +692,7 @@ Vector<double> setIC(const int dim) {
             }
             case 14: // Flame
             {
-                x0  = 0; xEnd = 0.00768; xDisc = xEnd*0.05; tEnd=0.25;
+                x0  = 0; xEnd = 0.00768; xDisc = xEnd*0.10; tEnd=0.25;
                 vxL = 0.0;  pL = 1.0*one_atm_Pa; 
                 vxR = 0.0;  pR = 1.0*one_atm_Pa; 
                 YO2L = Y_O2; YN2L = Y_N2; YO2R = Y_O2; YN2R = Y_N2;
