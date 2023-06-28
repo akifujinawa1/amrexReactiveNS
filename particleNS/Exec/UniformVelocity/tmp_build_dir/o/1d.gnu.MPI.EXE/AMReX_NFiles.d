@@ -4,6 +4,8 @@ tmp_build_dir/o/1d.gnu.MPI.EXE/AMReX_NFiles.o: \
  tmp_build_dir/s/1d.gnu.MPI.EXE/AMReX_Config.H \
  ../../../../amrex/Src/Base/AMReX_ParallelDescriptor.H \
  ../../../../amrex/Src/Base/AMReX_ccse-mpi.H \
+ /usr/lib/x86_64-linux-gnu/openmpi/include/mpi.h \
+ /usr/lib/x86_64-linux-gnu/openmpi/include/mpi_portable_platform.h \
  ../../../../amrex/Src/Base/AMReX_ParallelContext.H \
  ../../../../amrex/Src/Base/AMReX_Extension.H \
  ../../../../amrex/Src/Base/AMReX_Vector.H \
@@ -50,6 +52,10 @@ tmp_build_dir/s/1d.gnu.MPI.EXE/AMReX_Config.H:
 ../../../../amrex/Src/Base/AMReX_ParallelDescriptor.H:
 
 ../../../../amrex/Src/Base/AMReX_ccse-mpi.H:
+
+/usr/lib/x86_64-linux-gnu/openmpi/include/mpi.h:
+
+/usr/lib/x86_64-linux-gnu/openmpi/include/mpi_portable_platform.h:
 
 ../../../../amrex/Src/Base/AMReX_ParallelContext.H:
 
