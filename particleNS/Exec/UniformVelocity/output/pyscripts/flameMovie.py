@@ -32,14 +32,13 @@ color = colors
 
 tfinal = 100000
 
-frames = 400
+frames = 1000
 fpsval = 20
 duration = frames/fpsval
-
-scale = (tfinal/frames)/(fpsval/frames)
+scale = 2*frames
  
 # matplot subplot
-fig, ax = plt.subplots(nrows=2,ncols=1,figsize=(8,8*yratio),dpi=288)  #fig2,ax2 = plt.subplots(nrows=2,ncols=1,figsize=(8,8*yratio))
+fig, ax = plt.subplots(nrows=2,ncols=1,figsize=(8,8*yratio),dpi=144)  #fig2,ax2 = plt.subplots(nrows=2,ncols=1,figsize=(8,8*yratio))
 plt.subplots_adjust(left=0.14, bottom=0.15, right=0.90, top=0.94, wspace=0.20, hspace=0.20)
 
 iter = 0;
@@ -50,6 +49,9 @@ def make_frame(t):
     # clear
     ax[0].clear()
     ax[1].clear()
+
+    # print(t)
+    # print(t*scale)
 
     if (t==0.0):
         string = '00'
