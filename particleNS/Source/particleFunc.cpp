@@ -323,8 +323,7 @@ AmrLevelAdv::updateParticleInfo(MultiFab& Sborder, const double& dt, const doubl
                     Abort("nan found before applying lagrangian source");
                 }
                 
-                q[h] = q[h] + dt*(1.0/vCell)*qSource[h];
-                arr(i,j,k,h) = q[h];
+                arr(i,j,k,h) = arr(i,j,k,h) + dt*(1.0/vCell)*qSource[h];
 
                 if (arr(i,j,k,h) != arr(i,j,k,h)){
                     std::cout << "cell number: " << i << std::endl;

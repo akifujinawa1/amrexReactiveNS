@@ -61,7 +61,7 @@ double nFeFe3O4 = 3.0*M_Fe/M_Fe3O4;
 double nO2FeO   = 0.5*M_O2/M_FeO;
 double nO2Fe3O4 = 2.0*M_O2/M_Fe3O4;   
 
-double rp0        = 0.5*54.0e-6;
+double rp0        = 0.5*dp0;
 double deltaFeO   = 0.95*delta0;
 double deltaFe3O4 = 0.05*delta0;
 

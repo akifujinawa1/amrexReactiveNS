@@ -40,7 +40,7 @@ framestep = tfinal/frames
 scale = framestep/timestep
  
 # matplot subplot
-fig, ax = plt.subplots(nrows=2,ncols=1,figsize=(8,8*yratio),dpi=144)  #fig2,ax2 = plt.subplots(nrows=2,ncols=1,figsize=(8,8*yratio))
+fig, ax = plt.subplots(nrows=2,ncols=1,figsize=(8,8*yratio),dpi=100)  #fig2,ax2 = plt.subplots(nrows=2,ncols=1,figsize=(8,8*yratio))
 plt.subplots_adjust(left=0.14, bottom=0.15, right=0.90, top=0.94, wspace=0.20, hspace=0.20)
 
 iter = 0;
