@@ -37,8 +37,11 @@ extern   int       conv;
 extern   int       Da;
 extern   int       particle;
 extern   int       Nsub;
+
+extern   double       dp0;             // initial particle size from constants.H
 extern   double       Gamma;           // ratio of specific heats -
 extern   double       R;               // univeral gas constant   J/K/mol
+extern   double       pi;              // pi
 extern   double       one_atm_Pa;      // one atmosphere          Pa
 extern   double       T0;              // initial gas temperature K
 extern   double       M_O2;            // O2 molecular weight     kg/mol
@@ -48,7 +51,7 @@ extern   double       X_N2;            // mole fraction of N2
 extern   double       Y_O2;            // mass fraction of O2
 extern   double       Y_N2;            // mass fraction of N2
 extern   double       Mavg;            // average molecular weight of the gas mixture
-extern   double       dp0;             // initial particle size
+extern   double       delta0, rhoFe, rhoFeO, rhoFe3O4;  //particle parameters
 
 // define the remaining global variables here. NUM_GROW should be defined based on the value of slope limiting.
 int      AmrLevelAdv::verbose         = 0;
@@ -59,13 +62,14 @@ int      AmrLevelAdv::NUM_STATE       = 6;  // set this to 6 for reactive NS wit
 int      AmrLevelAdv::NUM_GROW        = 2;  // number of ghost cells, set gCells from main.cpp file. -2023W2
 int      n_cell;
 int      max_level;
-const int spacedim               = amrex::SpaceDim;
 int      NUM_STATE                    = AmrLevelAdv::NUM_STATE;
 int      pfrequency                   = 20;
 int      iter                         = 0;
 int      printlevel                   = 0;
 int      advIter = 0;
 int      counter = 0;
+const int spacedim               = amrex::SpaceDim;
+
 
 double   meltFe, meltFeO, meltFe3O4;
 double   dt_super;
@@ -454,7 +458,10 @@ AmrLevelAdv::initData ()
     }
   } // closes mfi patch loop
 
-  initParticles(S_new);
+  initParticles(S_new,mFe0,mFeO0,mFe3O40);
+
+  std::cout << "rp0 dFeO dnext rFeO rFe: " << rp0 << " " << deltaFeO << " " << deltaFe3O4 << " " << rFeO0 << std::endl;
+  std::cout << "masses, interdist: " << mFe0 << " " << mFeO0 << " " << mFe3O40 << " " << interDist << std::endl;
 
   // Abort("particles initialized ");
 
@@ -730,7 +737,7 @@ AmrLevelAdv::advance (Real time,
       // }
       double dt_sub = dt/Nsub;
       for (int i = 0; i < Nsub; i++){
-        updateParticleInfo(Sborder,dt,dX,dY);
+        updateParticleInfo(Sborder,mFe0,interDist,dt,dX,dY);
       }
       
     // }

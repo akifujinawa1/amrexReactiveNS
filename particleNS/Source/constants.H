@@ -27,6 +27,7 @@ double Dpre  = (1e-7*pow(1.0/M_O2 + 1.0/M_N2,0.5))/pow(pow(vO2,(1.0/3.0))+pow(vN
 
 // Particle constants
 
+double dp0       = 10.0e-6;
 double delta0    = 1e-3;           // Initial oxide layer thickness to particle size ratio
 double rhoFe     = 7874.0;         // kg/m^3                  Solid-phase iron(Fe) density
 double rhoFeO    = 5745.0;         // kg/m^3                  Solid-phase FeO density

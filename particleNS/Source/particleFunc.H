@@ -3,7 +3,7 @@
 
 #include "AMReX_Vector.H"
 
-void particleInit(double& energy0);
+void particleInit(const double& mFe0, const double& mFeO0, const double& mFe3O40, double& energy0);
 double Cdrag(double Re);
 double Hparticle(const double& mFe, const double& mFeO, const double& mFe3O4, const double& Tp, \
                  const int& phaseFe, const int& phaseFeO, const int& phaseFe3O4);
@@ -29,7 +29,7 @@ double Tparticle(const double& mFe, const double& mFeO, const double& mFe3O4, co
                  int& phaseFe, int& phaseFeO, int& phaseFe3O4, \
                  const double& LFe, const double& LFeO, const double& LFe3O4);
 void getSource(Vector<double>& qSource, Vector<double>& pSource, const Vector<double>& q, Vector<double>& pReal, \
-               Vector<int>& pInt, const double& dt, const double& dx, const double& dy);
+               Vector<int>& pInt, const double& mFe0, const double& dt, const double& dx, const double& dy);
 
 Vector<double> getOxidationRates(const double& mFe, const double& mFeO, const double& mFe3O4, \
                                  const double& Tp,  const double& rp);

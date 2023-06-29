@@ -1,5 +1,6 @@
 tmp_build_dir/o/1d.gnu.MPI.EXE/amrex_parser.lex.o: \
  ../../../../amrex/Src/Base/Parser/amrex_parser.lex.cpp \
+ ../../../../amrex/Src/Base/Parser/amrex_parser.lex.nolint.H \
  ../../../../amrex/Src/Base/Parser/AMReX_Parser_Y.H \
  tmp_build_dir/s/1d.gnu.MPI.EXE/AMReX_Config.H \
  ../../../../amrex/Src/Base/AMReX_GpuQualifiers.H \
@@ -10,8 +11,6 @@ tmp_build_dir/o/1d.gnu.MPI.EXE/amrex_parser.lex.o: \
  ../../../../amrex/Src/Base/AMReX.H \
  ../../../../amrex/Src/Base/AMReX_GpuAssert.H \
  ../../../../amrex/Src/Base/AMReX_ccse-mpi.H \
- /usr/lib/x86_64-linux-gnu/openmpi/include/mpi.h \
- /usr/lib/x86_64-linux-gnu/openmpi/include/mpi_portable_platform.h \
  ../../../../amrex/Src/Base/AMReX_Exception.H \
  ../../../../amrex/Src/Base/AMReX_ParallelContext.H \
  ../../../../amrex/Src/Base/AMReX_Vector.H \
@@ -39,6 +38,8 @@ tmp_build_dir/o/1d.gnu.MPI.EXE/amrex_parser.lex.o: \
  ../../../../amrex/Src/Base/AMReX_ANSIEscCode.H \
  ../../../../amrex/Src/Base/Parser/amrex_parser.tab.h
 
+../../../../amrex/Src/Base/Parser/amrex_parser.lex.nolint.H:
+
 ../../../../amrex/Src/Base/Parser/AMReX_Parser_Y.H:
 
 tmp_build_dir/s/1d.gnu.MPI.EXE/AMReX_Config.H:
@@ -58,10 +59,6 @@ tmp_build_dir/s/1d.gnu.MPI.EXE/AMReX_Config.H:
 ../../../../amrex/Src/Base/AMReX_GpuAssert.H:
 
 ../../../../amrex/Src/Base/AMReX_ccse-mpi.H:
-
-/usr/lib/x86_64-linux-gnu/openmpi/include/mpi.h:
-
-/usr/lib/x86_64-linux-gnu/openmpi/include/mpi_portable_platform.h:
 
 ../../../../amrex/Src/Base/AMReX_Exception.H:
 

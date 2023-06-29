@@ -44,7 +44,6 @@ extern double TpInitial;
 extern double M_O2, M_N2;
 extern double qFeOs,qFeOl,qFe3O4s,qFe2O3s,qFeOg;
 extern double meltFe,meltFeO,meltFe3O4;
-extern const double mFe0,mFeO0,mFe3O40,interDist;
 
 
 
@@ -53,7 +52,7 @@ using namespace amrex;
 // Use this file to write functions required for particle calculations
 
 void
-AmrLevelAdv::initParticles (const MultiFab& S_new)
+AmrLevelAdv::initParticles (const MultiFab& S_new, const double& mFe0, const double& mFeO0, const double& mFe3O40)
 {
     const int lev = 0;
     Real patch = 0;
@@ -132,7 +131,7 @@ AmrLevelAdv::initParticles (const MultiFab& S_new)
             }
 
             double energy0;
-            particleInit(energy0);
+            particleInit(mFe0,mFeO0,mFe3O40,energy0);
             
             if (enIC==14){
                 if ((p.pos(0)/dX) < n_cell*0.1){
@@ -227,7 +226,8 @@ AmrLevelAdv::getParticleInfo(Vector<double>& pReal, Vector<int>& pInt)
 }
 
 void 
-AmrLevelAdv::updateParticleInfo(MultiFab& Sborder, const double& dt, const double& dx, const double& dy)
+AmrLevelAdv::updateParticleInfo(MultiFab& Sborder, const double& mFe0, const double& interDist, \
+                                const double& dt, const double& dx, const double& dy)
 {
   const int lev = 0;
   Real x, y, lx, ly, vCell;
@@ -294,7 +294,7 @@ AmrLevelAdv::updateParticleInfo(MultiFab& Sborder, const double& dt, const doubl
             pInt[h] = p.idata(h);
         }
 
-        getSource(qSource,pSource,q,pReal,pInt,dt,dx,dy);
+        getSource(qSource,pSource,q,pReal,pInt,mFe0,dt,dx,dy);
 
         p.rdata(RealData::Hp)     = pReal[RealData::Hp];
         p.idata(IntData::Fe)      = pInt[IntData::Fe];
@@ -348,7 +348,7 @@ AmrLevelAdv::updateParticleInfo(MultiFab& Sborder, const double& dt, const doubl
 }
 
 void getSource(Vector<double>& qSource, Vector<double>& pSource, const Vector<double>& q, Vector<double>& pReal, \
-               Vector<int>& pInt, const double& dt, const double& dx, const double& dy){
+               Vector<int>& pInt, const double& mFe0, const double& dt, const double& dx, const double& dy){
     
     // Declare particle and gas variables
     Real up, vp, wp, mFe, mFeO, mFe3O4, Hp, LFe, LFeO, LFe3O4;
@@ -731,7 +731,7 @@ AmrLevelAdv::printParticleInfo()
 //   std::cout << "Enthalpy and Temperature:: Hp: " << Hp << ", Tp: " << Tp << std::endl;
 }
 
-void particleInit(double& energy0){
+void particleInit(const double& mFe0, const double& mFeO0, const double& mFe3O40, double& energy0){
 
     int    phaseFe=0, phaseFeO=0, phaseFe3O4=0;
     // double deltaFeO, deltaFe3O4, rp0, rFeO0, rFe0;
