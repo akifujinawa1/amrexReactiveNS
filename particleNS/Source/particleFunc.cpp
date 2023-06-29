@@ -3,8 +3,6 @@
 #include "thermoTransport.H"
 #include "particleFunc.H"
 #include "AmrLevelAdv.H"
-// #include "constants.H"
-// #include "constants.H"
 #include "AMReX_Vector.H"
 #include "AMReX_Array.H"
 #include "AMReX_REAL.H"
@@ -46,7 +44,16 @@ extern double TpInitial;
 extern double M_O2, M_N2;
 extern double qFeOs,qFeOl,qFe3O4s,qFe2O3s,qFeOg;
 extern double meltFe,meltFeO,meltFe3O4;
-extern double mFe0,mFeO0,mFe3O40,interDist;
+
+double rp0        = 0.5*dp0;
+double deltaFeO   = 0.95*delta0;
+double deltaFe3O4 = 0.05*delta0;
+double rFeO0      = rp0*(1-deltaFe3O4);
+double rFe0       = rp0*(1-delta0);
+const double mFe0       = rhoFe*(4.0/3.0)*pi*pow(rFe0,3.0);
+const double mFeO0      = rhoFeO*(4.0/3.0)*pi*(pow(rFeO0,3.0)-pow(rFe0,3.0));
+const double mFe3O40    = rhoFe3O4*(4.0/3.0)*pi*(pow(rp0,3.0)-pow(rFeO0,3.0));
+const double interDist  = pow(1.0e3*(mFe0+mFeO0+mFe3O40)/1100.0,1.0/3.0);
 
 
 using namespace amrex;
