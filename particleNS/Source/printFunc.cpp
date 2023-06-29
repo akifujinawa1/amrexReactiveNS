@@ -142,7 +142,7 @@ void AmrLevelAdv::writePlotFile()
 
                 // std::cout << "Tg, p: " << Tgas << " " << p << std::endl;
 
-                AllPrint(approx) << x << " " << Tgas << " " << YO2 << " " << p << " " << vx << std::endl;
+                AllPrint(approx) << x << " " << Tgas << " " << YO2 << " " << p << " " << vx << " " << rho << std::endl;
             }
         }
         approx.close();

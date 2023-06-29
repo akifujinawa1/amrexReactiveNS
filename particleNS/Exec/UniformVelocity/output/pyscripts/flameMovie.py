@@ -32,10 +32,12 @@ color = colors
 
 tfinal = 40000
 
-frames = 100
+frames = 400
 fpsval = 20
 duration = frames/fpsval
-scale = 2*frames
+timestep = 1/duration
+framestep = tfinal/frames
+scale = framestep/timestep
  
 # matplot subplot
 fig, ax = plt.subplots(nrows=2,ncols=1,figsize=(8,8*yratio),dpi=144)  #fig2,ax2 = plt.subplots(nrows=2,ncols=1,figsize=(8,8*yratio))
