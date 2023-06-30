@@ -40,6 +40,7 @@ extern   int       iter;
 extern   int       printlevel;
 extern   int       n_cell;
 extern   int       counter;
+extern   int       counterP;
 
 extern   double       Gamma;           // ratio of specific heats -
 extern   double       R;               // univeral gas constant   J/K/mol
@@ -148,6 +149,7 @@ void AmrLevelAdv::writePlotFile()
         approx.close();
     }
     if ((enIC == 14)&&(cur_time > 5e-6*counter)) { // 1D isobaric flame case
+        counterP += 1;
         const MultiFab &S_plot = get_new_data(Phi_Type);
         const int lev = 0;
 
@@ -156,8 +158,8 @@ void AmrLevelAdv::writePlotFile()
         Real x, y=0, up, vp, wp, mFe, mFeO, mFe3O4, Hp, Tp, LFe, LFeO, LFe3O4;
         int  phaseFe, phaseFeO, phaseFe3O4;
 
-        // for (MFIter mfi = MakeMFIter(lev); mfi.isValid(); ++mfi)
-        for (MFIter mfi(S_plot); mfi.isValid(); ++mfi)
+        for (MFIter mfi = MakeMFIter(lev); mfi.isValid(); ++mfi)
+        // for (MFIter mfi(S_plot); mfi.isValid(); ++mfi)
         {
 
             const int grid_id = mfi.index();

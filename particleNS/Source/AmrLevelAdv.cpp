@@ -68,6 +68,7 @@ int      iter                         = 0;
 int      printlevel                   = 0;
 int      advIter = 0;
 int      counter = 0;
+int      counterP = 0;
 const int spacedim               = amrex::SpaceDim;
 
 
