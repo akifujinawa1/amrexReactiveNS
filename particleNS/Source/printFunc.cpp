@@ -148,7 +148,7 @@ void AmrLevelAdv::writePlotFile()
         }
         approx.close();
     }
-    if ((enIC == 14)&&(cur_time > 5e-6*counter)) { // 1D isobaric flame case
+    if ((enIC == 14)&&(cur_time > 5e-6*counterP)) { // 1D isobaric flame case
         counterP += 1;
         const MultiFab &S_plot = get_new_data(Phi_Type);
         const int lev = 0;
