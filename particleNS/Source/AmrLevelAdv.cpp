@@ -51,7 +51,7 @@ extern   double       X_N2;            // mole fraction of N2
 extern   double       Y_O2;            // mass fraction of O2
 extern   double       Y_N2;            // mass fraction of N2
 extern   double       Mavg;            // average molecular weight of the gas mixture
-extern   const double mFe0, interDist;  //particle parameters
+extern   const double mFe0, mFeO0, mFe3O40, interDist;  //particle parameters
 
 // define the remaining global variables here. NUM_GROW should be defined based on the value of slope limiting.
 int      AmrLevelAdv::verbose         = 0;

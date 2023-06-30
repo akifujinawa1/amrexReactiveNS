@@ -31,7 +31,7 @@ double pi    = M_PI;
 // Particle constants
 
 double dp0       = 10.0e-6;
-double delta0    = 1e-3;           // Initial oxide layer thickness to particle size ratio
+double delta0    = 1.0e-3;           // Initial oxide layer thickness to particle size ratio
 double rhoFe     = 7874.0;         // kg/m^3                  Solid-phase iron(Fe) density
 double rhoFeO    = 5745.0;         // kg/m^3                  Solid-phase FeO density
 double rhoFe3O4  = 5170.0;         // kg/m^3                  Solid-phase Fe3O4 density
