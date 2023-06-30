@@ -52,8 +52,8 @@ using namespace amrex;
 // Use this file to write functions required for particle calculations
 
 void
-AmrLevelAdv::initParticles (const MultiFab& S_new, const double& mFe0, const double& mFeO0, const double& mFe3O40, \
-                            const double& xDisc)
+AmrLevelAdv::initParticles (const MultiFab& S_new, const double& xDisc)
+
 {
     const int lev = 0;
     Real patch = 0;
@@ -300,7 +300,8 @@ AmrLevelAdv::updateParticleInfo(MultiFab& Sborder, const double& mFe0, const dou
         p.idata(IntData::Fe)      = pInt[IntData::Fe];
         p.idata(IntData::FeO)     = pInt[IntData::FeO];
         p.idata(IntData::Fe3O4)   = pInt[IntData::Fe3O4];
-        p.idata(IntData::regime)   = pInt[IntData::regime];
+        p.idata(IntData::regime)  = pInt[IntData::regime];
+
         
         p.pos(0) = p.pos(0) + dt*p.rdata(RealData::u);
         if (spacedim == 2){
@@ -586,7 +587,8 @@ void getSource(Vector<double>& qSource, Vector<double>& pSource, const Vector<do
                 dmFe3O4formdt = 0;
             }
             pSource[RealData::mFe] = - pSource[RealData::mFeO]*nFeFeO - pSource[RealData::mFe3O4]*nFeFe3O4;
-            pInt[IntData::regime] = 1;
+            pInt[IntData::regime] = 1;  // combustion regime flag changed to diffusion-controlled
+
             // std::cout << "diffusion-controlled" << std::endl;
         }
     }

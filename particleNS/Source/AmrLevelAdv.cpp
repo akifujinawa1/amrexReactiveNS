@@ -306,8 +306,8 @@ AmrLevelAdv::initData ()
   const Real dY = (amrex::SpaceDim > 1 ? dx[1] : 0.0);
 
   const Real probLoX = prob_lo[0];
-  const Real probHiX = prob_hi[0];
   const Real probLoY = (amrex::SpaceDim > 1 ? prob_lo[1] : 0.0);
+  const Real probHiX = prob_hi[0];
   const Real probHiY = (amrex::SpaceDim > 1 ? prob_hi[1] : 0.0);
 
   
@@ -453,10 +453,7 @@ AmrLevelAdv::initData ()
     }
   } // closes mfi patch loop
 
-  initParticles(S_new,mFe0,mFeO0,mFe3O40,xDisc);
-
-  std::cout << "rp0 dFeO dnext rFeO rFe: " << rp0 << " " << deltaFeO << " " << deltaFe3O4 << " " << rFeO0 << std::endl;
-  std::cout << "masses, interdist: " << mFe0 << " " << mFeO0 << " " << mFe3O40 << " " << interDist << std::endl;
+  initParticles(S_new,xDisc);
 
   // Abort("particles initialized ");
 
