@@ -807,7 +807,7 @@ AmrLevelAdv::advance (Real time,
       // }
       double dt_sub = dt/Nsub;
       for (int i = 0; i < Nsub; i++){
-        updateParticleInfo(Sborder,mFe0,interDist,dt,dX,dY);
+        updateParticleInfo(Sborder,dt,dX,dY);
       }
       
     // }

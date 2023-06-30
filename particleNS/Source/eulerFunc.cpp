@@ -533,9 +533,10 @@ Vector<double> setIC(const int dim, const double& probLoX, const double& probHiX
     if (dim==1) {
         vyL = 0;
         vyR = 0;
+        x0 = probLoX;
+        xEnd = probHiX;
+            
         switch (enIC) {
-            x0 = probLoX;
-            xEnd = probHiX;
             case 1: //toro test 1
             {
                 xDisc = 0.5; tEnd=0.25;
