@@ -524,7 +524,7 @@ void updateEuler(MultiFab& Sborder, Array<MultiFab, SpaceDim>& fluxes, Vector<do
 
 }
 
-Vector<double> setIC(const int dim) {
+Vector<double> setIC(const int dim, const double& lox, const double& hix, const double& loy, const double& hiy) {
 
     double rhoL, vxL, vyL, pL, YO2L, YN2L, rhoR, vxR, vyR, pR, YO2R, YN2R, TgL, TgR, EL, ER;
     double x0,xEnd,xDisc,tEnd;
@@ -536,7 +536,7 @@ Vector<double> setIC(const int dim) {
         switch (enIC) {
             case 1: //toro test 1
             {
-                x0  = 0; xEnd = 1; xDisc = 0.5; tEnd=0.25;
+                x0  = lox; xEnd = hix; xDisc = 0.5; tEnd=0.25;
                 rhoL = 1.0;   vxL = 0.0;  pL = 1.0;
                 rhoR = 0.125; vxR = 0.0;  pR = 0.1;
                 YO2L = Y_O2; YN2L = Y_N2; YO2R = Y_O2; YN2R = Y_N2;
@@ -548,7 +548,7 @@ Vector<double> setIC(const int dim) {
             }
             case 2: //toro test 2
             {
-                x0  = 0; xEnd = 1; xDisc = 0.5; tEnd=0.25;
+                x0  = lox; xEnd = hix; xDisc = 0.5; tEnd=0.25;
                 rhoL = 1.0; vxL = -2.0; pL = 0.4;      
                 rhoR = 1.0; vxR = 2.0;  pR = 0.4;
                 YO2L = Y_O2; YN2L = Y_N2; YO2R = Y_O2; YN2R = Y_N2;
@@ -560,7 +560,7 @@ Vector<double> setIC(const int dim) {
             }
             case 3: //toro test 3
             {
-                x0  = 0; xEnd = 1; xDisc = 0.5; tEnd=0.012;
+                x0  = lox; xEnd = hix; xDisc = 0.5; tEnd=0.012;
                 rhoL = 1.0; vxL = 0.0; pL = 1000.0;    
                 rhoR = 1.0; vxR = 0.0; pR = 0.01;
                 YO2L = Y_O2; YN2L = Y_N2; YO2R = Y_O2; YN2R = Y_N2;
@@ -572,7 +572,7 @@ Vector<double> setIC(const int dim) {
             }
             case 4: //toro test 4
             {
-                x0  = 0; xEnd = 1; xDisc = 0.5; tEnd=0.035;
+                x0  = lox; xEnd = hix; xDisc = 0.5; tEnd=0.035;
                 rhoL = 1.0; vxL = 0.0; pL = 0.01;      
                 rhoR = 1.0; vxR = 0.0; pR = 100.0;
                 YO2L = Y_O2; YN2L = Y_N2; YO2R = Y_O2; YN2R = Y_N2;
@@ -584,7 +584,7 @@ Vector<double> setIC(const int dim) {
             }
             case 5: //toro test 5
             {
-                x0  = 0; xEnd = 1; xDisc = 0.5; tEnd=0.035;
+                x0  = lox; xEnd = hix; xDisc = 0.5; tEnd=0.035;
                 rhoL = 5.99924; vxL = 19.5975;  pL = 460.894;      
                 rhoR = 5.99242; vxR = -6.19633; pR = 46.0950;
                 YO2L = Y_O2; YN2L = Y_N2; YO2R = Y_O2; YN2R = Y_N2;
@@ -596,7 +596,7 @@ Vector<double> setIC(const int dim) {
             }
             case 6: //cyl exp
             {
-                x0  = 0; xEnd = 1; xDisc = 0.4; tEnd=0.25;
+                x0  = lox; xEnd = hix; xDisc = 0.4; tEnd=0.25;
                 rhoL = 1; vxL = 0;  pL = 1;      
                 rhoR = 0.125; vxR = 0; pR = 0.1;
                 YO2L = Y_O2; YN2L = Y_N2; YO2R = Y_O2; YN2R = Y_N2;
@@ -608,7 +608,7 @@ Vector<double> setIC(const int dim) {
             }
             case 7: //offset for 2-D, revert to toro1
             {
-                x0  = 0; xEnd = 1; xDisc = 0.4; tEnd=0.25;
+                x0  = lox; xEnd = hix; xDisc = 0.4; tEnd=0.25;
                 rhoL = 1; vxL = 0;  pL = 1;      
                 rhoR = 0.125; vxR = 0; pR = 0.1;
                 YO2L = Y_O2; YN2L = Y_N2; YO2R = Y_O2; YN2R = Y_N2;
@@ -620,7 +620,7 @@ Vector<double> setIC(const int dim) {
             }
             case 8: // Diffusion validation test
             {
-                x0  = 0; xEnd = 4.0; xDisc = 0.5; tEnd=0.25;
+                x0  = lox; xEnd = hix; xDisc = 0.5; tEnd=0.25;
                 rhoL = 8.7345e-4; vxL = 0.0; pL = 1.0; 
                 rhoR = 8.7345e-4; vxR = 0.0; pR = 1.0;
                 YO2L = Y_O2; YN2L = Y_N2; YO2R = Y_O2; YN2R = Y_N2;
@@ -632,7 +632,7 @@ Vector<double> setIC(const int dim) {
             }
             case 9: // Sods shock tube problem with O2-N2 diatomic gas mixture and detailed thermodynamics
             {
-                x0  = 0; xEnd = 1; xDisc = 0.5; tEnd=0.25;
+                x0  = lox; xEnd = hix; xDisc = 0.5; tEnd=0.25;
                 rhoL = 1.0;   vxL = 0.0;  pL = 1.0*one_atm_Pa; //*one_atm_Pa;
                 rhoR = 0.125; vxR = 0.0;  pR = 0.1*one_atm_Pa; //*one_atm_Pa;
                 YO2L = Y_O2; YN2L = Y_N2; YO2R = Y_O2; YN2R = Y_N2;
@@ -644,7 +644,7 @@ Vector<double> setIC(const int dim) {
             }
             case 10: // Particle drag test
             {
-                x0  = 0; xEnd = 1; xDisc = 0.5; tEnd=0.25;
+                x0  = lox; xEnd = hix; xDisc = 0.5; tEnd=0.25;
                 vxL = 5.0;  pL = 1.0*one_atm_Pa; 
                 vxR = 5.0;  pR = 1.0*one_atm_Pa; 
                 YO2L = Y_O2; YN2L = Y_N2; YO2R = Y_O2; YN2R = Y_N2;
@@ -656,7 +656,7 @@ Vector<double> setIC(const int dim) {
             }
             case 11: // Particle heat test
             {
-                x0  = 0; xEnd = 1; xDisc = 0.5; tEnd=0.25;
+                x0  = lox; xEnd = hix; xDisc = 0.5; tEnd=0.25;
                 vxL = 5.0;  pL = 1.0*one_atm_Pa; 
                 vxR = 5.0;  pR = 1.0*one_atm_Pa; 
                 YO2L = Y_O2; YN2L = Y_N2; YO2R = Y_O2; YN2R = Y_N2;
@@ -668,7 +668,7 @@ Vector<double> setIC(const int dim) {
             }
             case 12: // Particle ignition test
             {
-                x0  = 0; xEnd = 1; xDisc = 0.5; tEnd=0.25;
+                x0  = lox; xEnd = hix; xDisc = 0.5; tEnd=0.25;
                 vxL = 0.0;  pL = 1.0*one_atm_Pa; 
                 vxR = 0.0;  pR = 1.0*one_atm_Pa; 
                 YO2L = Y_O2; YN2L = Y_N2; YO2R = Y_O2; YN2R = Y_N2;
@@ -680,7 +680,7 @@ Vector<double> setIC(const int dim) {
             }
             case 13: // Particle combustion test
             {
-                x0  = 0; xEnd = 1; xDisc = 0.5; tEnd=0.25;
+                x0  = lox; xEnd = hix; xDisc = 0.5; tEnd=0.25;
                 vxL = 0.0;  pL = 1.0*one_atm_Pa; 
                 vxR = 0.0;  pR = 1.0*one_atm_Pa; 
                 YO2L = Y_O2; YN2L = Y_N2; YO2R = Y_O2; YN2R = Y_N2;
@@ -692,7 +692,7 @@ Vector<double> setIC(const int dim) {
             }
             case 14: // Flame
             {
-                x0  = 0; xEnd = 0.00512; xDisc = xEnd*0.10; tEnd=0.25;
+                x0  = lox; xEnd = hix; xDisc = xEnd*0.10; tEnd=0.25;
                 vxL = 0.0;  pL = 1.0*one_atm_Pa; 
                 vxR = 0.0;  pR = 1.0*one_atm_Pa; 
                 YO2L = Y_O2; YN2L = Y_N2; YO2R = Y_O2; YN2R = Y_N2;
@@ -710,7 +710,7 @@ Vector<double> setIC(const int dim) {
         switch (enIC) {
             case 1: //toro test 1
             {
-                x0  = 0; xEnd = 1; xDisc = 0.5; tEnd=0.25;
+                x0  = lox; xEnd = hix; xDisc = 0.5; tEnd=0.25;
                 rhoL = 1.0;   vxL = 0.0;  pL = 1.0;
                 rhoR = 0.125; vxR = 0.0;  pR = 0.1;
                 YO2L = Y_O2; YN2L = Y_N2; YO2R = Y_O2; YN2R = Y_N2;
