@@ -293,7 +293,7 @@ AmrLevelAdv::updateParticleInfo(MultiFab& Sborder, const double& dt, const doubl
             pInt[h] = p.idata(h);
         }
 
-        getSource(qSource,pSource,q,pReal,pInt,mFe0,dt,dx,dy);
+        getSource(qSource,pSource,q,pReal,pInt,dt,dx,dy);
 
         p.rdata(RealData::Hp)     = pReal[RealData::Hp];
         p.idata(IntData::Fe)      = pInt[IntData::Fe];
