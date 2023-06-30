@@ -208,8 +208,7 @@ public:
 
     using MyParIter = amrex::ParIter<RealData::ncomps, IntData::ncomps>;
 
-    void initParticles(const amrex::MultiFab& S_new, const double& mFe0, const double& mFeO0, const double& mFe3O40, \
-                       const double& xDisc);  //amrex::MultiFab& S_new, const int num_particles
+    void initParticles(const amrex::MultiFab& S_new, const double& xDisc);  //amrex::MultiFab& S_new, const int num_particles
 
     amrex::Vector<double> getParticleInfo(amrex::Vector<double>& pReal, amrex::Vector<int>& pInt);  //
 
