@@ -40,6 +40,7 @@ struct IntData
         FeO,
         Fe3O4,
         pIter,
+        regime,
         ncomps
     };
 };

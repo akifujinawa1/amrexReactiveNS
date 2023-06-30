@@ -299,10 +299,12 @@ AmrLevelAdv::initData ()
 
   const Real probLoX = prob_lo[0];
   const Real probLoY = (amrex::SpaceDim > 1 ? prob_lo[1] : 0.0);
+  const Real probHiX = prob_hi[0];
+  const Real probHiY = (amrex::SpaceDim > 1 ? prob_hi[1] : 0.0);
   
   // Initialize vector to store left and right state for Riemann problem
   Vector<double> RPLeftRight(16);
-  RPLeftRight = setIC(amrex::SpaceDim);
+  RPLeftRight = setIC(amrex::SpaceDim,probLoX,probHiX,probLoY,probHiY);
   double xDisc = RPLeftRight[12];
 
   std::cout << "Initial conditions:" << std::endl; 
@@ -442,7 +444,7 @@ AmrLevelAdv::initData ()
     }
   } // closes mfi patch loop
 
-  initParticles(S_new);
+  initParticles(S_new,xDisc);
 
   // Abort("particles initialized ");
 

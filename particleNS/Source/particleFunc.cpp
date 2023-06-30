@@ -54,7 +54,7 @@ using namespace amrex;
 // Use this file to write functions required for particle calculations
 
 void
-AmrLevelAdv::initParticles (const MultiFab& S_new)
+AmrLevelAdv::initParticles (const MultiFab& S_new, const double& xDisc)
 {
     const int lev = 0;
     Real patch = 0;
@@ -136,7 +136,7 @@ AmrLevelAdv::initParticles (const MultiFab& S_new)
             particleInit(energy0);
             
             if (enIC==14){
-                if ((p.pos(0)/10e-6) < n_cell*0.1){
+                if (p.pos(0) < xDisc){
                     energy0 = Hparticle(mFe0,mFeO0,mFe3O40,1270,0,0,0);
                 }
             }    
@@ -156,6 +156,7 @@ AmrLevelAdv::initParticles (const MultiFab& S_new)
             p.idata(IntData::FeO)    = 0;         // Store the FeO melt flag variable here
             p.idata(IntData::Fe3O4)  = 0;         // Store the Fe3O4 melt flag variable here
             p.idata(IntData::pIter)  = totalParIter; // Store the particle counter here
+            p.idata(IntData::regime) = 0;
 
             totalParIter += 1;
 
@@ -263,7 +264,7 @@ AmrLevelAdv::updateParticleInfo(MultiFab& Sborder, const double& dt, const doubl
         x  = p.pos(0);   //given in meters, lo.x is in cell count, so scale by dx to get meters
         i  = static_cast<int>(Math::floor(x/dx));
         // std::cout << "x-position: " << x << std::endl;
-        std::cout << "cell number is: " << i << std::endl;
+        // std::cout << "cell number is: " << i << std::endl;
         // std::cout << "lo.x and hi.x are: " << lo.x << ", " << hi.x << std::endl; 
 
         if (spacedim == 2){
@@ -273,10 +274,10 @@ AmrLevelAdv::updateParticleInfo(MultiFab& Sborder, const double& dt, const doubl
             // std::cout << "position in y cell number is: " << y/dy << ", cell number is: " << j << std::endl;
         }
         
-        std::cout << "rho: " << arr(i,j,k,0) << std::endl;
-        std::cout << "x- and y-momentum: " << arr(i,j,k,1) << " " << arr(i,j,k,2) << std::endl;
-        std::cout << "energy: " << arr(i,j,k,3) << std::endl;
-        std::cout << "O2 and N2 concentration: " << arr(i,j,k,4) << " " << arr(i,j,k,5) << std::endl;
+        // std::cout << "rho: " << arr(i,j,k,0) << std::endl;
+        // std::cout << "x- and y-momentum: " << arr(i,j,k,1) << " " << arr(i,j,k,2) << std::endl;
+        // std::cout << "energy: " << arr(i,j,k,3) << std::endl;
+        // std::cout << "O2 and N2 concentration: " << arr(i,j,k,4) << " " << arr(i,j,k,5) << std::endl;
 
         for (int h = 0; h < NUM_STATE; h++){
             q[h] = arr(i,j,k,h);
@@ -300,6 +301,7 @@ AmrLevelAdv::updateParticleInfo(MultiFab& Sborder, const double& dt, const doubl
         p.idata(IntData::Fe)      = pInt[IntData::Fe];
         p.idata(IntData::FeO)     = pInt[IntData::FeO];
         p.idata(IntData::Fe3O4)   = pInt[IntData::Fe3O4];
+        p.idata(IntData::regime)  = pInt[IntData::regime];
         
         p.pos(0) = p.pos(0) + dt*p.rdata(RealData::u);
         if (spacedim == 2){
@@ -415,9 +417,9 @@ void getSource(Vector<double>& qSource, Vector<double>& pSource, const Vector<do
     Tp         = Tparticle(mFe,mFeO,mFe3O4,Hp,phaseFe,phaseFeO,phaseFe3O4,LFe,LFeO,LFe3O4);
     Tfilm      = filmAverage(Tp,Tgas);
 
-    std::cout << "mFe, mFeO: " << mFe << " " << mFeO << "\n" << std::endl;
-    std::cout << "mFe3O4, Hp: " << mFe3O4 << " " << Hp << "\n" << std::endl;
-    std::cout << "Tp, Tg: " << Tp << " " << Tgas << "\n" << std::endl;
+    // std::cout << "mFe, mFeO: " << mFe << " " << mFeO << "\n" << std::endl;
+    // std::cout << "mFe3O4, Hp: " << mFe3O4 << " " << Hp << "\n" << std::endl;
+    // std::cout << "Tp, Tg: " << Tp << " " << Tgas << "\n" << std::endl;
 
     // With the particle temperature known, we first compute the vapor pressures of gas-phase Fe and FeO
     // resulting from the gas-liquid equilibrium at the particle surface. If the particle temperature is 
@@ -553,6 +555,7 @@ void getSource(Vector<double>& qSource, Vector<double>& pSource, const Vector<do
     // there is more than 1% of the initial Fe mass, and more than 1% of the ambient oxygen mole fraction
     // in the gas cell.
 
+    pInt[IntData::regime] = 0;
     if ((mFe/mFe0 > 0.01)&&(YO2/(0.2329) > 0.01)){ 
         if (mdotO2d > mdotO2k){ // if the molecular diffusion rate is FASTER than the kinetic rate of O2 consumption
             // reaction is kinetically-controlled
@@ -585,6 +588,7 @@ void getSource(Vector<double>& qSource, Vector<double>& pSource, const Vector<do
                 dmFe3O4formdt = 0;
             }
             pSource[RealData::mFe] = - pSource[RealData::mFeO]*nFeFeO - pSource[RealData::mFe3O4]*nFeFe3O4;
+            pInt[IntData::regime] = 1;  // combustion regime flag changed to diffusion-controlled
             // std::cout << "diffusion-controlled" << std::endl;
         }
     }
