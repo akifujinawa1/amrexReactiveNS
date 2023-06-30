@@ -44,7 +44,7 @@ extern double TpInitial;
 extern double M_O2, M_N2;
 extern double qFeOs,qFeOl,qFe3O4s,qFe2O3s,qFeOg;
 extern double meltFe,meltFeO,meltFe3O4;
-
+extern const double mFe0,mFeO0,mFe3O40,interDist;
 
 
 using namespace amrex;
@@ -226,8 +226,7 @@ AmrLevelAdv::getParticleInfo(Vector<double>& pReal, Vector<int>& pInt)
 }
 
 void 
-AmrLevelAdv::updateParticleInfo(MultiFab& Sborder, const double& mFe0, const double& interDist, \
-                                const double& dt, const double& dx, const double& dy)
+AmrLevelAdv::updateParticleInfo(MultiFab& Sborder, const double& dt, const double& dx, const double& dy)
 {
   const int lev = 0;
   Real x, y, lx, ly, vCell;
@@ -349,7 +348,7 @@ AmrLevelAdv::updateParticleInfo(MultiFab& Sborder, const double& mFe0, const dou
 }
 
 void getSource(Vector<double>& qSource, Vector<double>& pSource, const Vector<double>& q, Vector<double>& pReal, \
-               Vector<int>& pInt, const double& mFe0, const double& dt, const double& dx, const double& dy){
+               Vector<int>& pInt, const double& dt, const double& dx, const double& dy){
     
     // Declare particle and gas variables
     Real up, vp, wp, mFe, mFeO, mFe3O4, Hp, LFe, LFeO, LFe3O4;

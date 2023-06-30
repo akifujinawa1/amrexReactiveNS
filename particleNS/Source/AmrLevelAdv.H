@@ -212,8 +212,7 @@ public:
 
     amrex::Vector<double> getParticleInfo(amrex::Vector<double>& pReal, amrex::Vector<int>& pInt);  //
 
-    void updateParticleInfo(amrex::MultiFab& Sborder, const double& mFe0, const double& interDist, \
-                            const double& dt, const double& dx, const double& dy);  //
+    void updateParticleInfo(amrex::MultiFab& Sborder, const double& dt, const double& dx, const double& dy);  //
 
     void printParticleInfo();
 

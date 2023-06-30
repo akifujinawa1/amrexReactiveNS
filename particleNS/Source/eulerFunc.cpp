@@ -712,7 +712,7 @@ Vector<double> setIC(const int dim, const double& probLoX, const double& probHiX
         switch (enIC) {
             case 1: //toro test 1
             {
-                x0  = lox; xEnd = hix; xDisc = 0.5; tEnd=0.25;
+                x0  = 0; xEnd = 1; xDisc = 0.5; tEnd=0.25;
                 rhoL = 1.0;   vxL = 0.0;  pL = 1.0;
                 rhoR = 0.125; vxR = 0.0;  pR = 0.1;
                 YO2L = Y_O2; YN2L = Y_N2; YO2R = Y_O2; YN2R = Y_N2;
