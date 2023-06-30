@@ -263,8 +263,6 @@ AmrLevelAdv::variableSetUp ()
   desc_lst.setComponent(Phi_Type, 5, "rhoN2", bc, 
 			                  StateDescriptor::BndryFunc(nullfill));
 
-  // Initialize particle here
-
 }
 
 //
