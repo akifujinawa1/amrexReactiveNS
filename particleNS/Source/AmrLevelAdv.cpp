@@ -453,7 +453,7 @@ AmrLevelAdv::initData ()
     }
   } // closes mfi patch loop
 
-  initParticles(S_new,mFe0,mFeO0,mFe3O40);
+  initParticles(S_new,mFe0,mFeO0,mFe3O40,xDisc);
 
   std::cout << "rp0 dFeO dnext rFeO rFe: " << rp0 << " " << deltaFeO << " " << deltaFe3O4 << " " << rFeO0 << std::endl;
   std::cout << "masses, interdist: " << mFe0 << " " << mFeO0 << " " << mFe3O40 << " " << interDist << std::endl;

@@ -52,7 +52,8 @@ using namespace amrex;
 // Use this file to write functions required for particle calculations
 
 void
-AmrLevelAdv::initParticles (const MultiFab& S_new, const double& mFe0, const double& mFeO0, const double& mFe3O40)
+AmrLevelAdv::initParticles (const MultiFab& S_new, const double& mFe0, const double& mFeO0, const double& mFe3O40, \
+                            const double& xDisc)
 {
     const int lev = 0;
     Real patch = 0;
@@ -130,12 +131,11 @@ AmrLevelAdv::initParticles (const MultiFab& S_new, const double& mFe0, const dou
                 p.pos(1) = y_coord[i];
             }
 
-            double energy0;
-            particleInit(mFe0,mFeO0,mFe3O40,energy0);
+            double energy0 = Hparticle(mFe0,mFeO0,mFe3O40,TpInitial,0,0,0);
             
             if (enIC==14){
-                if ((p.pos(0)/dX) < n_cell*0.1){
-                    energy0 = Hparticle(mFe0,mFeO0,mFe3O40,1270,0,0,0);
+                if (p.pos(0) < xDisc){
+                    energy0 = Hparticle(mFe0,mFeO0,mFe3O40,1270.0,0,0,0);
                 }
             }    
 
