@@ -37,8 +37,11 @@ extern   int       conv;
 extern   int       Da;
 extern   int       particle;
 extern   int       Nsub;
+
+extern   double       dp0;             // initial particle size from constants.H
 extern   double       Gamma;           // ratio of specific heats -
 extern   double       R;               // univeral gas constant   J/K/mol
+extern   double       pi;              // pi
 extern   double       one_atm_Pa;      // one atmosphere          Pa
 extern   double       T0;              // initial gas temperature K
 extern   double       M_O2;            // O2 molecular weight     kg/mol
@@ -48,6 +51,7 @@ extern   double       X_N2;            // mole fraction of N2
 extern   double       Y_O2;            // mass fraction of O2
 extern   double       Y_N2;            // mass fraction of N2
 extern   double       Mavg;            // average molecular weight of the gas mixture
+extern   const double mFe0, mFeO0, mFe3O40, interDist;  //particle parameters
 
 // define the remaining global variables here. NUM_GROW should be defined based on the value of slope limiting.
 int      AmrLevelAdv::verbose         = 0;
@@ -58,15 +62,19 @@ int      AmrLevelAdv::NUM_STATE       = 6;  // set this to 6 for reactive NS wit
 int      AmrLevelAdv::NUM_GROW        = 2;  // number of ghost cells, set gCells from main.cpp file. -2023W2
 int      n_cell;
 int      max_level;
-const int spacedim               = amrex::SpaceDim;
 int      NUM_STATE                    = AmrLevelAdv::NUM_STATE;
 int      pfrequency                   = 20;
 int      iter                         = 0;
 int      printlevel                   = 0;
 int      advIter = 0;
+int      counter = 0;
+const int spacedim               = amrex::SpaceDim;
+
+
 double   meltFe, meltFeO, meltFe3O4;
 double   dt_super;
-int counter = 0;
+
+
 
 // std::unique_ptr<amrex::ParticleContainer<RealData::ncomps, IntData::ncomps>> AmrLevelAdv::particles =  nullptr;
 
@@ -301,6 +309,7 @@ AmrLevelAdv::initData ()
   const Real probLoY = (amrex::SpaceDim > 1 ? prob_lo[1] : 0.0);
   const Real probHiX = prob_hi[0];
   const Real probHiY = (amrex::SpaceDim > 1 ? prob_hi[1] : 0.0);
+
   
   // Initialize vector to store left and right state for Riemann problem
   Vector<double> RPLeftRight(16);
@@ -697,41 +706,6 @@ AmrLevelAdv::advance (Real time,
     dY = dx[1];
   }
 
-  // ____ PARTICLE ____ //
-
-  // we want the particles to interact with the Sborder MultiFab
-
-  std::cout << "Particle int is: " << particle << std::endl;
-  
-  if (particle > 0){
-    // if ((enIC == 12)&&(pPosTp[2]>1600)){
-    //   Vector<double> pPosTp(3);
-    //   Vector<double> pReal(RealData::ncomps);
-    //   Vector<int> pInt(IntData::ncomps);
-    //   pPosTp = getParticleInfo(pReal,pInt);
-    //   Abort("ignition");
-    // }
-    // else {
-      // int subcycle = 20;
-      // double dt_sub = dt/Nsub;
-      // dt_super = 1.0e-7;
-      // for (int i = 0; i < Nsub; i++){
-      //   updateParticleInfo(Sborder,dt_super,dX,dY);
-      // }
-      double dt_sub = dt/Nsub;
-      for (int i = 0; i < Nsub; i++){
-        updateParticleInfo(Sborder,dt,dX,dY);
-      }
-      
-    // }
-
-    Sborder.FillBoundary(geom.periodicity());
-    FillDomainBoundary(Sborder,geom,BCVec);   // use this to fill cell-centred data outside domain (AMReX_BCUtil.H) -2023W2
-    
-  }
-  
-
-
   // We update the cell-centred values in a dimensionally-split manner, using an inviscid-viscous-source splitting 
 
   // ____ EULER ____ //
@@ -810,7 +784,39 @@ AmrLevelAdv::advance (Real time,
   } //this closes the d=0 to d=spacedim loop for the EULER update
 
 
+  // ____ PARTICLE ____ //
+
+  // we want the particles to interact with the Sborder MultiFab
+
+  // std::cout << "Particle int is: " << particle << std::endl;
   
+  if (particle > 0){
+    // if ((enIC == 12)&&(pPosTp[2]>1600)){
+    //   Vector<double> pPosTp(3);
+    //   Vector<double> pReal(RealData::ncomps);
+    //   Vector<int> pInt(IntData::ncomps);
+    //   pPosTp = getParticleInfo(pReal,pInt);
+    //   Abort("ignition");
+    // }
+    // else {
+      // int subcycle = 20;
+      // double dt_sub = dt/Nsub;
+      // dt_super = 1.0e-7;
+      // for (int i = 0; i < Nsub; i++){
+      //   updateParticleInfo(Sborder,dt_super,dX,dY);
+      // }
+      double dt_sub = dt/Nsub;
+      for (int i = 0; i < Nsub; i++){
+        updateParticleInfo(Sborder,mFe0,interDist,dt,dX,dY);
+      }
+      
+    // }
+
+    Sborder.FillBoundary(geom.periodicity());
+    FillDomainBoundary(Sborder,geom,BCVec);   // use this to fill cell-centred data outside domain (AMReX_BCUtil.H) -2023W2
+    
+  }
+
 
 
 

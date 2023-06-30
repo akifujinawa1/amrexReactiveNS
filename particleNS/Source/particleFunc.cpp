@@ -3,8 +3,6 @@
 #include "thermoTransport.H"
 #include "particleFunc.H"
 #include "AmrLevelAdv.H"
-// #include "constants.H"
-// #include "constants.H"
 #include "AMReX_Vector.H"
 #include "AMReX_Array.H"
 #include "AMReX_REAL.H"
@@ -46,7 +44,7 @@ extern double TpInitial;
 extern double M_O2, M_N2;
 extern double qFeOs,qFeOl,qFe3O4s,qFe2O3s,qFeOg;
 extern double meltFe,meltFeO,meltFe3O4;
-extern double mFe0,mFeO0,mFe3O40,interDist;
+
 
 
 using namespace amrex;
@@ -55,6 +53,7 @@ using namespace amrex;
 
 void
 AmrLevelAdv::initParticles (const MultiFab& S_new, const double& xDisc)
+
 {
     const int lev = 0;
     Real patch = 0;
@@ -118,7 +117,7 @@ AmrLevelAdv::initParticles (const MultiFab& S_new, const double& xDisc)
             }
         }
 
-        std::cout << "total number of particles in this patch: "  << Np << std::endl;
+        // std::cout << "total number of particles in this patch: "  << Np << std::endl;
         
         for (int i = 0; i < Np; i++){
 
@@ -127,17 +126,16 @@ AmrLevelAdv::initParticles (const MultiFab& S_new, const double& xDisc)
             p.cpu()  = ParallelDescriptor::MyProc();
             
             p.pos(0) = x_coord[i];
-            std::cout << "particle position: " << p.pos(0) << std::endl;
+            // std::cout << "particle position: " << p.pos(0) << std::endl;
             if (spacedim == 2){
                 p.pos(1) = y_coord[i];
             }
 
-            double energy0;
-            particleInit(energy0);
+            double energy0 = Hparticle(mFe0,mFeO0,mFe3O40,TpInitial,0,0,0);
             
             if (enIC==14){
                 if (p.pos(0) < xDisc){
-                    energy0 = Hparticle(mFe0,mFeO0,mFe3O40,1270,0,0,0);
+                    energy0 = Hparticle(mFe0,mFeO0,mFe3O40,1270.0,0,0,0);
                 }
             }    
 
@@ -156,7 +154,7 @@ AmrLevelAdv::initParticles (const MultiFab& S_new, const double& xDisc)
             p.idata(IntData::FeO)    = 0;         // Store the FeO melt flag variable here
             p.idata(IntData::Fe3O4)  = 0;         // Store the Fe3O4 melt flag variable here
             p.idata(IntData::pIter)  = totalParIter; // Store the particle counter here
-            p.idata(IntData::regime) = 0;
+            p.idata(IntData::regime) = 0;            // Store the particle combustion regime
 
             totalParIter += 1;
 
@@ -228,7 +226,8 @@ AmrLevelAdv::getParticleInfo(Vector<double>& pReal, Vector<int>& pInt)
 }
 
 void 
-AmrLevelAdv::updateParticleInfo(MultiFab& Sborder, const double& dt, const double& dx, const double& dy)
+AmrLevelAdv::updateParticleInfo(MultiFab& Sborder, const double& mFe0, const double& interDist, \
+                                const double& dt, const double& dx, const double& dy)
 {
   const int lev = 0;
   Real x, y, lx, ly, vCell;
@@ -240,7 +239,7 @@ AmrLevelAdv::updateParticleInfo(MultiFab& Sborder, const double& dt, const doubl
   Vector<int>    pInt(IntData::ncomps,0);
 
   
-  std::cout << "in updateParticleInfo" << std::endl;
+//   std::cout << "in updateParticleInfo" << std::endl;
 
   for (MFIter mfi(Sborder); mfi.isValid(); ++mfi){
 
@@ -249,7 +248,7 @@ AmrLevelAdv::updateParticleInfo(MultiFab& Sborder, const double& dt, const doubl
     auto& particle_tile = GetParticles(lev)[std::make_pair(grid_id,tile_id)];
     auto& particles = particle_tile.GetArrayOfStructs();
     const int np = particles.numParticles();
-    std::cout << "number of particles in grid in updateParticleInfo, within advance: " << np << std::endl;
+    // std::cout << "number of particles in grid in updateParticleInfo, within advance: " << np << std::endl;
 
     // Access S_border multifab information here
     const Box& bx = mfi.tilebox();
@@ -295,13 +294,14 @@ AmrLevelAdv::updateParticleInfo(MultiFab& Sborder, const double& dt, const doubl
             pInt[h] = p.idata(h);
         }
 
-        getSource(qSource,pSource,q,pReal,pInt,dt,dx,dy);
+        getSource(qSource,pSource,q,pReal,pInt,mFe0,dt,dx,dy);
 
         p.rdata(RealData::Hp)     = pReal[RealData::Hp];
         p.idata(IntData::Fe)      = pInt[IntData::Fe];
         p.idata(IntData::FeO)     = pInt[IntData::FeO];
         p.idata(IntData::Fe3O4)   = pInt[IntData::Fe3O4];
         p.idata(IntData::regime)  = pInt[IntData::regime];
+
         
         p.pos(0) = p.pos(0) + dt*p.rdata(RealData::u);
         if (spacedim == 2){
@@ -323,8 +323,7 @@ AmrLevelAdv::updateParticleInfo(MultiFab& Sborder, const double& dt, const doubl
                     Abort("nan found before applying lagrangian source");
                 }
                 
-                q[h] = q[h] + dt*(1.0/vCell)*qSource[h];
-                arr(i,j,k,h) = q[h];
+                arr(i,j,k,h) = arr(i,j,k,h) + dt*(1.0/vCell)*qSource[h];
 
                 if (arr(i,j,k,h) != arr(i,j,k,h)){
                     std::cout << "cell number: " << i << std::endl;
@@ -350,7 +349,7 @@ AmrLevelAdv::updateParticleInfo(MultiFab& Sborder, const double& dt, const doubl
 }
 
 void getSource(Vector<double>& qSource, Vector<double>& pSource, const Vector<double>& q, Vector<double>& pReal, \
-               Vector<int>& pInt, const double& dt, const double& dx, const double& dy){
+               Vector<int>& pInt, const double& mFe0, const double& dt, const double& dx, const double& dy){
     
     // Declare particle and gas variables
     Real up, vp, wp, mFe, mFeO, mFe3O4, Hp, LFe, LFeO, LFe3O4;
@@ -589,6 +588,7 @@ void getSource(Vector<double>& qSource, Vector<double>& pSource, const Vector<do
             }
             pSource[RealData::mFe] = - pSource[RealData::mFeO]*nFeFeO - pSource[RealData::mFe3O4]*nFeFe3O4;
             pInt[IntData::regime] = 1;  // combustion regime flag changed to diffusion-controlled
+
             // std::cout << "diffusion-controlled" << std::endl;
         }
     }
@@ -733,7 +733,7 @@ AmrLevelAdv::printParticleInfo()
 //   std::cout << "Enthalpy and Temperature:: Hp: " << Hp << ", Tp: " << Tp << std::endl;
 }
 
-void particleInit(double& energy0){
+void particleInit(const double& mFe0, const double& mFeO0, const double& mFe3O40, double& energy0){
 
     int    phaseFe=0, phaseFeO=0, phaseFe3O4=0;
     // double deltaFeO, deltaFe3O4, rp0, rFeO0, rFe0;

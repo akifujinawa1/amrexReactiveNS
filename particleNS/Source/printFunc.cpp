@@ -147,7 +147,7 @@ void AmrLevelAdv::writePlotFile()
         }
         approx.close();
     }
-    if ((enIC == 14)&&((iter%500)==0)) { // 1D isobaric flame case
+    if ((enIC == 14)&&(cur_time > 5e-6*counter)) { // 1D isobaric flame case
         const MultiFab &S_plot = get_new_data(Phi_Type);
         const int lev = 0;
 
@@ -194,6 +194,7 @@ void AmrLevelAdv::writePlotFile()
                 phaseFe    = p.idata(IntData::Fe);
                 phaseFeO   = p.idata(IntData::FeO);
                 phaseFe3O4 = p.idata(IntData::Fe3O4);
+                int regime     = p.idata(IntData::regime);
                 int particleID = p.idata(IntData::pIter);
                 int regime = p.idata(IntData::regime);
                 Tp = Tparticle(mFe,mFeO,mFe3O4,Hp,phaseFe,phaseFeO,phaseFe3O4,LFe,LFeO,LFe3O4);
