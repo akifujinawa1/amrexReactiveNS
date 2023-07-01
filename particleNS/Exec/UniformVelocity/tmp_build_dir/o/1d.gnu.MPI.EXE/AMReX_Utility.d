@@ -12,6 +12,8 @@ tmp_build_dir/o/1d.gnu.MPI.EXE/AMReX_Utility.o: \
  ../../../../amrex/Src/Base/AMReX_GpuPrint.H \
  ../../../../amrex/Src/Base/AMReX_GpuAssert.H \
  ../../../../amrex/Src/Base/AMReX_ccse-mpi.H \
+ /usr/lib/x86_64-linux-gnu/openmpi/include/mpi.h \
+ /usr/lib/x86_64-linux-gnu/openmpi/include/mpi_portable_platform.h \
  ../../../../amrex/Src/Base/AMReX_Exception.H \
  ../../../../amrex/Src/Base/AMReX_GpuControl.H \
  ../../../../amrex/Src/Base/AMReX_GpuTypes.H \
@@ -67,6 +69,10 @@ tmp_build_dir/s/1d.gnu.MPI.EXE/AMReX_Config.H:
 ../../../../amrex/Src/Base/AMReX_GpuAssert.H:
 
 ../../../../amrex/Src/Base/AMReX_ccse-mpi.H:
+
+/usr/lib/x86_64-linux-gnu/openmpi/include/mpi.h:
+
+/usr/lib/x86_64-linux-gnu/openmpi/include/mpi_portable_platform.h:
 
 ../../../../amrex/Src/Base/AMReX_Exception.H:
 
