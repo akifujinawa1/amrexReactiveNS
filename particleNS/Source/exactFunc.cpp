@@ -44,7 +44,7 @@ void updateExact(const int nSteps, const double dx, const int dim, std::ofstream
     amrex::Vector<double> primBound(NUM_STATE);
 
     // Retrive the Riemann problem based on what initial condition has been selected in the inputs file.
-    RPLeftRight = setIC(dim);
+    RPLeftRight = setIC(dim,0,1,0,1); //need to fix
     
     qL[0] = RPLeftRight[0];
     qL[1] = RPLeftRight[1];
