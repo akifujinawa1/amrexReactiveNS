@@ -24,7 +24,7 @@ void updateEuler(MultiFab& Sborder, Array<MultiFab, SpaceDim>& fluxes, Vector<do
 Vector<double> getEulerFlux(const Vector<double>& q, const int& dir);
 Vector<double> getPrim(const Vector<double>& q);
 Vector<double> getCons(const Vector<double>& prim);
-Vector<double> setIC(const int dim);
+Vector<double> setIC(const int dim, const double& probLoX, const double& probHiX, const double& probLoY, const double& probHiY);
 Vector<double> HLLCflux(const Vector<double>& qL, const Vector<double>& qR, const int& dir);
 Vector<double> HLLCstarFlux(const Vector<double>& f, const Vector<double>& q,\
                                  const double& s, const double& sStar, const int& dir);
