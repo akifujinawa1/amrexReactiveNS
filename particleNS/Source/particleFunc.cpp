@@ -46,7 +46,7 @@ extern double TpInitial;
 extern double M_O2, M_N2;
 extern double qFeOs,qFeOl,qFe3O4s,qFe2O3s,qFeOg;
 extern double meltFe,meltFeO,meltFe3O4;
-extern double mFe0,mFeO0,mFe3O40,interDist;
+extern const double mFe0,mFeO0,mFe3O40,interDist;
 
 
 using namespace amrex;
@@ -136,7 +136,7 @@ AmrLevelAdv::initParticles (const MultiFab& S_new, const double& xDisc)
             
             if (enIC==14){
                 // if ((p.pos(0)/10e-6) < n_cell*0.1){
-                if (p.pos(0) < xDisc){
+                if (p.pos(0) < 2*xDisc){
                     energy0 = Hparticle(mFe0,mFeO0,mFe3O40,1270,0,0,0);
                 }
             }    
