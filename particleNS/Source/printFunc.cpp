@@ -142,7 +142,7 @@ void AmrLevelAdv::writePlotFile()
 
                 // std::cout << "Tg, p: " << Tgas << " " << p << std::endl;
 
-                AllPrint(approx) << x << " " << Tgas << " " << YO2 << " " << p << " " << vx << std::endl;
+                AllPrint(approx) << x << " " << Tgas << " " << YO2 << " " << p << " " << vx << " " << rho << std::endl;
             }
         }
         approx.close();
@@ -195,9 +195,10 @@ void AmrLevelAdv::writePlotFile()
                 phaseFeO   = p.idata(IntData::FeO);
                 phaseFe3O4 = p.idata(IntData::Fe3O4);
                 int particleID = p.idata(IntData::pIter);
+                int regime     = p.idata(IntData::regime);
                 Tp = Tparticle(mFe,mFeO,mFe3O4,Hp,phaseFe,phaseFeO,phaseFe3O4,LFe,LFeO,LFe3O4);
                 
-                AllPrint(parOut) << cur_time << " " << x << " " << mFe << " " << mFeO << " " << mFe3O4 << " " << Tp << std::endl;
+                AllPrint(parOut) << cur_time << " " << x << " " << mFe << " " << mFeO << " " << mFe3O4 << " " << Tp << " " << regime << std::endl;
                 
                 parOut.close();
 

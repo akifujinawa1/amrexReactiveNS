@@ -155,6 +155,7 @@ AmrLevelAdv::initParticles (const MultiFab& S_new)
             p.idata(IntData::FeO)    = 0;         // Store the FeO melt flag variable here
             p.idata(IntData::Fe3O4)  = 0;         // Store the Fe3O4 melt flag variable here
             p.idata(IntData::pIter)  = totalParIter; // Store the particle counter here
+            p.idata(IntData::regime) = 0;         // Store the combustion regime of each particle here
 
             totalParIter += 1;
 
@@ -298,6 +299,7 @@ AmrLevelAdv::updateParticleInfo(MultiFab& Sborder, const double& dt, const doubl
         p.idata(IntData::Fe)      = pInt[IntData::Fe];
         p.idata(IntData::FeO)     = pInt[IntData::FeO];
         p.idata(IntData::Fe3O4)   = pInt[IntData::Fe3O4];
+        p.idata(IntData::regime)  = pInt[IntData::regime];
         
         p.pos(0) = p.pos(0) + dt*p.rdata(RealData::u);
         if (spacedim == 2){
@@ -549,6 +551,7 @@ void getSource(Vector<double>& qSource, Vector<double>& pSource, const Vector<do
     // there is more than 1% of the initial Fe mass, and more than 1% of the ambient oxygen mole fraction
     // in the gas cell.
 
+    pInt[IntData::regime] = 0;  // preset combustion regime to kinetic
     if ((mFe/mFe0 > 0.01)&&(YO2/(0.2329) > 0.01)){ 
         if (mdotO2d > mdotO2k){ // if the molecular diffusion rate is FASTER than the kinetic rate of O2 consumption
             // reaction is kinetically-controlled
@@ -581,6 +584,7 @@ void getSource(Vector<double>& qSource, Vector<double>& pSource, const Vector<do
                 dmFe3O4formdt = 0;
             }
             pSource[RealData::mFe] = - pSource[RealData::mFeO]*nFeFeO - pSource[RealData::mFe3O4]*nFeFe3O4;
+            pInt[IntData::regime] = 1;  // set combustion regime to diffusive
             // std::cout << "diffusion-controlled" << std::endl;
         }
     }
