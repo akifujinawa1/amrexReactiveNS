@@ -46,7 +46,7 @@ extern double TpInitial;
 extern double M_O2, M_N2;
 extern double qFeOs,qFeOl,qFe3O4s,qFe2O3s,qFeOg;
 extern double meltFe,meltFeO,meltFe3O4;
-extern const double mFe0,mFeO0,mFe3O40,interDist;
+extern double mFe0,mFeO0,mFe3O40,interDist;
 
 
 using namespace amrex;
