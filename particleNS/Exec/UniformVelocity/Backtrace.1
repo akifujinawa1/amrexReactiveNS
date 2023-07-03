@@ -1,4 +1,4 @@
-Host Name: cerberus1
+Host Name: cerberus2
 === If no file names and line numbers are shown below, one can run
             addr2line -Cpfie my_exefile my_line_address
     to convert `my_line_address` (e.g., 0x4a6b) into file name and line number.
@@ -9,44 +9,31 @@ Host Name: cerberus1
             readelf -wl my_exefile | grep my_line_address'
     to find out the offset for that line.
 
- 0: ./main1d.gnu.MPI.ex(+0x15951d) [0x5638b1f3651d]
+ 0: ./main1d.gnu.MPI.ex(+0x1591fd) [0x5632989d61fd]
     amrex::BLBackTrace::print_backtrace_info(_IO_FILE*) at /usr/include/x86_64-linux-gnu/bits/unistd.h:354
  (inlined by) amrex::BLBackTrace::print_backtrace_info(_IO_FILE*) at /home/raid/af793/amrexReactiveNS/particleNS/Exec/UniformVelocity/../../../../amrex/Src/Base/AMReX_BLBackTrace.cpp:196
 
- 1: ./main1d.gnu.MPI.ex(+0x15b485) [0x5638b1f38485]
+ 1: ./main1d.gnu.MPI.ex(+0x15b165) [0x5632989d8165]
     amrex::BLBackTrace::handler(int) at /home/raid/af793/amrexReactiveNS/particleNS/Exec/UniformVelocity/../../../../amrex/Src/Base/AMReX_BLBackTrace.cpp:96
 
- 2: ./main1d.gnu.MPI.ex(+0x4c89c) [0x5638b1e2989c]
-    Tg(double const&, double const&, double const&, double const&, double const&, double const&) at /home/raid/af793/amrexReactiveNS/particleNS/Exec/UniformVelocity/../../Source/thermoTransport.cpp:556
+ 2: ./main1d.gnu.MPI.ex(+0x54e42) [0x5632988d1e42]
+    amrex::Abort(char const*) at /home/raid/af793/amrexReactiveNS/particleNS/Exec/UniformVelocity/../../../../amrex/Src/Base/AMReX.H:163
+ (inlined by) AmrLevelAdv::updateParticleInfo(amrex::MultiFab&, double const&, double const&, double const&, double const&, double const&) at /home/raid/af793/amrexReactiveNS/particleNS/Exec/UniformVelocity/../../Source/particleFunc.cpp:340
 
- 3: ./main1d.gnu.MPI.ex(+0x3de70) [0x5638b1e1ae70]
-    pressure(double const&, double const&, double const&, double const&) at /home/raid/af793/amrexReactiveNS/particleNS/Exec/UniformVelocity/../../Source/eulerFunc.cpp:1286
- (inlined by) getPrim(amrex::Vector<double, std::allocator<double> > const&) at /home/raid/af793/amrexReactiveNS/particleNS/Exec/UniformVelocity/../../Source/eulerFunc.cpp:1228
+ 3: ./main1d.gnu.MPI.ex(+0x31651) [0x5632988ae651]
+    AmrLevelAdv::advance(double, double, int, int) at /home/raid/af793/amrexReactiveNS/particleNS/Exec/UniformVelocity/../../Source/AmrLevelAdv.cpp:738
 
- 4: ./main1d.gnu.MPI.ex(+0x3e04b) [0x5638b1e1b04b]
-    std::_Vector_base<double, std::allocator<double> >::_Vector_impl_data::_M_copy_data(std::_Vector_base<double, std::allocator<double> >::_Vector_impl_data const&) at /usr/include/c++/9/bits/stl_vector.h:108
- (inlined by) std::_Vector_base<double, std::allocator<double> >::_Vector_impl_data::_M_swap_data(std::_Vector_base<double, std::allocator<double> >::_Vector_impl_data&) at /usr/include/c++/9/bits/stl_vector.h:121
- (inlined by) std::vector<double, std::allocator<double> >::_M_move_assign(std::vector<double, std::allocator<double> >&&, std::integral_constant<bool, true>) at /usr/include/c++/9/bits/stl_vector.h:1816
- (inlined by) std::vector<double, std::allocator<double> >::operator=(std::vector<double, std::allocator<double> >&&) at /usr/include/c++/9/bits/stl_vector.h:711
- (inlined by) amrex::Vector<double, std::allocator<double> >::operator=(amrex::Vector<double, std::allocator<double> >&&) at /home/raid/af793/amrexReactiveNS/particleNS/Exec/UniformVelocity/../../../../amrex/Src/Base/AMReX_Vector.H:25
- (inlined by) wavespeedEstimate(amrex::Vector<double, std::allocator<double> > const&, amrex::Vector<double, std::allocator<double> > const&, double&, double&, double&, int) at /home/raid/af793/amrexReactiveNS/particleNS/Exec/UniformVelocity/../../Source/eulerFunc.cpp:934
+ 4: ./main1d.gnu.MPI.ex(+0x1c1ef9) [0x563298a3eef9]
+    amrex::Amr::timeStep(int, double, int, int, double) at /home/raid/af793/amrexReactiveNS/particleNS/Exec/UniformVelocity/../../../../amrex/Src/Amr/AMReX_Amr.cpp:2017
 
- 5: ./main1d.gnu.MPI.ex(+0x2c25d) [0x5638b1e0925d]
-    AmrLevelAdv::estTimeStep(double) at /home/raid/af793/amrexReactiveNS/particleNS/Exec/UniformVelocity/../../Source/AmrLevelAdv.cpp:904
+ 5: ./main1d.gnu.MPI.ex(+0x1b95b1) [0x563298a365b1]
+    amrex::Amr::coarseTimeStep(double) at /home/raid/af793/amrexReactiveNS/particleNS/Exec/UniformVelocity/../../../../amrex/Src/Amr/AMReX_Amr.cpp:2127
 
- 6: ./main1d.gnu.MPI.ex(+0x2cba1) [0x5638b1e09ba1]
-    amrex::Vector<double, std::allocator<double> >::operator[](unsigned long) at /home/raid/af793/amrexReactiveNS/particleNS/Exec/UniformVelocity/../../../../amrex/Src/Base/AMReX_Vector.H:37
- (inlined by) AmrLevelAdv::computeNewDt(int, int, amrex::Vector<int, std::allocator<int> >&, amrex::Vector<amrex::IntVect, std::allocator<amrex::IntVect> > const&, amrex::Vector<double, std::allocator<double> >&, amrex::Vector<double, std::allocator<double> >&, double, int) at /home/raid/af793/amrexReactiveNS/particleNS/Exec/UniformVelocity/../../Source/AmrLevelAdv.cpp:1029
- (inlined by) AmrLevelAdv::computeNewDt(int, int, amrex::Vector<int, std::allocator<int> >&, amrex::Vector<amrex::IntVect, std::allocator<amrex::IntVect> > const&, amrex::Vector<double, std::allocator<double> >&, amrex::Vector<double, std::allocator<double> >&, double, int) at /home/raid/af793/amrexReactiveNS/particleNS/Exec/UniformVelocity/../../Source/AmrLevelAdv.cpp:1006
-
- 7: ./main1d.gnu.MPI.ex(+0x1b98a5) [0x5638b1f968a5]
-    amrex::Amr::coarseTimeStep(double) at /home/raid/af793/amrexReactiveNS/particleNS/Exec/UniformVelocity/../../../../amrex/Src/Amr/AMReX_Amr.cpp:2104
-
- 8: ./main1d.gnu.MPI.ex(+0x26bad) [0x5638b1e03bad]
+ 6: ./main1d.gnu.MPI.ex(+0x26b9d) [0x5632988a3b9d]
     main at /home/raid/af793/amrexReactiveNS/particleNS/Exec/UniformVelocity/../../Source/main.cpp:105
 
- 9: /lib/x86_64-linux-gnu/libc.so.6(__libc_start_main+0xf3) [0x7f7187aa1083]
+ 7: /lib/x86_64-linux-gnu/libc.so.6(__libc_start_main+0xf3) [0x7ff951d86083]
 
-10: ./main1d.gnu.MPI.ex(+0x2b5fe) [0x5638b1e085fe]
+ 8: ./main1d.gnu.MPI.ex(+0x2b5ee) [0x5632988a85ee]
     ?? ??:0
 
