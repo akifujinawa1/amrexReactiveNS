@@ -136,7 +136,7 @@ AmrLevelAdv::initParticles (const MultiFab& S_new, const double& xDisc)
             
             if (enIC==14){
                 // if ((p.pos(0)/10e-6) < n_cell*0.1){
-                if (p.pos(0) < 2*xDisc){
+                if (p.pos(0) < 2.0*xDisc){
                     energy0 = Hparticle(mFe0,mFeO0,mFe3O40,1270,0,0,0);
                 }
             }    
@@ -552,8 +552,7 @@ void getSource(Vector<double>& qSource, Vector<double>& pSource, const Vector<do
     // there is more than 1% of the initial Fe mass, and more than 1% of the ambient oxygen mole fraction
     // in the gas cell.
 
-    pInt[IntData::regime] = 0;  // preset combustion regime to kinetic
-    if ((mFe/mFe0 > 0.01)&&(YO2/(0.2329) > 0.01)){ 
+    if ((mFe/mFe0 > 0.001)&&(YO2/(0.2329) > 0.001)){ 
         if (mdotO2d > mdotO2k){ // if the molecular diffusion rate is FASTER than the kinetic rate of O2 consumption
             // reaction is kinetically-controlled
             pSource[RealData::mFe] = dmdt[0];
@@ -564,6 +563,7 @@ void getSource(Vector<double>& qSource, Vector<double>& pSource, const Vector<do
             dmO2dt = -nO2FeO*pSource[RealData::mFeO]-nO2Fe3O4*pSource[RealData::mFe3O4];
             dmFeOformdt   = pSource[RealData::mFeO];
             dmFe3O4formdt = pSource[RealData::mFe3O4];
+            pInt[IntData::regime] = 0;  // set combustion regime to kinetic
         }
         else{ // if the kinetic rate of O2 consumption is FASTER than the molecular diffusion rate
             // the particle can only consume the O2 supplied from the gas, hence, diffusion-controlled
