@@ -37,7 +37,8 @@ extern   int       conv;
 extern   int       Da;
 extern   int       particle;
 extern   int       Nsub;
-extern   double       dp0;
+extern   double       dp0;             // from main.cpp
+extern   double       delta0;          // from constants.H
 extern   double       Gamma;           // ratio of specific heats -
 extern   double       R;               // univeral gas constant   J/K/mol
 extern   double       one_atm_Pa;      // one atmosphere          Pa
