@@ -32,27 +32,53 @@ color = colors
 
 
 # matplot subplot
-fig, ax = plt.subplots(nrows=2,ncols=1,figsize=(8,8*yratio),dpi=100)  #fig2,ax2 = plt.subplots(nrows=2,ncols=1,figsize=(8,8*yratio))
+fig, ax = plt.subplots(figsize=(8,8*yratio))  #fig2,ax2 = plt.subplots(nrows=2,ncols=1,figsize=(8,8*yratio))nrows=2,ncols=1,,dpi=100
 plt.subplots_adjust(left=0.14, bottom=0.15, right=0.90, top=0.94, wspace=0.20, hspace=0.20)
+time = [0]*30
+location = [0]*30
+Np = 0
 
 for i in range(15):
     for j in range(2):
         iVal = str(i)
         jVal = str(j)
+        # print(iVal)
+        # print(jVal)
         data = np.loadtxt('output/txt/1Dflame/isobaric/particle/'+jVal+'-'+iVal+'.txt')
-        # 0=time, 1=x, 2=
+        # 0=time, 1=x, 2=mFe, 3=mFeO, 4=mFe3O4, 5=Tp, 6=regime
+        # print(len(data[:,0]))
+        for k in range(len(data[:,0])):
+            length = len(data[:,0])
+            if (data[length-(k+1),6]-data[length-(k+2),6] == 1):
+                time[Np] = data[length-k,0]
+                location[Np] = data[length-k,1]
+                Np += 1
+                break
 
-    
+# print(time)
+# print(location)
+
+time, location = zip(*sorted(zip(time,location)))
+LLSlocations = [0]*30
+
+A = np.vstack([time[7:30], np.ones(len(time[7:30]))]).T
+m, c = np.linalg.lstsq(A, location[7:30], rcond=None)[0]
+
+for i in range(len(time)):
+    LLSlocations[i] = m*time[i] + c
+
+print('Flame speed estimate from slope of x-t graph: ',m*1e2,' cm/s')
+
 # plotting line
-ax[0].scatter(data[:,0],data[:,1],c='black',s=3,label='$t='+str(time_ms)+'\;\mathrm{ms}$') 
-ax[0].plot(data[:,0],data[:,1]*0+2330,c=colors[1],linewidth=1,label='$\mathrm{Adiabatic\;flame\;temperature}$') 
-ax[1].scatter(data[:,0],data[:,2],c='red',s=3,label='$t='+str(time_ms)+'\;\mathrm{ms}$') 
-ax[0].set_ylim(0,2600)
-ax[1].set_ylim(0,0.24)
-ax[0].set_ylabel(r'$T_\mathrm{g}\;[\mathrm{K}]$', fontsize=20)
-ax[1].set_ylabel(r'$Y_\mathrm{O_2}\;[\mathrm{-}]$', fontsize=20)
-ax[1].set_xlabel(r'$\mathrm{x}\;[\mathrm{m}]$', fontsize=20)
-ax[0].legend(ncol=1, loc="top right", fontsize = 12)
+ax.scatter(time,location,c='black',s=3,label='$\mathrm{Ignition\;points}$') 
+ax.plot(time[6:24],LLSlocations[6:24],c='red',linewidth=2,label='$\mathrm{Flame\;speed\;}=9.96\;\mathrm{cm/s}\;(\mathrm{LLS)}$') 
+# ax[0].plot(data[:,0],data[:,1]*0+2330,c=colors[1],linewidth=1,label='$\mathrm{Adiabatic\;flame\;temperature}$') 
+# ax[1].scatter(data[:,0],data[:,2],c='red',s=3,label='$t='+str(time_ms)+'\;\mathrm{ms}$') 
+# ax[0].set_ylim(0,2600)
+# ax[1].set_ylim(0,0.24)
+ax.set_ylabel(r'$x\;[\mathrm{m}]$', fontsize=20)
+ax.set_xlabel(r'$t\;[\mathrm{s}]$', fontsize=20)
+# ax.legend(ncol=1, loc="top right", fontsize = 12)
      
 
 
@@ -100,11 +126,12 @@ ax[0].legend(ncol=1, loc="top right", fontsize = 12)
 # # ax[1,0].set_ylim(0,1.01)
 # # ax[1,1].set_ylim(1.391,1.401)
 
-# ax2[0].legend(ncol=1, loc="top right", fontsize = 12)
+ax.legend(ncol=1, loc="best", fontsize = 16)
 
 
-# # plt.legend()
-# plt.show()
+
+# plt.legend()
+plt.show()
 
 # # plt2.legend()
 # # plt2.show()

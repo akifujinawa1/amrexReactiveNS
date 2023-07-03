@@ -71,7 +71,6 @@ int      advIter = 0;
 int      counter = 0;
 double   meltFe, meltFeO, meltFe3O4;
 double   dt_super;
-double   rp0,deltaFeO,deltaFe3O4,rFeO0,rFe0;
 
 
 
@@ -451,11 +450,11 @@ AmrLevelAdv::initData ()
     }
   } // closes mfi patch loop
 
-  rp0        = 0.5*dp0;
-  deltaFeO   = 0.95*delta0;
-  deltaFe3O4 = 0.05*delta0;
-  rFeO0      = rp0*(1.0-deltaFe3O4);
-  rFe0       = rp0*(1.0-delta0);
+  const double rp0        = 0.5*dp0;
+  const double deltaFeO   = 0.95*delta0;
+  const double deltaFe3O4 = 0.05*delta0;
+  const double rFeO0      = rp0*(1.0-deltaFe3O4);
+  const double rFe0       = rp0*(1.0-delta0);
   const double mFe0       = rhoFe*(4.0/3.0)*pi*pow(rFe0,3.0);
   const double mFeO0      = rhoFeO*(4.0/3.0)*pi*(pow(rFeO0,3.0)-pow(rFe0,3.0));
   const double mFe3O40    = rhoFe3O4*(4.0/3.0)*pi*(pow(rp0,3.0)-pow(rFeO0,3.0));
@@ -738,6 +737,11 @@ AmrLevelAdv::advance (Real time,
       // for (int i = 0; i < Nsub; i++){
       //   updateParticleInfo(Sborder,dt_super,dX,dY);
       // }
+      const double rp0        = 0.5*dp0;
+      const double deltaFeO   = 0.95*delta0;
+      const double deltaFe3O4 = 0.05*delta0;
+      const double rFeO0      = rp0*(1.0-deltaFe3O4);
+      const double rFe0       = rp0*(1.0-delta0);
       const double mFe0       = rhoFe*(4.0/3.0)*pi*pow(rFe0,3.0);
       const double mFeO0      = rhoFeO*(4.0/3.0)*pi*(pow(rFeO0,3.0)-pow(rFe0,3.0));
       const double mFe3O40    = rhoFe3O4*(4.0/3.0)*pi*(pow(rp0,3.0)-pow(rFeO0,3.0));
