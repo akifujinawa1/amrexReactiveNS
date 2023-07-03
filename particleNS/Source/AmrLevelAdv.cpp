@@ -37,6 +37,7 @@ extern   int       conv;
 extern   int       Da;
 extern   int       particle;
 extern   int       Nsub;
+extern   double       dp0;
 extern   double       Gamma;           // ratio of specific heats -
 extern   double       R;               // univeral gas constant   J/K/mol
 extern   double       one_atm_Pa;      // one atmosphere          Pa
@@ -64,9 +65,19 @@ int      pfrequency                   = 20;
 int      iter                         = 0;
 int      printlevel                   = 0;
 int      advIter = 0;
+int counter = 0;
 double   meltFe, meltFeO, meltFe3O4;
 double   dt_super;
-int counter = 0;
+double rp0        = 0.5*dp0;
+double deltaFeO   = 0.95*delta0;
+double deltaFe3O4 = 0.05*delta0;
+double rFeO0      = rp0*(1-deltaFe3O4);
+double rFe0       = rp0*(1-delta0);
+const double mFe0       = rhoFe*(4.0/3.0)*pi*pow(rFe0,3.0);
+const double mFeO0      = rhoFeO*(4.0/3.0)*pi*(pow(rFeO0,3.0)-pow(rFe0,3.0));
+const double mFe3O40    = rhoFe3O4*(4.0/3.0)*pi*(pow(rp0,3.0)-pow(rFeO0,3.0));
+const double interDist  = pow(1.0e3*(mFe0+mFeO0+mFe3O40)/1100.0,1.0/3.0);
+
 
 // std::unique_ptr<amrex::ParticleContainer<RealData::ncomps, IntData::ncomps>> AmrLevelAdv::particles =  nullptr;
 
@@ -444,7 +455,7 @@ AmrLevelAdv::initData ()
     }
   } // closes mfi patch loop
 
-  initParticles(S_new,xDisc);
+  initParticles(S_new,xDisc,mFe0,mFeO0,mFe3O40);
 
   // Abort("particles initialized ");
 
@@ -719,7 +730,7 @@ AmrLevelAdv::advance (Real time,
       // }
       double dt_sub = dt/Nsub;
       for (int i = 0; i < Nsub; i++){
-        updateParticleInfo(Sborder,dt_sub,dX,dY);
+        updateParticleInfo(Sborder,mFe0,interDist,dt_sub,dX,dY);
       }
       
     // }
