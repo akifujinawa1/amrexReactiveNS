@@ -41,6 +41,7 @@ extern   double       dp0;             // from main.cpp
 extern   double       delta0;          // from constants.H
 extern   double       Gamma;           // ratio of specific heats -
 extern   double       R;               // univeral gas constant   J/K/mol
+extern   double       pi;              // pi constant
 extern   double       one_atm_Pa;      // one atmosphere          Pa
 extern   double       T0;              // initial gas temperature K
 extern   double       M_O2;            // O2 molecular weight     kg/mol
