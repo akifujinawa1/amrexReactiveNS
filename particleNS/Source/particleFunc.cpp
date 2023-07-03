@@ -132,7 +132,7 @@ AmrLevelAdv::initParticles (const MultiFab& S_new, const double& xDisc, const do
             }
 
             double energy0;
-            particleInit(energy0);
+            particleInit(mFe0, mFeO0, mFe3O40, energy0);
             
             if (enIC==14){
                 // if ((p.pos(0)/10e-6) < n_cell*0.1){
@@ -731,7 +731,7 @@ AmrLevelAdv::printParticleInfo()
 //   std::cout << "Enthalpy and Temperature:: Hp: " << Hp << ", Tp: " << Tp << std::endl;
 }
 
-void particleInit(double& energy0){
+void particleInit(const double& mFe0, const double& mFeO0, const double& mFe3O40, double& energy0){
 
     int    phaseFe=0, phaseFeO=0, phaseFe3O4=0;
     // double deltaFeO, deltaFe3O4, rp0, rFeO0, rFe0;
