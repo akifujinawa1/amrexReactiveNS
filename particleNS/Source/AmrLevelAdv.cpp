@@ -50,6 +50,7 @@ extern   double       X_N2;            // mole fraction of N2
 extern   double       Y_O2;            // mass fraction of O2
 extern   double       Y_N2;            // mass fraction of N2
 extern   double       Mavg;            // average molecular weight of the gas mixture
+extern   double       rhoFe, rhoFeO, rhoFe3O4; //from constants.H, import density values
 
 // define the remaining global variables here. NUM_GROW should be defined based on the value of slope limiting.
 int      AmrLevelAdv::verbose         = 0;
@@ -66,7 +67,7 @@ int      pfrequency                   = 20;
 int      iter                         = 0;
 int      printlevel                   = 0;
 int      advIter = 0;
-int counter = 0;
+int      counter = 0;
 double   meltFe, meltFeO, meltFe3O4;
 double   dt_super;
 double rp0        = 0.5*dp0;
