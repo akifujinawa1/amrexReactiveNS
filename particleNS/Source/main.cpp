@@ -31,7 +31,7 @@ int particle;         // =0 if no particles, =1 if enabled
 int Nsub;
 double TpInitial;
 double TgInitial;
-double dp0;           // initial particle size
+// double dp0;           // initial particle size
 
 
 int
@@ -64,7 +64,7 @@ main (int   argc,
         pp.query("conv",conv);
         pp.query("Da",Da);
         pp.query("particle",particle);
-        pp.query("dp0",dp0);
+        // pp.query("dp0",dp0);
         pp.query("TpInitial",TpInitial);
         pp.query("TgInitial",TgInitial);
         pp.query("stop_time",stop_time);
