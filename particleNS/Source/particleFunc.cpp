@@ -553,7 +553,7 @@ void getSource(Vector<double>& qSource, Vector<double>& pSource, const Vector<do
     // there is more than 1% of the initial Fe mass, and more than 1% of the ambient oxygen mole fraction
     // in the gas cell.
 
-    if ((mFe/mFe0 > 0.01)||(YO2/(0.2329) > 0.01)){ 
+    if ((mFe/(4.1105e-14) > 0.01) || (YO2/(0.2329) > 0.01)){ 
         if (mdotO2d > mdotO2k){ // if the molecular diffusion rate is FASTER than the kinetic rate of O2 consumption
             // reaction is kinetically-controlled
             pSource[RealData::mFe] = dmdt[0];
@@ -571,6 +571,7 @@ void getSource(Vector<double>& qSource, Vector<double>& pSource, const Vector<do
             if (Tp < 1870){ // if particle is still at least partially in solid-phase, partition the O2 as in Mi et al. (CnF, 2022)
                 pSource[RealData::mFeO]   = (mdotO2*dmdt[1]*nO2FeO/(dmdt[1]*nO2FeO+dmdt[2]*nO2Fe3O4))/nO2FeO;
                 pSource[RealData::mFe3O4] = (mdotO2*dmdt[2]*nO2Fe3O4/(dmdt[1]*nO2FeO+dmdt[2]*nO2Fe3O4))/nO2Fe3O4;
+                pSource[RealData::mFe]    = - pSource[RealData::mFeO]*nFeFeO - pSource[RealData::mFe3O4]*nFeFe3O4;
                 epsilon = 0.88;
                 dmO2dt = -nO2FeO*pSource[RealData::mFeO]-nO2Fe3O4*pSource[RealData::mFe3O4];
                 Nu = Nu*log(1.0+Bt)/Bt;
@@ -580,15 +581,24 @@ void getSource(Vector<double>& qSource, Vector<double>& pSource, const Vector<do
             else{ // if particle is completely in liquid-phase, use all O2 to form FeO
                 pSource[RealData::mFeO]   = mdotO2d/nO2FeO - mdotFeOevap;
                 pSource[RealData::mFe3O4] = 0.0;
+                pSource[RealData::mFe]    = -mdotO2d/nO2FeO*nFeFeO;
                 epsilon = 0.70;
                 dmO2dt = -mdotO2d;
                 dmFeOformdt   = mdotO2d/nO2FeO;
                 dmFe3O4formdt = 0;
             }
-            pSource[RealData::mFe] = - pSource[RealData::mFeO]*nFeFeO - pSource[RealData::mFe3O4]*nFeFe3O4;
             pInt[IntData::regime] = 1;  // set combustion regime to diffusive
             // std::cout << "diffusion-controlled" << std::endl;
         }
+    }
+    else { // if there is insufficient Fe mass or O2 mass fraction for reaction (to preserve boundedness)
+        // only consider mass change via FeO dissociative evaporation
+        pSource[RealData::mFe] = 0;
+        pSource[RealData::mFeO] = -mdotFeOevap;
+        pSource[RealData::mFe3O4] = 0;
+        dmO2dt = 0;
+        dmFeOformdt = 0;
+        dmFe3O4formdt = 0;
     }
 
     // Calculate Nusselt number, particle surface area, radiation parameters, gas conductivity, etc. for heat transfer

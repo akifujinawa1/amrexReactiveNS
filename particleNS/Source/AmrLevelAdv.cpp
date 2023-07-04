@@ -37,8 +37,8 @@ extern   int       conv;
 extern   int       Da;
 extern   int       particle;
 extern   int       Nsub;
-extern   double       dp0;             // from main.cpp
-extern   double       delta0;          // from constants.H
+// extern   double       dp0;             // from main.cpp
+// extern   double       delta0;          // from constants.H
 extern   double       Gamma;           // ratio of specific heats -
 extern   double       R;               // univeral gas constant   J/K/mol
 extern   double       pi;              // pi constant
@@ -51,7 +51,10 @@ extern   double       X_N2;            // mole fraction of N2
 extern   double       Y_O2;            // mass fraction of O2
 extern   double       Y_N2;            // mass fraction of N2
 extern   double       Mavg;            // average molecular weight of the gas mixture
-extern   double       rhoFe, rhoFeO, rhoFe3O4; //from constants.H, import density values
+extern   double       mFe0;            // from constants.H
+extern   double       mFeO0;
+extern   double       mFe3O40;
+extern   double       interDist;
 
 // define the remaining global variables here. NUM_GROW should be defined based on the value of slope limiting.
 int      AmrLevelAdv::verbose         = 0;
@@ -737,15 +740,7 @@ AmrLevelAdv::advance (Real time,
       // for (int i = 0; i < Nsub; i++){
       //   updateParticleInfo(Sborder,dt_super,dX,dY);
       // }
-      const double rp0        = 0.5*dp0;
-      const double deltaFeO   = 0.95*delta0;
-      const double deltaFe3O4 = 0.05*delta0;
-      const double rFeO0      = rp0*(1.0-deltaFe3O4);
-      const double rFe0       = rp0*(1.0-delta0);
-      const double mFe0       = rhoFe*(4.0/3.0)*pi*pow(rFe0,3.0);
-      const double mFeO0      = rhoFeO*(4.0/3.0)*pi*(pow(rFeO0,3.0)-pow(rFe0,3.0));
-      const double mFe3O40    = rhoFe3O4*(4.0/3.0)*pi*(pow(rp0,3.0)-pow(rFeO0,3.0));
-      const double interDist  = pow(1.0e3*(mFe0+mFeO0+mFe3O40)/1100.0,1.0/3.0);
+      
       double dt_sub = dt/Nsub;
       for (int i = 0; i < Nsub; i++){
         updateParticleInfo(Sborder,mFe0,interDist,dt_sub,dX,dY);
