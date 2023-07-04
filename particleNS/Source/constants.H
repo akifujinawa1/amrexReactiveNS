@@ -59,7 +59,9 @@ double pi    = M_PI;
 double nFeFeO   = M_Fe/M_FeO;
 double nFeFe3O4 = 3.0*M_Fe/M_Fe3O4;
 double nO2FeO   = 0.5*M_O2/M_FeO;
-double nO2Fe3O4 = 2.0*M_O2/M_Fe3O4;   
+double nO2Fe3O4 = 2.0*M_O2/M_Fe3O4;  
+
+double conc       = 881.9333289276074;
 
 double rp0        = 0.5*dp0;
 double deltaFeO   = 0.95*delta0;
@@ -69,7 +71,7 @@ double rFe0       = rp0*(1.0-delta0);
 double mFe0       = rhoFe*(4.0/3.0)*pi*pow(rFe0,3.0);
 double mFeO0      = rhoFeO*(4.0/3.0)*pi*(pow(rFeO0,3.0)-pow(rFe0,3.0));
 double mFe3O40    = rhoFe3O4*(4.0/3.0)*pi*(pow(rp0,3.0)-pow(rFeO0,3.0));
-double interDist  = pow(1.0e3*(mFe0+mFeO0+mFe3O40)/1100.0,1.0/3.0);
+double interDist  = pow(1.0e3*(mFe0+mFeO0+mFe3O40)/conc,1.0/3.0);
 
 
 

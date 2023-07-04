@@ -312,6 +312,7 @@ AmrLevelAdv::updateParticleInfo(MultiFab& Sborder, const double& mFe0, const dou
         }
 
         if (particle == 2){ // if we enable two-way coupling
+        
             vCell = dx*interDist*interDist;
             for (int h = 0; h < NUM_STATE; h++){
                     
