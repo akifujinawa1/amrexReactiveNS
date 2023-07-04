@@ -61,8 +61,8 @@ for i in range(15):
 time, location = zip(*sorted(zip(time,location)))
 LLSlocations = [0]*30
 
-A = np.vstack([time[7:30], np.ones(len(time[7:30]))]).T
-m, c = np.linalg.lstsq(A, location[7:30], rcond=None)[0]
+A = np.vstack([time[9:30], np.ones(len(time[9:30]))]).T
+m, c = np.linalg.lstsq(A, location[9:30], rcond=None)[0]
 
 for i in range(len(time)):
     LLSlocations[i] = m*time[i] + c

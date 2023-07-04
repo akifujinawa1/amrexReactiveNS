@@ -136,7 +136,7 @@ AmrLevelAdv::initParticles (const MultiFab& S_new, const double& xDisc, const do
             
             if (enIC==14){
                 // if ((p.pos(0)/10e-6) < n_cell*0.1){
-                if (p.pos(0) < 2.0*xDisc){
+                if (p.pos(0) < xDisc){
                     energy0 = Hparticle(mFe0,mFeO0,mFe3O40,1270,0,0,0);
                 }
             }    
@@ -551,10 +551,10 @@ void getSource(Vector<double>& qSource, Vector<double>& pSource, const Vector<do
     // std::cout << "fraction of o2 mass fraction remaining: " << YO2/(0.2329) << std::endl;
 
     // To prevent unboundedness, we only allow the particles to consume oxygen and release heat if
-    // there is more than 1% of the initial Fe mass, and more than 1% of the ambient oxygen mole fraction
-    // in the gas cell.
+    // there is more than 0.1% of the initial Fe mass, AND more than 0.1% of the ambient oxygen mole fraction
+    // in the gas cell where the particle resides. 
 
-    if ((mFe/(4.1105e-12) > 0.01) && (YO2/(0.2329) > 0.01)){ 
+    if ((mFe/(4.1105e-12) > 0.001) && (YO2/(0.2329) > 0.001)){ 
         if (mdotO2d > mdotO2k){ // if the molecular diffusion rate is FASTER than the kinetic rate of O2 consumption
             // reaction is kinetically-controlled
             pSource[RealData::mFe] = dmdt[0];
