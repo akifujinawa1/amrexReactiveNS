@@ -69,9 +69,10 @@ for i in range(len(time)):
 
 print('Flame speed estimate from slope of x-t graph: ',m*1e2,' cm/s')
 
+
 # plotting line
 ax.scatter(time,location,c='black',s=3,label='$\mathrm{Ignition\;points}$') 
-ax.plot(time[6:24],LLSlocations[6:24],c='red',linewidth=2,label='$\mathrm{Flame\;speed\;}=9.96\;\mathrm{cm/s}\;(\mathrm{LLS)}$') 
+ax.plot(time[6:24],LLSlocations[6:24],c='red',linewidth=2,label='$\mathrm{Flame\;speed\;}='+str(round(m*1e2,3))+'\;\mathrm{cm/s}\;(\mathrm{LLS)}$') 
 # ax[0].plot(data[:,0],data[:,1]*0+2330,c=colors[1],linewidth=1,label='$\mathrm{Adiabatic\;flame\;temperature}$') 
 # ax[1].scatter(data[:,0],data[:,2],c='red',s=3,label='$t='+str(time_ms)+'\;\mathrm{ms}$') 
 # ax[0].set_ylim(0,2600)
