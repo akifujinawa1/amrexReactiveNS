@@ -303,7 +303,13 @@ AmrLevelAdv::updateParticleInfo(MultiFab& Sborder, const double& mFe0, const dou
         p.idata(IntData::Fe3O4)   = pInt[IntData::Fe3O4];
         p.idata(IntData::regime)  = pInt[IntData::regime];
         
-        p.pos(0) = p.pos(0) + dt*p.rdata(RealData::u);
+        double pos = p.pos(0) + dt*p.rdata(RealData::u);
+        if (pos <= 1.0e-6){
+            p.pos(0) = 1.0e-6;
+        }
+        else {
+            p.pos(0) = p.pos(0) + dt*p.rdata(RealData::u);
+        }
         if (spacedim == 2){
             p.pos(1) = p.pos(1) + dt*p.rdata(RealData::v);
         }
