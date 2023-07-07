@@ -137,7 +137,7 @@ AmrLevelAdv::initParticles (const MultiFab& S_new, const double& xDisc, const do
             if (enIC==14){
                 // if ((p.pos(0)/10e-6) < n_cell*0.1){
                 if (p.pos(0) < 2*xDisc){
-                    energy0 = Hparticle(mFe0,mFeO0,mFe3O40,1450,0,0,0);
+                    energy0 = Hparticle(mFe0,mFeO0,mFe3O40,1270,0,0,0);
                 }
             }    
 
@@ -308,8 +308,9 @@ AmrLevelAdv::updateParticleInfo(MultiFab& Sborder, const double& mFe0, const dou
         //     p.pos(0) = 1.0e-6;
         // }
         // else {
-            p.pos(0) = p.pos(0) + dt*p.rdata(RealData::u);
+            
         // }
+        p.pos(0) = p.pos(0) + dt*p.rdata(RealData::u);
         if (spacedim == 2){
             p.pos(1) = p.pos(1) + dt*p.rdata(RealData::v);
         }
@@ -330,8 +331,7 @@ AmrLevelAdv::updateParticleInfo(MultiFab& Sborder, const double& mFe0, const dou
                     Abort("nan found before applying lagrangian source");
                 }
                 
-                q[h] = q[h] + dt*(1.0/vCell)*qSource[h];
-                arr(i,j,k,h) = q[h];
+                arr(i,j,k,h) = arr(i,j,k,h) + dt*(1.0/vCell)*qSource[h];
 
                 if (arr(i,j,k,h) != arr(i,j,k,h)){
                     std::cout << "cell number: " << i << std::endl;

@@ -171,11 +171,11 @@ void updateEuler(MultiFab& Sborder, Array<MultiFab, SpaceDim>& fluxes, Vector<do
 
             double rho,T1,T2,T3;
 
-	    //            std::cout << "in muscl" << std::endl;
+            std::cout << "in muscl" << std::endl;
             
             for (MFIter mfi(Sborder, true); mfi.isValid(); ++mfi)
             {
-              //  std::cout << "in mfi loop" << std::endl;
+                std::cout << "in mfi loop" << std::endl;
                 const Box& bx = mfi.tilebox();
                 const Dim3 lo = lbound(bx);
                 const Dim3 hi = ubound(bx);
@@ -625,7 +625,7 @@ Vector<double> setIC(const int dim, const double& probLoX, const double& probHiX
             }
             case 8: // Diffusion validation test
             {
-                xDisc = 0.5; tEnd=0.25;
+                xDisc = xEnd*0.5; tEnd=0.25;
                 rhoL = 8.7345e-4; vxL = 0.0; pL = 1.0; 
                 rhoR = 8.7345e-4; vxR = 0.0; pR = 1.0;
                 YO2L = Y_O2; YN2L = Y_N2; YO2R = Y_O2; YN2R = Y_N2;
@@ -637,7 +637,7 @@ Vector<double> setIC(const int dim, const double& probLoX, const double& probHiX
             }
             case 9: // Sods shock tube problem with O2-N2 diatomic gas mixture and detailed thermodynamics
             {
-                xDisc = 0.5; tEnd=0.25;
+                xDisc = xEnd*0.5; tEnd=0.25;
                 rhoL = 1.0;   vxL = 0.0;  pL = 1.0*one_atm_Pa; //*one_atm_Pa;
                 rhoR = 0.125; vxR = 0.0;  pR = 0.1*one_atm_Pa; //*one_atm_Pa;
                 YO2L = Y_O2; YN2L = Y_N2; YO2R = Y_O2; YN2R = Y_N2;
@@ -701,7 +701,7 @@ Vector<double> setIC(const int dim, const double& probLoX, const double& probHiX
                 vxL = 0.0;  pL = 1.0*one_atm_Pa; 
                 vxR = 0.0;  pR = 1.0*one_atm_Pa; 
                 YO2L = Y_O2; YN2L = Y_N2; YO2R = Y_O2; YN2R = Y_N2;
-                TgL = 1450;
+                TgL = 1270;
                 TgR = 300;
                 rhoL = pL*Mavg/(R*TgL);
                 rhoR = pR*Mavg/(R*TgR);

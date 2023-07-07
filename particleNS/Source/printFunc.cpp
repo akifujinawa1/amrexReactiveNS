@@ -309,18 +309,20 @@ void AmrLevelAdv::writePlotFile()
 
         std::ofstream approx;
 
-        if (conv == 1)
-        {
-            approx.open("output/txt/" + test + "/time" + iteration + resolution + ".txt", std::ofstream::app);
-        }
-        if (enIC == 8)
-        {
-            approx.open("output/txt/" + test + "/time" + iteration + stoptime + ".txt", std::ofstream::app);
-        }
-        else
-        {
-            approx.open("output/txt/" + test + "/time" + iteration + ".txt", std::ofstream::app);
-        }
+        // if (conv == 1)
+        // {
+        //     approx.open("output/txt/" + test + "/time" + iteration + resolution + ".txt", std::ofstream::app);
+        // }
+        // if (enIC == 8)
+        // {
+        //     approx.open("output/txt/" + test + "/time" + iteration + stoptime + ".txt", std::ofstream::app);
+        // }
+        // else
+        // {
+        //     approx.open("output/txt/" + test + "/time" + iteration + ".txt", std::ofstream::app);
+        // }
+
+        approx.open("output/txt/" + test + "/data" + resolution + ".txt", std::ofstream::app);
 
         for (MFIter mfi(S_plot); mfi.isValid(); ++mfi)
         {
