@@ -171,11 +171,11 @@ void updateEuler(MultiFab& Sborder, Array<MultiFab, SpaceDim>& fluxes, Vector<do
 
             double rho,T1,T2,T3;
 
-            std::cout << "in muscl" << std::endl;
+            // std::cout << "in muscl" << std::endl;
             
             for (MFIter mfi(Sborder, true); mfi.isValid(); ++mfi)
             {
-                std::cout << "in mfi loop" << std::endl;
+                // std::cout << "in mfi loop" << std::endl;
                 const Box& bx = mfi.tilebox();
                 const Dim3 lo = lbound(bx);
                 const Dim3 hi = ubound(bx);
