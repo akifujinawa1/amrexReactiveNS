@@ -453,22 +453,24 @@ AmrLevelAdv::initData ()
     }
   } // closes mfi patch loop
 
-  const double rp0        = 0.5*dp0;
-  const double deltaFeO   = 0.95*delta0;
-  const double deltaFe3O4 = 0.05*delta0;
-  const double rFeO0      = rp0*(1.0-deltaFe3O4);
-  const double rFe0       = rp0*(1.0-delta0);
-  const double mFe0       = rhoFe*(4.0/3.0)*pi*pow(rFe0,3.0);
-  const double mFeO0      = rhoFeO*(4.0/3.0)*pi*(pow(rFeO0,3.0)-pow(rFe0,3.0));
-  const double mFe3O40    = rhoFe3O4*(4.0/3.0)*pi*(pow(rp0,3.0)-pow(rFeO0,3.0));
-  const double interDist  = pow(1.0e3*(mFe0+mFeO0+mFe3O40)/1100.0,1.0/3.0);
+  // const double rp0        = 0.5*dp0;
+  // const double deltaFeO   = 0.95*delta0;
+  // const double deltaFe3O4 = 0.05*delta0;
+  // const double rFeO0      = rp0*(1.0-deltaFe3O4);
+  // const double rFe0       = rp0*(1.0-delta0);
+  // const double mFe0       = rhoFe*(4.0/3.0)*pi*pow(rFe0,3.0);
+  // const double mFeO0      = rhoFeO*(4.0/3.0)*pi*(pow(rFeO0,3.0)-pow(rFe0,3.0));
+  // const double mFe3O40    = rhoFe3O4*(4.0/3.0)*pi*(pow(rp0,3.0)-pow(rFeO0,3.0));
+  // const double interDist  = pow(1.0e3*(mFe0+mFeO0+mFe3O40)/1100.0,1.0/3.0);
 
-  std::cout << "dp0, delta0: " << " " << dp0 << " " << delta0 << std::endl;  
+  // std::cout << "dp0, delta0: " << " " << dp0 << " " << delta0 << std::endl;  
 
-  std::cout << "rp0, mFe0, mFeO0, mFe3O40, interdist: " << " " << rp0 << " " << mFe0 << " " << mFeO0 << " " << mFe3O40 << " " << interDist << std::endl;  
+  // std::cout << "rp0, mFe0, mFeO0, mFe3O40, interdist: " << " " << rp0 << " " << mFe0 << " " << mFeO0 << " " << mFe3O40 << " " << interDist << std::endl;  
 
-  initParticles(S_new,xDisc,mFe0,mFeO0,mFe3O40);
-
+  if (particle > 0){
+    initParticles(S_new,xDisc,mFe0,mFeO0,mFe3O40);
+  }
+  
   // Abort("particles initialized ");
 
   if (verbose) {
@@ -658,6 +660,18 @@ AmrLevelAdv::advance (Real time,
   // if (enIC < 8) // For the Euler equation tests, use transmissive BCs everywhere
   // {
   // if (enIC == 8){ // if we are testing for multicomponent diffusion validation
+
+  if (enIC < 14){
+    for (int nVar = 0; nVar < NUM_STATE; nVar++){
+      for (int nDim = 0; nDim < amrex::SpaceDim; nDim++){
+        BCVec[nVar].setLo(nDim,BCType::foextrap);
+        BCVec[nVar].setHi(nDim,BCType::foextrap);
+      }
+    }
+  }
+
+
+  else if (enIC == 14){
     for (int nVar = 0; nVar < NUM_STATE; nVar++){
       for (int nDim = 0; nDim < amrex::SpaceDim; nDim++){
         if (nDim == 0){ // x domain BCs
@@ -673,12 +687,9 @@ AmrLevelAdv::advance (Real time,
           BCVec[nVar].setLo(nDim,BCType::int_dir);
           BCVec[nVar].setHi(nDim,BCType::int_dir);
         }
-
-        // BCVec[nVar].setLo(nDim,BCType::foextrap);
-        // BCVec[nVar].setHi(nDim,BCType::foextrap);
-
       }
     }
+  }
     
     
   // }
@@ -761,16 +772,6 @@ AmrLevelAdv::advance (Real time,
 
   for (int d = 0; d < amrex::SpaceDim ; d++)   
   {
-    // double dt_total=0;
-    // double dt_sub = dt;
-    // while (dt_total < dt_super){
-    //   dt_total+=dt_sub;
-    //   if (dt_total > dt_super){
-    //     dt_sub = dt_super - (dt_total - dt);
-    //   }
-    //   updateEuler(Sborder, fluxes, qL, qR, fluxvals, d, dt_sub, dX, dY, euler);
-    // }
-
     updateEuler(Sborder, fluxes, qL, qR, fluxvals, d, dt, dX, dY, euler);
     
     Sborder.FillBoundary(geom.periodicity());
