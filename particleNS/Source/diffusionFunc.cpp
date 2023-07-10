@@ -216,39 +216,25 @@ void getViscFlux1D(Vector<double>& viscSlice, const Vector<double>& qL,\
     mixDiffCoeffs_L = getMixDiffCoeffs(TL,pL,YO2L,YN2L,0.0,0.0);
     mixDiffCoeffs_R = getMixDiffCoeffs(TR,pR,YO2R,YN2R,0.0,0.0);
     DO2_L = mixDiffCoeffs_L[gases::O2];
-    DO2_R = mixDiffCoeffs_L[gases::O2];
+    DO2_R = mixDiffCoeffs_R[gases::O2];
     DN2_L = mixDiffCoeffs_L[gases::N2];
-    DN2_R = mixDiffCoeffs_L[gases::N2];
-
-
-    double dudxCons = (mu_L*uL-mu_R*uR)/dx;
-    double uTauCons = (4.0/3.0)*0.5*(mu_L*uL*uL-mu_R*uR*uR)/dx;
-    double dTdxCons = (k_L*TL-k_R*TR)/dx;
-    double dDrhoYO2dx = (DO2_L*rhoL*YO2L-DO2_R*rhoR*YO2R)/dx;
-    double dDrhoYN2dx = (DN2_L*rhoL*YN2L-DN2_R*rhoR*YN2R)/dx;
-    
-
-    double drhoudx = (rhoL*uL-rhoR*uR)/dx;
-    double dTdxConsConv = (rhoL*cp_L*TL-rhoR*cp_R*TR)/dx;
-    double drhoYO2dx = (rhoL*YO2L-rhoR*YO2R)/dx;
-    double drhoYN2dx = (rhoL*YN2L-rhoR*YN2R)/dx;
-    
+    DN2_R = mixDiffCoeffs_R[gases::N2];   
     
     if (enIC == 8){ // test for diffusion convergence
         viscSlice[0] = 0;
-        viscSlice[1] = (4.0/3.0)*(2.0e-5)*drhoudx;
+        viscSlice[1] = (4.0/3.0)*(2.0e-5)*(rhoL*uL-rhoR*uR)/dx;
         viscSlice[2] = 0;
-        viscSlice[3] = (4.0/3.0)*0.5*(mu_L*uL*uL-mu_R*uR*uR)/dx + (2.0e-5)*dTdxConsConv;
-        viscSlice[4] = (2.0e-5)*drhoYO2dx;
-        viscSlice[5] = (2.0e-5)*drhoYN2dx;
+        viscSlice[3] = (4.0/3.0)*0.5*(mu_L*uL*uL-mu_R*uR*uR)/dx + (2.0e-5)*(rhoL*cp_L*TL-rhoR*cp_R*TR)/dx;
+        viscSlice[4] = (2.0e-5)*(rhoL*YO2L-rhoR*YO2R)/dx;
+        viscSlice[5] = (2.0e-5)*(rhoL*YN2L-rhoR*YN2R)/dx;
     }
     else{
         viscSlice[0] = 0;
-        viscSlice[1] = (4.0/3.0)*dudxCons;
+        viscSlice[1] = (4.0/3.0)*(mu_L*uL-mu_R*uR)/dx;
         viscSlice[2] = 0;
-        viscSlice[3] = uTauCons + dTdxCons;
-        viscSlice[4] = dDrhoYO2dx;
-        viscSlice[5] = dDrhoYN2dx;
+        viscSlice[3] = (2.0/3.0)*(mu_L*uL*uL-mu_R*uR*uR)/dx + (k_L*TL-k_R*TR)/dx;
+        viscSlice[4] = (DO2_L*rhoL*YO2L-DO2_R*rhoR*YO2R)/dx;
+        viscSlice[5] = (DN2_L*rhoL*YN2L-DN2_R*rhoR*YN2R)/dx;
     }
     
 }
@@ -445,16 +431,16 @@ double diffusiveSpeed(const Vector<double>& qL, const Vector<double>& qR){
     mixDiffCoeffs_L = getMixDiffCoeffs(TL,pL,YO2L,YN2L,0.0,0.0);
     mixDiffCoeffs_R = getMixDiffCoeffs(TR,pR,YO2R,YN2R,0.0,0.0);
     DO2_L = mixDiffCoeffs_L[gases::O2];
-    DO2_R = mixDiffCoeffs_L[gases::O2];
+    DO2_R = mixDiffCoeffs_R[gases::O2];
     DN2_L = mixDiffCoeffs_L[gases::N2];
-    DN2_R = mixDiffCoeffs_L[gases::N2];
+    DN2_R = mixDiffCoeffs_R[gases::N2];
 
 
-    double momentum = std::max(mu_L/rhoL, mu_R/rhoR);
-    double heat     = std::max(k_L/(rhoL*cp_L), k_R/(rhoR*cp_R));
-    double speciesO2  = std::max(DO2_L, DO2_R);
-    double speciesN2  = std::max(DN2_L, DN2_R);
-    double species  = std::max(speciesO2, speciesN2);
+    double momentum  = std::max(mu_L/rhoL, mu_R/rhoR);
+    double heat      = std::max(k_L/(rhoL*cp_L), k_R/(rhoR*cp_R));
+    double speciesO2 = std::max(DO2_L, DO2_R);
+    double speciesN2 = std::max(DN2_L, DN2_R);
+    double species   = std::max(speciesO2, speciesN2);
     
     double maxSpeed = 2.0*std::max(std::max(momentum, heat),species);
 

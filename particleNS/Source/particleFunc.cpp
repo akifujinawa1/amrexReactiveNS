@@ -424,7 +424,7 @@ void getSource(Vector<double>& qSource, Vector<double>& pSource, const Vector<do
     Tp         = Tparticle(mFe,mFeO,mFe3O4,Hp,phaseFe,phaseFeO,phaseFe3O4,LFe,LFeO,LFe3O4);
     Tfilm      = filmAverage(Tp,Tgas);
 
-    // std::cout << "Tp, Tg: " << Tp << " " << Tgas << "\n" << std::endl;
+    std::cout << "Tp, Tg: " << Tp << " " << Tgas << "\n" << std::endl;
 
     // With the particle temperature known, we first compute the vapor pressures of gas-phase Fe and FeO
     // resulting from the gas-liquid equilibrium at the particle surface. If the particle temperature is 
