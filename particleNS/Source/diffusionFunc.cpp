@@ -84,6 +84,11 @@ void updateViscous(MultiFab& Sborder, Array<MultiFab, SpaceDim>& fluxes, Vector<
                                     for(int h = 0; h < NUM_STATE; h++)
                                     {
                                         fluxArrVisc(i,j,k,h) = viscSlice[h]; // this is the viscous flux function for the left interface of cell i
+                                        // if ((i < 10)||(i > 502)){
+                                        //     std::cout << "cell number: " << i << std::endl;
+                                        //     std::cout << "u, T, O2, N2 fluxes:" << std::endl;
+                                        //     std::cout << viscSlice[1] << " " << viscSlice[3] << " " << viscSlice[4] << " " << viscSlice[5] << std::endl;
+                                        // }
                                     }
                                 }
                                 else { // x-direction viscous flux calculation if domain is 2-D
@@ -133,7 +138,7 @@ void updateViscous(MultiFab& Sborder, Array<MultiFab, SpaceDim>& fluxes, Vector<
                                 {
                                     arr(i,j,k,h) = arr(i,j,k,h) + (dt / dx) * (fluxArrVisc(i,j,k,h) - fluxArrVisc(i+iOffset,j,k,h));
                                     if (arr(i,j,k,h) != arr(i,j,k,h)){
-                                        std::cout << "Nan found in diffusion calculation, variable h: " << h << std::endl;
+                                        std::cout << "Nan found in diffusion calculation, cell " << i << ", var " << h << std::endl;
                                         Abort("nan found in diffusion calculation");
                                     }
                                 }
@@ -172,7 +177,8 @@ void getViscFlux1D(Vector<double>& viscSlice, const Vector<double>& qL,\
 
     double rhoL, uL, vL, enerL, epsL, TL, YO2L, YN2L, pL, rhoR, uR, vR, enerR, epsR, TR, YO2R, YN2R, pR;
     double dudx, dTdx, dYO2dx, dYN2dx, uAvg, TAvg, pAvg, rhoAvg, YO2Avg, YN2Avg;
-    double mu_avg, k_avg;
+    double mu_avg, k_avg, cp_avg;
+    double mu_L, mu_R, k_L, k_R, cp_L, cp_R;
 
     Vector<double> mixDiffCoeffs(gases::ncomps);
     Vector<double> primL(NUM_STATE);
@@ -198,31 +204,52 @@ void getViscFlux1D(Vector<double>& viscSlice, const Vector<double>& qL,\
     YO2R  = primR[4];
     YN2R  = primR[5];
     TR    = Tg(rhoR,uR,vR,YO2R,YN2R,enerR);
+    
+    // calculate transport properties based on cell-centred values on the left and right
+    mu_L   = muMix_O2N2(muO2(TL),muN2(TL),YO2L,YN2L);
+    mu_R   = muMix_O2N2(muO2(TR),muN2(TR),YO2R,YN2R);
+    k_L    = kMix_O2N2(kO2(TL),kN2(TL),YO2L,YO2L);
+    k_R    = kMix_O2N2(kO2(TR),kN2(TR),YO2R,YO2R);
+    cp_L   = cpMix(cpO2(TL),cpN2(TL),YO2L,YO2L);
+    cp_R   = cpMix(cpO2(TR),cpN2(TR),YO2R,YO2R);
+    mixDiffCoeffs_L = getMixDiffCoeffs(TL,pL,YO2L,YO2L,0.0,0.0);
+    mixDiffCoeffs_R = getMixDiffCoeffs(TR,pR,YO2R,YO2R,0.0,0.0);
+    DO2_L = mixDiffCoeffs_L[gases::O2];
+    DO2_R = mixDiffCoeffs_L[gases::O2];
+    DN2_L = mixDiffCoeffs_L[gases::N2];
+    DN2_R = mixDiffCoeffs_L[gases::N2];
 
-    dudx = (uL-uR)/dx;
-    dTdx = (TL-TR)/dx;
-    dYO2dx = (YO2L-YO2R)/dx;
-    dYN2dx = (YN2L-YN2R)/dx;
-    uAvg = (uR+uL)/2.0;
-    TAvg = (TR+TL)/2.0;
-    pAvg = (pR+pL)/2.0;
-    rhoAvg = (rhoR+rhoL)/2.0;
-    YO2Avg = (YO2R+YO2L)/2.0;
-    YN2Avg = (YN2R+YN2L)/2.0;
-    mixDiffCoeffs = getMixDiffCoeffs(TAvg,pAvg,YO2Avg,YN2Avg,0.0,0.0);
-    mu_avg = muMix_O2N2(muO2(TAvg),muN2(TAvg),YO2Avg,YN2Avg); // consider only the O2-N2 gas mixture
-    k_avg  = kMix_O2N2(kO2(TAvg),kN2(TAvg),YO2Avg,YN2Avg);
 
-    // std::cout << "rho, T, p, YO2, YN2: " << rhoAvg << " " << TAvg << " " << pAvg << " " << YO2Avg << " " << YN2Avg << std::endl; 
-    // std::cout << "mu, k, DO2, DN2: " << mu_avg << " " << k_avg << " " << mixDiffCoeffs[gases::O2] << " " << mixDiffCoeffs[gases::N2] << std::endl;
+    double dudxCons = (mu_L*uL-mu_R*uR)/dx;
+    double uTauCons = (4.0/3.0)*0.5*(mu_L*uL*uL-mu_R*uR*uR)/dx;
+    double dTdxCons = (k_L*TL-k_R*TR)/dx;
+    double dDrhoYO2dx = (DO2_L*rhoL*YO2L-DO2_R*rhoR*YO2R)/dx;
+    double dDrhoYN2dx = (DN2_L*rhoL*YN2L-DN2_R*rhoR*YN2R)/dx;
+    
 
-    viscSlice[0] = 0;
-    viscSlice[1] = (4.0/3.0)*mu_avg*dudx;
-    viscSlice[2] = 0;
-    viscSlice[3] = uAvg*viscSlice[1] + k_avg*dTdx;
-    viscSlice[4] = rhoAvg*mixDiffCoeffs[gases::O2]*dYO2dx;
-    viscSlice[5] = rhoAvg*mixDiffCoeffs[gases::N2]*dYN2dx;
-
+    double drhoudx = (rhoL*uL-rhoR*uR)/dx;
+    double dTdxCons = (rhoL*cp_L*TL-rhoR*cp_R*TR)/dx;
+    double drhoYO2dx = (rhoL*YO2L-rhoR*YO2R)/dx;
+    double drhoYN2dx = (rhoL*YN2L-rhoR*YN2R)/dx;
+    
+    
+    if (enIC == 8){ // test for diffusion convergence
+        viscSlice[0] = 0;
+        viscSlice[1] = (4.0/3.0)*(2.0e-5)*drhoudx;
+        viscSlice[2] = 0;
+        viscSlice[3] = (4.0/3.0)*0.5*(mu_L*uL*uL-mu_R*uR*uR)/dx + (2.0e-5)*dTdxCons;
+        viscSlice[4] = (2.0e-5)*drhoYO2dx;
+        viscSlice[5] = (2.0e-5)*drhoYN2dx;
+    }
+    else{
+        viscSlice[0] = 0;
+        viscSlice[1] = (4.0/3.0)*dudxCons;
+        viscSlice[2] = 0;
+        viscSlice[3] = uTauCons + dTdxCons;
+        viscSlice[4] = dDrhoYO2dx;
+        viscSlice[5] = dDrhoYN2dx;
+    }
+    
 }
 
 void getViscFlux2D(Vector<double>& viscSlice, const Vector<double>& qL, const Vector<double>& qR, \
@@ -407,36 +434,32 @@ double diffusiveSpeed(const Vector<double>& qL, const Vector<double>& qR){
     YN2R  = primR[5];
     TR    = Tg(rhoR,uR,vR,YO2R,YN2R,enerR);
 
-    uAvg = (uR+uL)/2.0;
-    TAvg = (TR+TL)/2.0;
-    pAvg = (pR+pL)/2.0;
-    rhoAvg = (rhoR+rhoL)/2.0;
-    YO2Avg = (YO2R+YO2L)/2.0;
-    YN2Avg = (YN2R+YN2L)/2.0;
-    mixDiffCoeffs = getMixDiffCoeffs(TAvg,pAvg,YO2Avg,YN2Avg,0.0,0.0);
-    double maxD   = std::max(mixDiffCoeffs[gases::O2],mixDiffCoeffs[gases::N2]);
-    mu_avg = muMix_O2N2(muO2(TAvg),muN2(TAvg),YO2Avg,YN2Avg); // consider only the O2-N2 gas mixture
-    k_avg  = kMix_O2N2(kO2(TAvg),kN2(TAvg),YO2Avg,YN2Avg);
-    cp_avg = cpMix(cpO2(TAvg),cpN2(TAvg),YO2Avg,YN2Avg);
-    double heat = k_avg/(rhoAvg*cp_avg);
-    
-    double maxSpeed = 2*std::max(std::max(mu_avg/rhoAvg,k_avg/(rhoAvg*cp_avg)),maxD);
 
-    // if (maxSpeed == mu_avg/rhoAvg){
-    //     std::cout << "momentum limiting" << std::endl;
-    // }
-    // else if (maxSpeed == k_avg/(rhoAvg*cp_avg)){
-    //     std::cout << "heat limiting" << std::endl;
-    // }
-    // else {
-    //     std::cout << "species limiting" << std::endl;
-    // }
+    mu_L   = muMix_O2N2(muO2(TL),muN2(TL),YO2L,YN2L);
+    mu_R   = muMix_O2N2(muO2(TR),muN2(TR),YO2R,YN2R);
+    k_L    = kMix_O2N2(kO2(TL),kN2(TL),YO2L,YO2L);
+    k_R    = kMix_O2N2(kO2(TR),kN2(TR),YO2R,YO2R);
+    cp_L   = cpMix(cpO2(TL),cpN2(TL),YO2L,YO2L);
+    cp_R   = cpMix(cpO2(TR),cpN2(TR),YO2R,YO2R);
+    mixDiffCoeffs_L = getMixDiffCoeffs(TL,pL,YO2L,YO2L,0.0,0.0);
+    mixDiffCoeffs_R = getMixDiffCoeffs(TR,pR,YO2R,YO2R,0.0,0.0);
+    DO2_L = mixDiffCoeffs_L[gases::O2];
+    DO2_R = mixDiffCoeffs_L[gases::O2];
+    DN2_L = mixDiffCoeffs_L[gases::N2];
+    DN2_R = mixDiffCoeffs_L[gases::N2];
+
+
+    double momentum = std::max(mu_L/rho_L, mu_R/rho_R);
+    double heat     = std::max(k_L/(rho_L*cp_L), k_R/(rho_R*cp_R));
+    double speciesO2  = std::max(DO2_L, DO2_R);
+    double speciesN2  = std::max(DN2_L, DN2_R);
+    double species  = std::max(speciesO2, speciesN2);
+    
+    double maxSpeed = 2.0*std::max(std::max(momentum, heat),species);
 
     if (enIC == 8){
         return 2.0*2.0e-5;
     }
-
-    // std::cout << "mu/rho: " << mu_avg/rhoAvg << ", heat: " << heat << ", D: " << maxD << ", max speed" << maxSpeed << std::endl;
 
     return maxSpeed;
 

@@ -396,7 +396,7 @@ AmrLevelAdv::initData ()
               // density*O2 mass frac
               arr(i,j,k,4) = arr(i,j,k,0)*yO2;
 
-              // density*unburned fuel mass fraction
+              // density*N2 mass frac
               arr(i,j,k,5) = arr(i,j,k,0)*yN2;
 
               // std::cout << "x: " << x << "Density: " << arr(i,j,k,0) << " Temperature: " << T << " Energy: " << arr(i,j,k,3) << std::endl; 
