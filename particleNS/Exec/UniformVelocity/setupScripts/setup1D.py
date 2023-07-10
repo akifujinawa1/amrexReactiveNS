@@ -136,7 +136,7 @@ print('Nz_cell for 3D: ', Ly/dp0)
 
 print('number of particles: ', Np)
 
-spacing_x = math.ceil((Lx/dp0)/Np)
+spacing_x = math.floor((Lx/dp0)/Np)
 
 print('cells between particles in x: ', spacing_x)
 
