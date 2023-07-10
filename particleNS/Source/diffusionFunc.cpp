@@ -224,6 +224,7 @@ void getViscFlux1D(Vector<double>& viscSlice, const Vector<double>& qL,\
     double kAvg   = 0.5*(k_L+k_R);
     double DO2Avg = 0.5*(DO2_L+DO2_R);
     double DN2Avg = 0.5*(DN2_L+DN2_R);
+    double rhoAvg = 0.5*(rhoL+rhoR);
     
     if (enIC == 8){ // test for diffusion convergence
         viscSlice[0] = 0;
@@ -238,8 +239,8 @@ void getViscFlux1D(Vector<double>& viscSlice, const Vector<double>& qL,\
         viscSlice[1] = (4.0/3.0)*muAvg*(uL-uR)/dx;
         viscSlice[2] = 0;
         viscSlice[3] = (2.0/3.0)*muAvg*(uL*uL-uR*uR)/dx + kAvg*(TL-TR)/dx;
-        viscSlice[4] = DO2Avg*(rhoL*YO2L-rhoR*YO2R)/dx;
-        viscSlice[5] = DN2Avg*(rhoL*YN2L-rhoR*YN2R)/dx;
+        viscSlice[4] = rhoAvg*DO2Avg*(YO2L-YO2R)/dx;
+        viscSlice[5] = rhoAvg*DN2Avg*(YN2L-YN2R)/dx;
     }
     
 }

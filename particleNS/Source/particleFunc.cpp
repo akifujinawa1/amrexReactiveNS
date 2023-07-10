@@ -424,7 +424,7 @@ void getSource(Vector<double>& qSource, Vector<double>& pSource, const Vector<do
     Tp         = Tparticle(mFe,mFeO,mFe3O4,Hp,phaseFe,phaseFeO,phaseFe3O4,LFe,LFeO,LFe3O4);
     Tfilm      = filmAverage(Tp,Tgas);
 
-    std::cout << "Tp, Tg: " << Tp << " " << Tgas << "\n" << std::endl;
+    // std::cout << "Tp, Tg: " << Tp << " " << Tgas << "\n" << std::endl;
 
     // With the particle temperature known, we first compute the vapor pressures of gas-phase Fe and FeO
     // resulting from the gas-liquid equilibrium at the particle surface. If the particle temperature is 
@@ -468,7 +468,7 @@ void getSource(Vector<double>& qSource, Vector<double>& pSource, const Vector<do
     Mfilm    = 1.0/(YO2film/M_O2+YN2film/M_N2+YFefilm/M_Fe+YFeOfilm/M_FeO);
     rhofilm  = pfilm*Mfilm/(R*Tfilm);
 
-    std::cout << "rhofilm " << rhofilm << std::endl;
+    // std::cout << "rhofilm " << rhofilm << std::endl;
 
     // Calculate necessary particle parameters here:
     vTot = mFe/rhoFel + mFeO/rhoFeOl + mFe3O4/rhoFe3O4;    // total particle volume, m^3
@@ -476,7 +476,7 @@ void getSource(Vector<double>& qSource, Vector<double>& pSource, const Vector<do
     dp   = 2*rp;                                     
     rhop = (mFe+mFeO+mFe3O4)/vTot;                       // average particle density, kg/m^3
 
-    std::cout << "particle radius: " << rp << std::endl;
+    // std::cout << "particle radius: " << rp << std::endl;
     
     // Calculate Reynolds number for particle flow here:
     uRel = fabs(u-up);                               // relative velocity (slip velocity), m/s
@@ -541,10 +541,10 @@ void getSource(Vector<double>& qSource, Vector<double>& pSource, const Vector<do
     mdotFeOevap = M_FeO*(mdotFeO/M_FeO + mdotFe/M_Fe);
     mdotO2d = mdotO2 - (mdotFe*(3.0/4.0)*M_O2/M_Fe) - (mdotFeO*(1.0/4.0)*M_O2/M_FeO);
 
-    std::cout << "kmix: " << kgas << std::endl;
-    std::cout << "Re ScO2 rp ShO2 ShSt XO2 XO2p: " << Re << " " << ScO2 << " "  << rp << " " << ShO2 << " " << ShSt << " " << XO2 << std::endl;
-    std::cout << "mdot O2 Fe FeO: " << mdotO2 << " " << mdotFe << " " << mdotFeO << std::endl;
-    std::cout << "mdotO2d: " << mdotO2d << std::endl;
+    // std::cout << "kmix: " << kgas << std::endl;
+    // std::cout << "Re ScO2 rp ShO2 ShSt XO2 XO2p: " << Re << " " << ScO2 << " "  << rp << " " << ShO2 << " " << ShSt << " " << XO2 << std::endl;
+    // std::cout << "mdot O2 Fe FeO: " << mdotO2 << " " << mdotFe << " " << mdotFeO << std::endl;
+    // std::cout << "mdotO2d: " << mdotO2d << std::endl;
 
     // Calculate change of Fe, FeO, and Fe3O4 mass based on temperature and oxide layer.
     // Compare the rate at which the kinetics predict a total consumption of oxygen, compare to the molecular diffusion
@@ -552,9 +552,9 @@ void getSource(Vector<double>& qSource, Vector<double>& pSource, const Vector<do
     dmdt = getOxidationRates(mFe,mFeO,mFe3O4,Tp,rp);
     mdotO2k = dmdt[1]*nO2FeO + dmdt[2]*nO2Fe3O4;     // total kinetic rate of O2 consumption, kg/s
 
-    std::cout << "kinetic rate: " << mdotO2k << ", diffusion rate: " << mdotO2d << std::endl;
-    std::cout << "fraction of Fe mass remaining: " << mFe/mFe0 << std::endl;
-    std::cout << "fraction of o2 mass fraction remaining: " << YO2/(0.2329) << std::endl;
+    // std::cout << "kinetic rate: " << mdotO2k << ", diffusion rate: " << mdotO2d << std::endl;
+    // std::cout << "fraction of Fe mass remaining: " << mFe/mFe0 << std::endl;
+    // std::cout << "fraction of o2 mass fraction remaining: " << YO2/(0.2329) << std::endl;
 
     // To prevent unboundedness, we only allow the particles to consume oxygen and release heat if
     // there is more than 0.1% of the initial Fe mass, AND more than 0.1% of the ambient oxygen mole fraction
@@ -624,9 +624,9 @@ void getSource(Vector<double>& qSource, Vector<double>& pSource, const Vector<do
     dHpdt   = conv + rad + evap - dmO2dt*hO2(Tp)/M_O2;
     pSource[RealData::Hp] = dHpdt; 
 
-    std::cout << "kgas, nuStef" << kgas << " " << Nu << std::endl;
-    std::cout << "conv+rad, evap" << conv+rad << " " << evap << std::endl;
-    std::cout << "mass based hO2, addition" << hO2(Tp)/M_O2 << " " << dmO2dt*hO2(Tp)/M_O2 << std::endl;
+    // std::cout << "kgas, nuStef" << kgas << " " << Nu << std::endl;
+    // std::cout << "conv+rad, evap" << conv+rad << " " << evap << std::endl;
+    // std::cout << "mass based hO2, addition" << hO2(Tp)/M_O2 << " " << dmO2dt*hO2(Tp)/M_O2 << std::endl;
 
     if (Tp > 1650){
         qFeO = qFeOl;
@@ -637,10 +637,10 @@ void getSource(Vector<double>& qSource, Vector<double>& pSource, const Vector<do
 
     dHgOxidt = (mdotFe/M_Fe)*(0.5*qFe2O3s*M_Fe2O3) + (mdotFeO/M_FeO)*(0.5*qFe2O3s*M_Fe2O3-qFeOg*M_FeO); 
 
-    std::cout << "mFe: " << mFe << ", mFeO: " << mFeO << ", mFe3O4: " << mFe3O4 << std::endl;
-    std::cout << "dupdt: " << dupdt << ", dvpdt: " << dvpdt << std::endl;
-    std::cout << "conv loss: " << conv << ", rad loss: " << rad << ", mO2gain: " << -dmO2dt*hO2(Tp)/M_O2 << std::endl;
-    std::cout << "energy source for gas: " << -dHpdt << std::endl;
+    // std::cout << "mFe: " << mFe << ", mFeO: " << mFeO << ", mFe3O4: " << mFe3O4 << std::endl;
+    // std::cout << "dupdt: " << dupdt << ", dvpdt: " << dvpdt << std::endl;
+    // std::cout << "conv loss: " << conv << ", rad loss: " << rad << ", mO2gain: " << -dmO2dt*hO2(Tp)/M_O2 << std::endl;
+    // std::cout << "energy source for gas: " << -dHpdt << std::endl;
 
     qSource[gasVar::rho]    = dmO2dt;
     qSource[gasVar::rhou]   = -(mFe+mFeO+mFe3O4)*dupdt;
