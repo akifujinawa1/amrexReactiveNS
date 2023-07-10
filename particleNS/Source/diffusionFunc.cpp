@@ -229,7 +229,7 @@ void getViscFlux1D(Vector<double>& viscSlice, const Vector<double>& qL,\
     
 
     double drhoudx = (rhoL*uL-rhoR*uR)/dx;
-    double dTdxCons = (rhoL*cp_L*TL-rhoR*cp_R*TR)/dx;
+    double dTdxConsConv = (rhoL*cp_L*TL-rhoR*cp_R*TR)/dx;
     double drhoYO2dx = (rhoL*YO2L-rhoR*YO2R)/dx;
     double drhoYN2dx = (rhoL*YN2L-rhoR*YN2R)/dx;
     
@@ -238,7 +238,7 @@ void getViscFlux1D(Vector<double>& viscSlice, const Vector<double>& qL,\
         viscSlice[0] = 0;
         viscSlice[1] = (4.0/3.0)*(2.0e-5)*drhoudx;
         viscSlice[2] = 0;
-        viscSlice[3] = (4.0/3.0)*0.5*(mu_L*uL*uL-mu_R*uR*uR)/dx + (2.0e-5)*dTdxCons;
+        viscSlice[3] = (4.0/3.0)*0.5*(mu_L*uL*uL-mu_R*uR*uR)/dx + (2.0e-5)*dTdxConsConv;
         viscSlice[4] = (2.0e-5)*drhoYO2dx;
         viscSlice[5] = (2.0e-5)*drhoYN2dx;
     }
@@ -450,8 +450,8 @@ double diffusiveSpeed(const Vector<double>& qL, const Vector<double>& qR){
     DN2_R = mixDiffCoeffs_L[gases::N2];
 
 
-    double momentum = std::max(mu_L/rho_L, mu_R/rho_R);
-    double heat     = std::max(k_L/(rho_L*cp_L), k_R/(rho_R*cp_R));
+    double momentum = std::max(mu_L/rhoL, mu_R/rhoR);
+    double heat     = std::max(k_L/(rhoL*cp_L), k_R/(rhoR*cp_R));
     double speciesO2  = std::max(DO2_L, DO2_R);
     double speciesN2  = std::max(DN2_L, DN2_R);
     double species  = std::max(speciesO2, speciesN2);
