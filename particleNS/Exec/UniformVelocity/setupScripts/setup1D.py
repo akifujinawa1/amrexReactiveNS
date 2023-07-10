@@ -78,9 +78,7 @@ Lx = 0.00512   # 4 cm length of channel
 Tgas = 300
 rhogas = p*Mavg/(R*Tgas)
 
-
 dx = dp0;
-
 
 NpLo = 1;
 NpHi = 20;
@@ -138,12 +136,11 @@ print('Nz_cell for 3D: ', Ly/dp0)
 
 print('number of particles: ', Np)
 
-spacing_x = math.floor((Lx/dp0)/Np)
+spacing_x = math.ceil((Lx/dp0)/Np)
 
 print('cells between particles in x: ', spacing_x)
 
 with open('setupScripts/locations.txt', 'w') as text_file:
-
     for i in range(math.floor(Np)):
         x = math.ceil(0.5*spacing_x)+spacing_x*i
         text_file.write(repr(x)+'\n')
@@ -159,7 +156,3 @@ fig,ax = plt.subplots(figsize=(10,2))
 
 ax.scatter(data[:,0],data[:,1],c='black',linewidth=1) 
 plt.show()
-
-
-
-
