@@ -34,11 +34,11 @@ color = colors
 # matplot subplot
 fig, ax = plt.subplots(figsize=(8,8*yratio))  #fig2,ax2 = plt.subplots(nrows=2,ncols=1,figsize=(8,8*yratio))nrows=2,ncols=1,,dpi=100
 plt.subplots_adjust(left=0.14, bottom=0.15, right=0.90, top=0.94, wspace=0.20, hspace=0.20)
-time = [0]*45
-location = [0]*45
+time = [0]*30
+location = [0]*30
 Np = 0
 
-for i in range(21):
+for i in range(15):
     for j in range(2):
         iVal = str(i)
         jVal = str(j)
@@ -59,10 +59,10 @@ for i in range(21):
 # print(location)
 
 time, location = zip(*sorted(zip(time,location)))
-LLSlocations = [0]*45
+LLSlocations = [0]*30
 
-A = np.vstack([time[9:45], np.ones(len(time[9:45]))]).T
-m, c = np.linalg.lstsq(A, location[9:45], rcond=None)[0]
+A = np.vstack([time[7:30], np.ones(len(time[7:30]))]).T
+m, c = np.linalg.lstsq(A, location[7:30], rcond=None)[0]
 
 for i in range(len(time)):
     LLSlocations[i] = m*time[i] + c
