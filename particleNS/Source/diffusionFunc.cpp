@@ -437,14 +437,18 @@ double diffusiveSpeed(const Vector<double>& qL, const Vector<double>& qR){
     DO2_L = mixDiffCoeffs_L[gases::O2];
     DO2_R = mixDiffCoeffs_R[gases::O2];
     DN2_L = mixDiffCoeffs_L[gases::N2];
-    DN2_R = mixDiffCoeffs_R[gases::N2];
+    DN2_R = mixDiffCoeffs_R[gases::N2];   
 
+    double muAvg  = 0.5*(mu_L+mu_R);
+    double kAvg   = 0.5*(k_L+k_R);
+    double cpAvg  = 0.5*(cp_L+cp_R);
+    double DO2Avg = 0.5*(DO2_L+DO2_R);
+    double DN2Avg = 0.5*(DN2_L+DN2_R);
+    double rhoAvg = 0.5*(rhoL+rhoR);
 
-    double momentum  = std::max(mu_L/rhoL, mu_R/rhoR);
-    double heat      = std::max(k_L/(rhoL*cp_L), k_R/(rhoR*cp_R));
-    double speciesO2 = std::max(DO2_L, DO2_R);
-    double speciesN2 = std::max(DN2_L, DN2_R);
-    double species   = std::max(speciesO2, speciesN2);
+    double momentum  = muAvg/rhoAvg;
+    double heat      = kAvg/(rhoAvg*cpAvg);
+    double species   = std::max(DO2Avg, DN2Avg);
     
     double maxSpeed = 2.0*std::max(std::max(momentum, heat),species);
 
