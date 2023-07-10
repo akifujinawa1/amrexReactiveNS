@@ -209,12 +209,12 @@ void getViscFlux1D(Vector<double>& viscSlice, const Vector<double>& qL,\
     // calculate transport properties based on cell-centred values on the left and right
     mu_L   = muMix_O2N2(muO2(TL),muN2(TL),YO2L,YN2L);
     mu_R   = muMix_O2N2(muO2(TR),muN2(TR),YO2R,YN2R);
-    k_L    = kMix_O2N2(kO2(TL),kN2(TL),YO2L,YO2L);
-    k_R    = kMix_O2N2(kO2(TR),kN2(TR),YO2R,YO2R);
-    cp_L   = cpMix(cpO2(TL),cpN2(TL),YO2L,YO2L);
-    cp_R   = cpMix(cpO2(TR),cpN2(TR),YO2R,YO2R);
-    mixDiffCoeffs_L = getMixDiffCoeffs(TL,pL,YO2L,YO2L,0.0,0.0);
-    mixDiffCoeffs_R = getMixDiffCoeffs(TR,pR,YO2R,YO2R,0.0,0.0);
+    k_L    = kMix_O2N2(kO2(TL),kN2(TL),YO2L,YN2L);
+    k_R    = kMix_O2N2(kO2(TR),kN2(TR),YO2R,YN2R);
+    cp_L   = cpMix(cpO2(TL),cpN2(TL),YO2L,YN2L);
+    cp_R   = cpMix(cpO2(TR),cpN2(TR),YO2R,YN2R);
+    mixDiffCoeffs_L = getMixDiffCoeffs(TL,pL,YO2L,YN2L,0.0,0.0);
+    mixDiffCoeffs_R = getMixDiffCoeffs(TR,pR,YO2R,YN2R,0.0,0.0);
     DO2_L = mixDiffCoeffs_L[gases::O2];
     DO2_R = mixDiffCoeffs_L[gases::O2];
     DN2_L = mixDiffCoeffs_L[gases::N2];
@@ -438,12 +438,12 @@ double diffusiveSpeed(const Vector<double>& qL, const Vector<double>& qR){
 
     mu_L   = muMix_O2N2(muO2(TL),muN2(TL),YO2L,YN2L);
     mu_R   = muMix_O2N2(muO2(TR),muN2(TR),YO2R,YN2R);
-    k_L    = kMix_O2N2(kO2(TL),kN2(TL),YO2L,YO2L);
-    k_R    = kMix_O2N2(kO2(TR),kN2(TR),YO2R,YO2R);
-    cp_L   = cpMix(cpO2(TL),cpN2(TL),YO2L,YO2L);
-    cp_R   = cpMix(cpO2(TR),cpN2(TR),YO2R,YO2R);
-    mixDiffCoeffs_L = getMixDiffCoeffs(TL,pL,YO2L,YO2L,0.0,0.0);
-    mixDiffCoeffs_R = getMixDiffCoeffs(TR,pR,YO2R,YO2R,0.0,0.0);
+    k_L    = kMix_O2N2(kO2(TL),kN2(TL),YO2L,YN2L);
+    k_R    = kMix_O2N2(kO2(TR),kN2(TR),YO2R,YN2R);
+    cp_L   = cpMix(cpO2(TL),cpN2(TL),YO2L,YN2L);
+    cp_R   = cpMix(cpO2(TR),cpN2(TR),YO2R,YN2R);
+    mixDiffCoeffs_L = getMixDiffCoeffs(TL,pL,YO2L,YN2L,0.0,0.0);
+    mixDiffCoeffs_R = getMixDiffCoeffs(TR,pR,YO2R,YN2R,0.0,0.0);
     DO2_L = mixDiffCoeffs_L[gases::O2];
     DO2_R = mixDiffCoeffs_L[gases::O2];
     DN2_L = mixDiffCoeffs_L[gases::N2];
