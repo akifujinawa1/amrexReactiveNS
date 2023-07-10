@@ -394,7 +394,6 @@ void getViscFlux2D(Vector<double>& viscSlice, const Vector<double>& qL, const Ve
 double diffusiveSpeed(const Vector<double>& qL, const Vector<double>& qR){
 
     double rhoL, uL, vL, enerL, epsL, TL, YO2L, YN2L, pL, rhoR, uR, vR, enerR, epsR, TR, YO2R, YN2R, pR;
-    double uAvg, TAvg, rhoAvg, pAvg, YO2Avg, YN2Avg;
     double mu_L, mu_R, k_L, k_R, cp_L, cp_R, DO2_L, DO2_R, DN2_L, DN2_R;
 
     Vector<double> mixDiffCoeffs_L(gases::ncomps);
