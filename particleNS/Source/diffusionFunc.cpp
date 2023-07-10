@@ -176,8 +176,6 @@ void getViscFlux1D(Vector<double>& viscSlice, const Vector<double>& qL,\
                    const Vector<double>& qR, const double& dx){
 
     double rhoL, uL, vL, enerL, epsL, TL, YO2L, YN2L, pL, rhoR, uR, vR, enerR, epsR, TR, YO2R, YN2R, pR;
-    double dudx, dTdx, dYO2dx, dYN2dx, uAvg, TAvg, pAvg, rhoAvg, YO2Avg, YN2Avg;
-    double mu_avg, k_avg, cp_avg;
     double mu_L, mu_R, k_L, k_R, cp_L, cp_R, DO2_L, DO2_R, DN2_L, DN2_R;
 
     Vector<double> mixDiffCoeffs_L(gases::ncomps);
