@@ -67,16 +67,20 @@ yInt = y0
 # print(arr)
 
 for idx, x in enumerate(arr):
+    # if (x > 0.5*L):
+    #     y0[idx] = 1.0
+    # else:
+    #     y0[idx] = 0.0
     y0val = np.exp(-5000*(x-0.0512)*(x-0.0512))
     y0[idx] = y0val
 
 # print(y0)
 
-t = np.array([0.0001])
+t = np.array([0.001])
 for it, time in enumerate(t):                    # loop thorugh time for plotting
     for idx, x in enumerate(arr):                # loop through x
         val = np.trapz(y0,x=arr)/L               # a0 values
-        for i in range(1,50):                    # loop through n for solution
+        for i in range(1,200):                    # loop through n for solution
             # print(y0*np.sin(i*pi*arr))
             yInt = np.multiply(y0,np.cos(i*pi*arr/L))              # integrand
             b    = 2*np.trapz(yInt,x=arr)/L                        # a_n
@@ -85,10 +89,10 @@ for it, time in enumerate(t):                    # loop thorugh time for plottin
         # print(time)
         y4096[idx] = val
 
-# print(data64[:,5]-y64)
-ax.scatter(data64[:,0],data64[:,5],marker=".",c="red",linewidths="0.1",label='$num.$')
-ax.scatter(arr,y4096,marker=".",c="black",linewidths="0.1",label='$exact$')
-plt.show()
+# # print(data64[:,5]-y64)
+# ax.scatter(data64[:,0],data64[:,5],marker=".",c="red",linewidths="0.1",label='$num.$')
+# ax.scatter(arr,y4096,marker=".",c="black",linewidths="0.1",label='$exact$')
+# plt.show()
 
 # # print(arr-data64[:,0])
 
@@ -205,7 +209,7 @@ nx = [64, 128, 256, 512, 1024]
 
 # print(len(y1))
 
-# data4096=y4096
+# y4096=data4096[:,5]
 
 for i in range(len(y4096)):
     for j in range(5):
@@ -315,4 +319,4 @@ ax.set_ylabel(r'$\epsilon$',fontsize = 20)
 plt.legend()
 plt.show()
 
-# fig.savefig('output/plots/multiGasEuler/convEuler.pdf')
+fig.savefig('output/plots/multiGasDiffusion/convDiffusion.pdf')
