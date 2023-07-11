@@ -76,7 +76,7 @@ for idx, x in enumerate(arr):
 
 # print(y0)
 
-t = np.array([0.001])
+t = np.array([0.0000000001])
 for it, time in enumerate(t):                    # loop thorugh time for plotting
     for idx, x in enumerate(arr):                # loop through x
         val = np.trapz(y0,x=arr)/L               # a0 values

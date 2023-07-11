@@ -304,21 +304,21 @@ AmrLevelAdv::updateParticleInfo(MultiFab& Sborder, const double& mFe0, const dou
         p.idata(IntData::Fe3O4)   = pInt[IntData::Fe3O4];
         p.idata(IntData::regime)  = pInt[IntData::regime];
         
-        double pos = p.pos(0) + dt*p.rdata(RealData::u);
-        if ((pos <= 1.0e-7)||(p.idata(IntData::lock) == 1)){
-            p.pos(0) = 1.0e-7;             // if the particle is about to leave the domain, lock it in the first cell
-            p.rdata(RealData::u) = 0.0;    // give it zero velocity
-            pSource[RealData::u] = 0.0;    // make source term for particle zero
-            qSource[gasVar::rhou] = 0.0;   // make source term for gas zero
-            p.idata(IntData::lock) = 1;    // and initiate lock flag such that it will remain in place
-        }
-        else {
-            p.pos(0) = p.pos(0) + dt*p.rdata(RealData::u);   // otherwise, update the particle position
-        }
+        // double pos = p.pos(0) + dt*p.rdata(RealData::u);
+        // if ((pos <= 1.0e-7)||(p.idata(IntData::lock) == 1)){
+        //     p.pos(0) = 1.0e-7;             // if the particle is about to leave the domain, lock it in the first cell
+        //     p.rdata(RealData::u) = 0.0;    // give it zero velocity
+        //     pSource[RealData::u] = 0.0;    // make source term for particle zero
+        //     qSource[gasVar::rhou] = 0.0;   // make source term for gas zero
+        //     p.idata(IntData::lock) = 1;    // and initiate lock flag such that it will remain in place
+        // }
+        // else {
+        //     p.pos(0) = p.pos(0) + dt*p.rdata(RealData::u);   // otherwise, update the particle position
+        // }
         // p.pos(0) = p.pos(0) + dt*p.rdata(RealData::u);
-        if (spacedim == 2){
-            p.pos(1) = p.pos(1) + dt*p.rdata(RealData::v);
-        }
+        // if (spacedim == 2){
+        //     p.pos(1) = p.pos(1) + dt*p.rdata(RealData::v);
+        // }
         for (int h = 0; h < RealData::ncomps; h++){
             p.rdata(h) = p.rdata(h) + dt*pSource[h];
         }

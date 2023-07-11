@@ -229,11 +229,14 @@ void getViscFlux1D(Vector<double>& viscSlice, const Vector<double>& qL,\
         double mu = 2.0e-5*rhoAvg;
         double k  = 2.0e-5*rhoAvg*cpAvg;
         double D  = 2.0e-5;
+        // double mu = rhoAvg;
+        // double k  = rhoAvg*cpAvg;
+        // double D  = 1.0;
         viscSlice[0] = 0;
         viscSlice[1] = (4.0/3.0)*mu*(uL-uR)/dx;
         viscSlice[2] = 0;
         // viscSlice[3] = (2.0/3.0)*mu*(uL*uL-uR*uR)/dx + k*(TL-TR)/dx;
-        viscSlice[3] = (2.0/3.0)*mu*(uL*uL-uR*uR)/dx + 2.0e-5*(enerL-enerR)/dx;
+        viscSlice[3] = (2.0/3.0)*mu*(uL*uL-uR*uR)/dx + D*(enerL-enerR)/dx;
         viscSlice[4] = rhoAvg*D*(YO2L-YO2R)/dx;
         viscSlice[5] = rhoAvg*D*(YN2L-YN2R)/dx;
     }
@@ -400,6 +403,7 @@ double diffusiveSpeed(const Vector<double>& qL, const Vector<double>& qR){
 
     if (enIC == 8){
         return 2.0*2.0e-5;
+        // return 2.0*1.0;
     }
 
     double rhoL, uL, vL, enerL, epsL, TL, YO2L, YN2L, pL, rhoR, uR, vR, enerR, epsR, TR, YO2R, YN2R, pR;
