@@ -103,7 +103,7 @@ while error > tol:
     # by equivalence ratio:
 
     mTot_all = mFeTot*Np
-    mO2_all = mTot_all/(1.0*2*M_Fe/M_O2)
+    mO2_all = mTot_all/(1.5*2*M_Fe/M_O2)
     vol_chamber = mO2_all/(0.1*rhoHi*Y_O2+0.9*rhoLo*Y_O2)
 
     Ly = (vol_chamber/(Lx))**0.5

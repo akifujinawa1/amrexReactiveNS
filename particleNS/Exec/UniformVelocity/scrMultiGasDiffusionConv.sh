@@ -14,7 +14,7 @@ do
     for j in "${tests[@]}"
     do
 	    mpirun -np 6 ./main1d.gnu.MPI.ex inputs amr.n_cell = "$i" 0 0 euler = 0 viscous = 1 source = 0 particle = 0\
-        enIC = "$j" geometry.prob_lo = 0.0 0.0 0.0 geometry.prob_hi = 1.0 0.0 0.0 adv.cfl = 0.9 adv.fourier = 0.8 \
+        enIC = "$j" geometry.prob_lo = 0.0 0.0 0.0 geometry.prob_hi = 0.01 0.0 0.0 adv.cfl = 0.9 adv.fourier = 0.8 \
         amr.max_level = 0 amr.ref_ratio = 2 2 4 4 amr.probin_file = prbn/detonation amr.plot_int = 30\
         amr.plot_files_output = 0 amr.plot_file = detonation/plt stop_time = 0.1
     done

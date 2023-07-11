@@ -45,7 +45,7 @@ data1024 = data1024[data1024[:, 0].argsort()]
 # calculate exact solution here
 
 x0 = 0
-L  = 1
+L  = 0.01
 D  = 2*10**(-5)
 nlim = 100
 pi   = np.pi
@@ -57,7 +57,8 @@ y1  = np.zeros(N)
 yInt = y0
 
 for idx, x in enumerate(arr):
-    xval = -100*(x-0.5)**2
+    # xval = -100*(x-0.5)**2
+    xval = (-1000000*(x-0.005)*(x-0.005))
     y0val = np.exp(xval)
     y0[idx] = y0val
 

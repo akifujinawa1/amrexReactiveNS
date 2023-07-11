@@ -345,7 +345,7 @@ AmrLevelAdv::initData ()
             if (enIC == 7){
               // Use this to set spatial profile of oxygen concentration
 
-              double yO2 = exp(-100*(x-0.5)*(x-0.5));
+              double yO2 = exp(-100*(x-0.05)*(x-0.05));
               double yN2 = 1-yO2;
               double mAvg = getMavg(yO2,yN2);
               double Tgas = 500.0*sin(10.0*x)+1000.0;
@@ -377,7 +377,7 @@ AmrLevelAdv::initData ()
             if (enIC == 8){
               // Use this to set spatial profile of oxygen concentration
 
-              double yO2 = exp(-100*(x-0.5)*(x-0.5));
+              double yO2 = exp(-1000000*(x-0.005)*(x-0.005)); // 100 0.5 0.5
               double yN2 = 1-yO2;
               double mAvg = getMavg(yO2,yN2);
               

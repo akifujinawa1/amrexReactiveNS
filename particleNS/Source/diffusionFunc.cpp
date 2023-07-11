@@ -225,12 +225,13 @@ void getViscFlux1D(Vector<double>& viscSlice, const Vector<double>& qL,\
     double rhoAvg = 0.5*(rhoL+rhoR);
     
     if (enIC == 8){ // test for diffusion convergence
+        double cpAvg = 0.5*(cp_L+cp_R);
         viscSlice[0] = 0;
-        viscSlice[1] = (4.0/3.0)*(2.0e-5)*(rhoL*uL-rhoR*uR)/dx;
+        viscSlice[1] = (4.0/3.0)*(2.0e-5)*rhoAvg*(uL-uR)/dx;
         viscSlice[2] = 0;
-        viscSlice[3] = (4.0/3.0)*0.5*(mu_L*uL*uL-mu_R*uR*uR)/dx + (2.0e-5)*(rhoL*cp_L*TL-rhoR*cp_R*TR)/dx;
-        viscSlice[4] = (2.0e-5)*(rhoL*YO2L-rhoR*YO2R)/dx;
-        viscSlice[5] = (2.0e-5)*(rhoL*YN2L-rhoR*YN2R)/dx;
+        viscSlice[3] = (4.0/3.0)*(2.0e-5)*rhoAvg*0.5*(uL*uL-uR*uR)/dx + (2.0e-5)*rhoAvg*cpAvg*(TL-TR)/dx;
+        viscSlice[4] = (2.0e-5)*rhoAvg*(YO2L-YO2R)/dx;
+        viscSlice[5] = (2.0e-5)*rhoAvg*(YN2L-YN2R)/dx;
     }
     else{
         viscSlice[0] = 0;
@@ -393,6 +394,10 @@ void getViscFlux2D(Vector<double>& viscSlice, const Vector<double>& qL, const Ve
 
 double diffusiveSpeed(const Vector<double>& qL, const Vector<double>& qR){
 
+    if (enIC == 8){
+        return 2.0*2.0e-5;
+    }
+
     double rhoL, uL, vL, enerL, epsL, TL, YO2L, YN2L, pL, rhoR, uR, vR, enerR, epsR, TR, YO2R, YN2R, pR;
     double mu_L, mu_R, k_L, k_R, cp_L, cp_R, DO2_L, DO2_R, DN2_L, DN2_R;
 
@@ -451,10 +456,7 @@ double diffusiveSpeed(const Vector<double>& qL, const Vector<double>& qR){
     
     double maxSpeed = 2.0*std::max(std::max(momentum, heat),species);
 
-    if (enIC == 8){
-        return 2.0*2.0e-5;
-    }
-
+    
     return maxSpeed;
 
 }

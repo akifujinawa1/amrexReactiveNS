@@ -9,33 +9,33 @@ Host Name: ironmontreal
             readelf -wl my_exefile | grep my_line_address'
     to find out the offset for that line.
 
- 0: ./main1d.gnu.MPI.ex(+0x15ac2d) [0x55c342119c2d]
+ 0: ./main1d.gnu.MPI.ex(+0x15aecd) [0x55c2acd81ecd]
     amrex::BLBackTrace::print_backtrace_info(_IO_FILE*) at /usr/include/x86_64-linux-gnu/bits/unistd.h:354
  (inlined by) amrex::BLBackTrace::print_backtrace_info(_IO_FILE*) at /home/afujinawa/amrexReactiveNS/particleNS/Exec/UniformVelocity/../../../../amrex/Src/Base/AMReX_BLBackTrace.cpp:196
 
- 1: ./main1d.gnu.MPI.ex(+0x15ca75) [0x55c34211ba75]
+ 1: ./main1d.gnu.MPI.ex(+0x15cd15) [0x55c2acd83d15]
     amrex::BLBackTrace::handler(int) at /home/afujinawa/amrexReactiveNS/particleNS/Exec/UniformVelocity/../../../../amrex/Src/Base/AMReX_BLBackTrace.cpp:96
 
- 2: ./main1d.gnu.MPI.ex(+0x4a28a) [0x55c34200928a]
+ 2: ./main1d.gnu.MPI.ex(+0x4a3e7) [0x55c2acc713e7]
     amrex::Abort(char const*) at /home/afujinawa/amrexReactiveNS/particleNS/Exec/UniformVelocity/../../../../amrex/Src/Base/AMReX.H:161
- (inlined by) updateViscous(amrex::MultiFab&, std::array<amrex::MultiFab, 1ul>&, amrex::Vector<double, std::allocator<double> >&, amrex::Vector<double, std::allocator<double> >&, amrex::Vector<double, std::allocator<double> >&, amrex::Vector<double, std::allocator<double> >&, amrex::Vector<double, std::allocator<double> >&, amrex::Vector<double, std::allocator<double> >&, amrex::Vector<double, std::allocator<double> >&, int const&, double const&, double const&, double const&, int const&, int const&) at /home/afujinawa/amrexReactiveNS/particleNS/Exec/UniformVelocity/../../Source/diffusionFunc.cpp:137
+ (inlined by) updateViscous(amrex::MultiFab&, std::array<amrex::MultiFab, 1ul>&, amrex::Vector<double, std::allocator<double> >&, amrex::Vector<double, std::allocator<double> >&, amrex::Vector<double, std::allocator<double> >&, amrex::Vector<double, std::allocator<double> >&, amrex::Vector<double, std::allocator<double> >&, amrex::Vector<double, std::allocator<double> >&, amrex::Vector<double, std::allocator<double> >&, int const&, double const&, double const&, double const&, int const&, int const&) at /home/afujinawa/amrexReactiveNS/particleNS/Exec/UniformVelocity/../../Source/diffusionFunc.cpp:142
 
- 3: ./main1d.gnu.MPI.ex(+0x31289) [0x55c341ff0289]
+ 3: ./main1d.gnu.MPI.ex(+0x31219) [0x55c2acc58219]
     amrex::Box::length(int) const at /home/afujinawa/amrexReactiveNS/particleNS/Exec/UniformVelocity/../../../../amrex/Src/Base/AMReX_Box.H:154
  (inlined by) amrex::Geometry::periodicity() const at /home/afujinawa/amrexReactiveNS/particleNS/Exec/UniformVelocity/../../../../amrex/Src/Base/AMReX_Geometry.H:342
  (inlined by) AmrLevelAdv::advance(double, double, int, int) at /home/afujinawa/amrexReactiveNS/particleNS/Exec/UniformVelocity/../../Source/AmrLevelAdv.cpp:816
 
- 4: ./main1d.gnu.MPI.ex(+0x1c08b9) [0x55c34217f8b9]
+ 4: ./main1d.gnu.MPI.ex(+0x1c0b59) [0x55c2acde7b59]
     amrex::Amr::timeStep(int, double, int, int, double) at /home/afujinawa/amrexReactiveNS/particleNS/Exec/UniformVelocity/../../../../amrex/Src/Amr/AMReX_Amr.cpp:1987
 
- 5: ./main1d.gnu.MPI.ex(+0x1c4961) [0x55c342183961]
+ 5: ./main1d.gnu.MPI.ex(+0x1c4c01) [0x55c2acdebc01]
     amrex::Amr::coarseTimeStep(double) at /home/afujinawa/amrexReactiveNS/particleNS/Exec/UniformVelocity/../../../../amrex/Src/Amr/AMReX_Amr.cpp:2097
 
- 6: ./main1d.gnu.MPI.ex(+0x26165) [0x55c341fe5165]
+ 6: ./main1d.gnu.MPI.ex(+0x260f5) [0x55c2acc4d0f5]
     main at /home/afujinawa/amrexReactiveNS/particleNS/Exec/UniformVelocity/../../Source/main.cpp:106
 
- 7: /lib/x86_64-linux-gnu/libc.so.6(__libc_start_main+0xf3) [0x7f5379ca9083]
+ 7: /lib/x86_64-linux-gnu/libc.so.6(__libc_start_main+0xf3) [0x7f9084724083]
 
- 8: ./main1d.gnu.MPI.ex(+0x2acfe) [0x55c341fe9cfe]
+ 8: ./main1d.gnu.MPI.ex(+0x2ac8e) [0x55c2acc51c8e]
     ?? ??:0
 
