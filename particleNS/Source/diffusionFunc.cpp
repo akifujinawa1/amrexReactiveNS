@@ -218,20 +218,24 @@ void getViscFlux1D(Vector<double>& viscSlice, const Vector<double>& qL,\
     DN2_L = mixDiffCoeffs_L[gases::N2];
     DN2_R = mixDiffCoeffs_R[gases::N2];   
 
-    double muAvg  = 0.5*(mu_L+mu_R);
-    double kAvg   = 0.5*(k_L+k_R);
-    double DO2Avg = 0.5*(DO2_L+DO2_R);
-    double DN2Avg = 0.5*(DN2_L+DN2_R);
-    double rhoAvg = 0.5*(rhoL+rhoR);
+    double muAvg  = 0.5*(mu_L  + mu_R);
+    double kAvg   = 0.5*(k_L   + k_R);
+    double DO2Avg = 0.5*(DO2_L + DO2_R);
+    double DN2Avg = 0.5*(DN2_L + DN2_R);
+    double rhoAvg = 0.5*(rhoL  + rhoR);
     
     if (enIC == 8){ // test for diffusion convergence
         double cpAvg = 0.5*(cp_L+cp_R);
+        double mu = 2.0e-5*rhoAvg;
+        double k  = 2.0e-5*rhoAvg*cpAvg;
+        double D  = 2.0e-5;
         viscSlice[0] = 0;
-        viscSlice[1] = (4.0/3.0)*(2.0e-5)*rhoAvg*(uL-uR)/dx;
+        viscSlice[1] = (4.0/3.0)*mu*(uL-uR)/dx;
         viscSlice[2] = 0;
-        viscSlice[3] = (4.0/3.0)*(2.0e-5)*rhoAvg*0.5*(uL*uL-uR*uR)/dx + (2.0e-5)*rhoAvg*cpAvg*(TL-TR)/dx;
-        viscSlice[4] = (2.0e-5)*rhoAvg*(YO2L-YO2R)/dx;
-        viscSlice[5] = (2.0e-5)*rhoAvg*(YN2L-YN2R)/dx;
+        // viscSlice[3] = (2.0/3.0)*mu*(uL*uL-uR*uR)/dx + k*(TL-TR)/dx;
+        viscSlice[3] = (2.0/3.0)*mu*(uL*uL-uR*uR)/dx + 2.0e-5*(enerL-enerR)/dx;
+        viscSlice[4] = rhoAvg*D*(YO2L-YO2R)/dx;
+        viscSlice[5] = rhoAvg*D*(YN2L-YN2R)/dx;
     }
     else{
         viscSlice[0] = 0;

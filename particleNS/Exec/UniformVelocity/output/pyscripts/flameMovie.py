@@ -40,7 +40,7 @@ framestep = tfinal/frames
 scale = framestep/timestep
  
 # matplot subplot
-fig, ax = plt.subplots(nrows=2,ncols=1,figsize=(8,8*yratio),dpi=100)  #fig2,ax2 = plt.subplots(nrows=2,ncols=1,figsize=(8,8*yratio))
+fig, ax = plt.subplots(nrows=3,ncols=1,figsize=(8,8*yratio),dpi=100)  #fig2,ax2 = plt.subplots(nrows=2,ncols=1,figsize=(8,8*yratio))
 plt.subplots_adjust(left=0.14, bottom=0.15, right=0.90, top=0.94, wspace=0.20, hspace=0.20)
 
 iter = 0;
@@ -51,6 +51,7 @@ def make_frame(t):
     # clear
     ax[0].clear()
     ax[1].clear()
+    ax[2].clear()
 
     # print(t)
     # print(t*scale)
@@ -62,17 +63,20 @@ def make_frame(t):
 
     time_ms = int(t*scale/1e3)
 
-    data = np.loadtxt('output/txt/1Dflame/phi1/field/'+string+'.txt')
+    data = np.loadtxt('output/txt/1Dflame/isobaric/field/'+string+'.txt')
      
     # plotting line
     ax[0].scatter(data[:,0],data[:,1],c='black',s=3,label='$t='+str(time_ms)+'\;\mathrm{ms}$') 
     ax[0].plot(data[:,0],data[:,1]*0+2330,c=colors[1],linewidth=1,label='$\mathrm{Adiabatic\;flame\;temperature}$') 
     ax[1].scatter(data[:,0],data[:,2],c='red',s=3,label='$t='+str(time_ms)+'\;\mathrm{ms}$') 
+    ax[2].scatter(data[:,0],data[:,4],c='blue',s=3,label='$t='+str(time_ms)+'\;\mathrm{ms}$') 
     ax[0].set_ylim(0,2600)
     ax[1].set_ylim(0,0.24)
+    ax[2].set_ylim(-0.5,0.5)
     ax[0].set_ylabel(r'$T_\mathrm{g}\;[\mathrm{K}]$', fontsize=20)
     ax[1].set_ylabel(r'$Y_\mathrm{O_2}\;[\mathrm{-}]$', fontsize=20)
-    ax[1].set_xlabel(r'$\mathrm{x}\;[\mathrm{m}]$', fontsize=20)
+    ax[2].set_ylabel(r'$u\;[\mathrm{m/s}]$', fontsize=20)
+    ax[2].set_xlabel(r'$\mathrm{x}\;[\mathrm{m}]$', fontsize=20)
     ax[0].legend(ncol=1, loc="top right", fontsize = 12)
      
     # returning numpy image
