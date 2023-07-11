@@ -41,6 +41,7 @@ struct IntData
         Fe3O4,
         pIter,
         regime,
+        lock,
         ncomps
     };
 };
