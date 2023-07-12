@@ -35,14 +35,14 @@ data128 = np.loadtxt('output/txt/multiGasDiffusion/data128.txt')
 data256 = np.loadtxt('output/txt/multiGasDiffusion/data256.txt')
 data512 = np.loadtxt('output/txt/multiGasDiffusion/data512.txt')
 data1024 = np.loadtxt('output/txt/multiGasDiffusion/data1024.txt')
-data4096 = np.loadtxt('output/txt/multiGasDiffusion/data4096.txt')
+# data4096 = np.loadtxt('output/txt/multiGasDiffusion/data4096.txt')
 
 data64 = data64[data64[:, 0].argsort()]
 data128 = data128[data128[:, 0].argsort()]
 data256 = data256[data256[:, 0].argsort()]
 data512 = data512[data512[:, 0].argsort()]
 data1024 = data1024[data1024[:, 0].argsort()]
-data4096 = data4096[data4096[:, 0].argsort()]
+# data4096 = data4096[data4096[:, 0].argsort()]
 
 # calculate exact solution here
 
@@ -76,7 +76,7 @@ for idx, x in enumerate(arr):
 
 # print(y0)
 
-t = np.array([0.0000000001])
+t = np.array([0.00000000000001])
 for it, time in enumerate(t):                    # loop thorugh time for plotting
     for idx, x in enumerate(arr):                # loop through x
         val = np.trapz(y0,x=arr)/L               # a0 values
