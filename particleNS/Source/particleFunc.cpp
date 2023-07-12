@@ -315,10 +315,10 @@ AmrLevelAdv::updateParticleInfo(MultiFab& Sborder, const double& mFe0, const dou
         // else {
         //     p.pos(0) = p.pos(0) + dt*p.rdata(RealData::u);   // otherwise, update the particle position
         // }
-        // p.pos(0) = p.pos(0) + dt*p.rdata(RealData::u);
-        // if (spacedim == 2){
-        //     p.pos(1) = p.pos(1) + dt*p.rdata(RealData::v);
-        // }
+        p.pos(0) = p.pos(0) + dt*p.rdata(RealData::u);
+        if (spacedim == 2){
+            p.pos(1) = p.pos(1) + dt*p.rdata(RealData::v);
+        }
         for (int h = 0; h < RealData::ncomps; h++){
             p.rdata(h) = p.rdata(h) + dt*pSource[h];
         }

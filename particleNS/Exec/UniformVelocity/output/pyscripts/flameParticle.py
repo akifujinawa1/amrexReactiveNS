@@ -44,9 +44,9 @@ for i in range(15):
         jVal = str(j)
         # print(iVal)
         # print(jVal)
-        data = np.loadtxt('output/txt/1Dflame/isobaric/particle/'+jVal+'-'+iVal+'.txt')
+        data = np.loadtxt('output/txt/1Dflame/1300/particle/'+jVal+'-'+iVal+'.txt')
         # 0=time, 1=x, 2=mFe, 3=mFeO, 4=mFe3O4, 5=Tp, 6=regime
-        # print(len(data[:,0]))
+        # print(len(data[:,0]))s
         for k in range(len(data[:,0])):
             length = len(data[:,0])
             if (data[length-(k+1),6]-data[length-(k+2),6] == 1):
@@ -60,6 +60,9 @@ for i in range(15):
 
 time, location = zip(*sorted(zip(time,location)))
 LLSlocations = [0]*30
+
+print(time)
+print(location)
 
 A = np.vstack([time[7:30], np.ones(len(time[7:30]))]).T
 m, c = np.linalg.lstsq(A, location[7:30], rcond=None)[0]

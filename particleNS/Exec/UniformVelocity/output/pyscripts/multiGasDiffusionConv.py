@@ -260,10 +260,6 @@ print('error in 1024 cell: ',error[4])
 first = [error[0], error[0]/2, error[0]/4, error[0]/8, error[0]/16]
 second = [error[0], error[0]/4, error[0]/16, error[0]/64, error[0]/256]
 
-
-
-
-
 ax.scatter(nx,error,marker=".",c="red",linewidths="2",label='$L_1,\mathrm{O_2}$-$\mathrm{N_2}$')
 
 ax.plot(nx,first,c="black",linewidth="1.5",label='$\mathrm{O}(1)$')

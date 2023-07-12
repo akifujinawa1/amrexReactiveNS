@@ -403,7 +403,7 @@ double diffusiveSpeed(const Vector<double>& qL, const Vector<double>& qR){
 
     if (enIC == 8){
         return 2.0*2.0e-5;
-        // return 2.0*1.0;
+        // return 2.0e5*2.0e-5;
     }
 
     double rhoL, uL, vL, enerL, epsL, TL, YO2L, YN2L, pL, rhoR, uR, vR, enerR, epsR, TR, YO2R, YN2R, pR;
