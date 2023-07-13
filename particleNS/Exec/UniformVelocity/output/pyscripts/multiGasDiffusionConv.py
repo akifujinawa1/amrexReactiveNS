@@ -50,7 +50,7 @@ data1024 = data1024[data1024[:, 0].argsort()]
 
 x0 = 0
 L  = 0.1024
-D  = 2*10**(-5)
+D  = 100     #2*10**(-5)
 nlim = 100
 pi   = np.pi
 
@@ -76,11 +76,11 @@ for idx, x in enumerate(arr):
 
 # print(y0)
 
-t = np.array([0.00000000000001])
+t = np.array([0.00000001])
 for it, time in enumerate(t):                    # loop thorugh time for plotting
     for idx, x in enumerate(arr):                # loop through x
         val = np.trapz(y0,x=arr)/L               # a0 values
-        for i in range(1,200):                    # loop through n for solution
+        for i in range(1,50):                    # loop through n for solution
             # print(y0*np.sin(i*pi*arr))
             yInt = np.multiply(y0,np.cos(i*pi*arr/L))              # integrand
             b    = 2*np.trapz(yInt,x=arr)/L                        # a_n
@@ -90,7 +90,7 @@ for it, time in enumerate(t):                    # loop thorugh time for plottin
         y4096[idx] = val
 
 # # print(data64[:,5]-y64)
-# ax.scatter(data64[:,0],data64[:,5],marker=".",c="red",linewidths="0.1",label='$num.$')
+# ax.scatter(data1024[:,0],data1024[:,5],marker=".",c="red",linewidths="0.1",label='$num.$')
 # ax.scatter(arr,y4096,marker=".",c="black",linewidths="0.1",label='$exact$')
 # plt.show()
 
@@ -218,15 +218,15 @@ for i in range(len(y4096)):
             # print(i)
             avg = 0.5*(y4096[i]+y4096[i-1])
             if (j == 0):
-                error[j] += abs(avg-data64[iter[j],5])/(2**(6+j))
+                error[j] += abs(avg-data64[iter[j],5])/(64)
             elif (j == 1):
-                error[j] += abs(avg-data128[iter[j],5])/(2**(6+j))
+                error[j] += abs(avg-data128[iter[j],5])/(128)
             elif (j == 2):
-                error[j] += abs(avg-data256[iter[j],5])/(2**(6+j))
+                error[j] += abs(avg-data256[iter[j],5])/(256)
             elif (j == 3):
-                error[j] += abs(avg-data512[iter[j],5])/(2**(6+j))
+                error[j] += abs(avg-data512[iter[j],5])/(512)
             else:
-                error[j] += abs(avg-data1024[iter[j],5])/(2**(6+j))
+                error[j] += abs(avg-data1024[iter[j],5])/(1024)
             iter[j] += 1
 
 

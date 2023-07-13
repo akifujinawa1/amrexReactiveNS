@@ -386,7 +386,8 @@ AmrLevelAdv::initData ()
               //   yO2 = 0.0;
               // }
               double yN2 = 1-yO2;
-              double mAvg = getMavg(yO2,yN2);
+              // double mAvg = getMavg(yO2,yN2);
+              double mAvg = getMavg(0.5,0.5);
               
               // density
               arr(i,j,k,0) = one_atm_Pa/((R/mAvg)*T0);
@@ -401,10 +402,10 @@ AmrLevelAdv::initData ()
               arr(i,j,k,3) = energy(arr(i,j,k,0),0.0,0.0,T0,yO2,yN2,one_atm_Pa);
 
               // density*O2 mass frac
-              arr(i,j,k,4) = arr(i,j,k,0)*yO2;
+              arr(i,j,k,4) = yO2;
 
               // density*N2 mass frac
-              arr(i,j,k,5) = arr(i,j,k,0)*yN2;
+              arr(i,j,k,5) = yN2;
 
               // std::cout << "x: " << x << "Density: " << arr(i,j,k,0) << " Temperature: " << T << " Energy: " << arr(i,j,k,3) << std::endl; 
             } 
