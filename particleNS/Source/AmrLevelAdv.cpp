@@ -409,8 +409,16 @@ AmrLevelAdv::initData ()
 
               // std::cout << "x: " << x << "Density: " << arr(i,j,k,0) << " Temperature: " << T << " Energy: " << arr(i,j,k,3) << std::endl; 
             } 
-            else {
-              if (x<xDisc){
+            if (enIC == 14){
+              if (x < probHiX/3.0){   // set to low gas temp
+                arr(i,j,k,0) = RPLeftRight[6];
+                arr(i,j,k,1) = RPLeftRight[7];
+                arr(i,j,k,2) = RPLeftRight[8];
+                arr(i,j,k,3) = RPLeftRight[9];
+                arr(i,j,k,4) = RPLeftRight[10];
+                arr(i,j,k,5) = RPLeftRight[11];
+              }
+              else if ((x >= probHiX/3.0) && (x < xDisc)){   // set to high gas temp
                 arr(i,j,k,0) = RPLeftRight[0];
                 arr(i,j,k,1) = RPLeftRight[1];
                 arr(i,j,k,2) = RPLeftRight[2];
@@ -419,7 +427,7 @@ AmrLevelAdv::initData ()
                 arr(i,j,k,5) = RPLeftRight[5];
               }
               else {
-                arr(i,j,k,0) = RPLeftRight[6];
+                arr(i,j,k,0) = RPLeftRight[6];  // set to low gas temp
                 arr(i,j,k,1) = RPLeftRight[7];
                 arr(i,j,k,2) = RPLeftRight[8];
                 arr(i,j,k,3) = RPLeftRight[9];

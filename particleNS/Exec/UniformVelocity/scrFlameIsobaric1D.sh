@@ -26,48 +26,4 @@ cp -r output/txt/1Dflame/isobaric/field/ output/txt/1Dflame/phi1/
 cp -r output/txt/1Dflame/isobaric/particle/ output/txt/1Dflame/phi1/
 
 
-rm output/txt/1Dflame/isobaric/field/*.*
-rm output/txt/1Dflame/isobaric/particle/*.*
-
-python3 setupScripts/setup1D_900.py
-
-for i in "${Tp[@]}"
-do
-    for j in "${tests[@]}"
-    do
-	    mpirun -np 24 ./main1d.gnu.MPI.ex inputs amr.n_cell = 768 0 0 euler = 2 viscous = 1 source = 0 particle = 2 Da = 1\
-        enIC = "$j" geometry.prob_lo = 0.0 0.0 0.0 geometry.prob_hi = 0.00768 0.0 0.0 adv.cfl = 0.8 adv.fourier = 0.8\
-        amr.max_level = 0 amr.ref_ratio = 2 2 4 4 amr.probin_file = prbn/detonation amr.plot_int = 1\
-        amr.max_grid_size = 64 amr.plot_files_output = 0 amr.plot_file = detonation/plt stop_time = 0.040\
-        TpInitial = "$i" TgInitial = 300 dp0 = 0.000010 Nsub = 1
-    done
-done
-
-cp -r output/txt/1Dflame/isobaric/field/ output/txt/1Dflame/900/
-cp -r output/txt/1Dflame/isobaric/particle/ output/txt/1Dflame/900/
-
-rm output/txt/1Dflame/isobaric/field/*.*
-rm output/txt/1Dflame/isobaric/particle/*.*
-
-python3 setupScripts/setup1D_1300.py
-
-for i in "${Tp[@]}"
-do
-    for j in "${tests[@]}"
-    do
-	    mpirun -np 24 ./main1d.gnu.MPI.ex inputs amr.n_cell = 768 0 0 euler = 2 viscous = 1 source = 0 particle = 2 Da = 1\
-        enIC = "$j" geometry.prob_lo = 0.0 0.0 0.0 geometry.prob_hi = 0.00768 0.0 0.0 adv.cfl = 0.8 adv.fourier = 0.8\
-        amr.max_level = 0 amr.ref_ratio = 2 2 4 4 amr.probin_file = prbn/detonation amr.plot_int = 1\
-        amr.max_grid_size = 64 amr.plot_files_output = 0 amr.plot_file = detonation/plt stop_time = 0.040\
-        TpInitial = "$i" TgInitial = 300 dp0 = 0.000010 Nsub = 1
-    done
-done
-
-cp -r output/txt/1Dflame/isobaric/field/ output/txt/1Dflame/1300/
-cp -r output/txt/1Dflame/isobaric/particle/ output/txt/1Dflame/1300/
-
-
-# python3 output/pyscripts/flameIsobaric1D.py
-
-
 

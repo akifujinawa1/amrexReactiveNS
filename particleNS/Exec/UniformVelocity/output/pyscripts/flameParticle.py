@@ -40,11 +40,11 @@ Np = 0
 
 for i in range(15):
     for j in range(2):
-        iVal = str(i)
+        iVal = str(8+i)
         jVal = str(j)
         # print(iVal)
         # print(jVal)
-        data = np.loadtxt('output/txt/1Dflame/1300/particle/'+jVal+'-'+iVal+'.txt')
+        data = np.loadtxt('output/txt/1Dflame/phi1/particle/'+jVal+'-'+iVal+'.txt')
         # 0=time, 1=x, 2=mFe, 3=mFeO, 4=mFe3O4, 5=Tp, 6=regime
         # print(len(data[:,0]))s
         for k in range(len(data[:,0])):
@@ -58,14 +58,16 @@ for i in range(15):
 # print(time)
 # print(location)
 
-time, location = zip(*sorted(zip(time,location)))
+# time, location = zip(*sorted(zip(time,location)))
+time.sort()
+location.sort()
 LLSlocations = [0]*30
 
 print(time)
 print(location)
 
-A = np.vstack([time[7:30], np.ones(len(time[7:30]))]).T
-m, c = np.linalg.lstsq(A, location[7:30], rcond=None)[0]
+A = np.vstack([time[16:len(time)], np.ones(len(time[16:len(time)]))]).T
+m, c = np.linalg.lstsq(A, location[16:len(time)], rcond=None)[0]
 
 for i in range(len(time)):
     LLSlocations[i] = m*time[i] + c
@@ -75,7 +77,7 @@ print('Flame speed estimate from slope of x-t graph: ',m*1e2,' cm/s')
 
 # plotting line
 ax.scatter(time,location,c='black',s=3,label='$\mathrm{Ignition\;points}$') 
-ax.plot(time[6:24],LLSlocations[6:24],c='red',linewidth=2,label='$\mathrm{Flame\;speed\;}='+str(round(m*1e2,3))+'\;\mathrm{cm/s}\;(\mathrm{LLS)}$') 
+ax.plot(time[11:len(time)],LLSlocations[11:len(time)],c='red',linewidth=2,label='$\mathrm{Flame\;speed\;}='+str(round(m*1e2,3))+'\;\mathrm{cm/s}\;(\mathrm{LLS)}$') 
 # ax[0].plot(data[:,0],data[:,1]*0+2330,c=colors[1],linewidth=1,label='$\mathrm{Adiabatic\;flame\;temperature}$') 
 # ax[1].scatter(data[:,0],data[:,2],c='red',s=3,label='$t='+str(time_ms)+'\;\mathrm{ms}$') 
 # ax[0].set_ylim(0,2600)

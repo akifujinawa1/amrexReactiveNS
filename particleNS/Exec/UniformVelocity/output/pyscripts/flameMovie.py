@@ -63,7 +63,7 @@ def make_frame(t):
 
     time_ms = int(t*scale/1e3)
 
-    data = np.loadtxt('output/txt/1Dflame/isobaric/field/'+string+'.txt')
+    data = np.loadtxt('output/txt/1Dflame/1300/'+string+'.txt')
      
     # plotting line
     ax[0].scatter(data[:,0],data[:,1],c='black',s=3,label='$t='+str(time_ms)+'\;\mathrm{ms}$') 
