@@ -8,7 +8,7 @@ make DIM=1 USE_MPI=TRUE -j6
 Tp=( 300 )
 tests=( 14 )
 
-python3 setupScripts/setup1D_phi1.py
+python3 setupScripts/setup1D_1300.py
 
 for i in "${Tp[@]}"
 do
@@ -22,8 +22,8 @@ do
     done
 done
 
-cp -r output/txt/1Dflame/isobaric/field/ output/txt/1Dflame/phi1/
-cp -r output/txt/1Dflame/isobaric/particle/ output/txt/1Dflame/phi1/
+cp -r output/txt/1Dflame/isobaric/field/ output/txt/1Dflame/1300/
+cp -r output/txt/1Dflame/isobaric/particle/ output/txt/1Dflame/1300/
 
 
 

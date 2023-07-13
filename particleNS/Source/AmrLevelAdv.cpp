@@ -377,7 +377,16 @@ AmrLevelAdv::initData ()
             if (enIC == 8){
               // Use this to set spatial profile of oxygen concentration
 
-              double yO2 = exp(-5000*(x-0.5*probHiX)*(x-0.5*probHiX)); // 100 0.5 0.5
+              double yO2 = 0;
+
+              for (int z = 0; z < 10; z++){
+                double xfrac = x - 0.5*dX + 0.05*dX + z*0.1*dX;
+                // std::cout << "xfrac: " << xfrac << std::endl;
+                double yO2val = exp(-5000*(xfrac-0.5*probHiX)*(xfrac-0.5*probHiX));
+                yO2 += yO2val/10.0;
+              }
+
+              // double yO2 = exp(-5000*(x-0.5*probHiX)*(x-0.5*probHiX)); // 100 0.5 0.5
               // double yO2;
               // if (x>0.5*probHiX){
               //   yO2 = 1.0;
@@ -406,6 +415,8 @@ AmrLevelAdv::initData ()
 
               // density*N2 mass frac
               arr(i,j,k,5) = yN2;
+
+              std::cout << "x: " << x << ", yO2: " << yO2 << std::endl;
 
               // std::cout << "x: " << x << "Density: " << arr(i,j,k,0) << " Temperature: " << T << " Energy: " << arr(i,j,k,3) << std::endl; 
             } 

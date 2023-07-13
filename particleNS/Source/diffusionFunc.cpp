@@ -237,10 +237,10 @@ void getViscFlux1D(Vector<double>& viscSlice, const Vector<double>& qL,\
         viscSlice[2] = 0;
         // viscSlice[3] = (2.0/3.0)*mu*(uL*uL-uR*uR)/dx + k*(TL-TR)/dx;
         viscSlice[3] = (2.0/3.0)*mu*(uL*uL-uR*uR)/dx + D*(enerL-enerR)/dx;
-        // viscSlice[4] = rhoAvg*D*(YO2L-YO2R)/dx;
-        // viscSlice[5] = rhoAvg*D*(YN2L-YN2R)/dx;
-        viscSlice[4] = D*(YO2L-YO2R)/dx;
-        viscSlice[5] = D*(YN2L-YN2R)/dx;
+        viscSlice[4] = rhoAvg*D*(YO2L-YO2R)/dx;
+        viscSlice[5] = rhoAvg*D*(YN2L-YN2R)/dx;
+        // viscSlice[4] = D*(YO2L-YO2R)/dx;
+        // viscSlice[5] = D*(YN2L-YN2R)/dx;
     }
     else{
         viscSlice[0] = 0;

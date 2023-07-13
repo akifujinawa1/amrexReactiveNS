@@ -358,7 +358,7 @@ void AmrLevelAdv::writePlotFile()
                         double gammaval = a * a * rho / p;
 
                         AllPrint(approx) << x << " " << rho << " " << vx / sqrt(one_atm_Pa) << " " << p / one_atm_Pa << " "
-                                         << eps / one_atm_Pa << " " << rhoYO2 << " " << rhoYN2 << " " << Tgas << " " << gammaval << std::endl;
+                                         << eps / one_atm_Pa << " " << YO2 << " " << YN2 << " " << Tgas << " " << gammaval << std::endl;
                     }
                 }
             }

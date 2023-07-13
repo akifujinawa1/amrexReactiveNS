@@ -9,21 +9,21 @@ Host Name: ironmontreal
             readelf -wl my_exefile | grep my_line_address'
     to find out the offset for that line.
 
- 0: ./main1d.gnu.MPI.ex(+0x15ae6d) [0x557d87d3fe6d]
+ 0: ./main1d.gnu.MPI.ex(+0x15aead) [0x556b25e14ead]
     amrex::BLBackTrace::print_backtrace_info(_IO_FILE*) at /usr/include/x86_64-linux-gnu/bits/unistd.h:354
  (inlined by) amrex::BLBackTrace::print_backtrace_info(_IO_FILE*) at /home/afujinawa/amrexReactiveNS/particleNS/Exec/UniformVelocity/../../../../amrex/Src/Base/AMReX_BLBackTrace.cpp:196
 
- 1: ./main1d.gnu.MPI.ex(+0x15ccb5) [0x557d87d41cb5]
+ 1: ./main1d.gnu.MPI.ex(+0x15ccf5) [0x556b25e16cf5]
     amrex::BLBackTrace::handler(int) at /home/afujinawa/amrexReactiveNS/particleNS/Exec/UniformVelocity/../../../../amrex/Src/Base/AMReX_BLBackTrace.cpp:96
 
- 2: ./main1d.gnu.MPI.ex(+0x4d67d) [0x557d87c3267d]
+ 2: ./main1d.gnu.MPI.ex(+0x4d6bd) [0x556b25d076bd]
     Tg(double const&, double const&, double const&, double const&, double const&, double const&) at /home/afujinawa/amrexReactiveNS/particleNS/Exec/UniformVelocity/../../Source/thermoTransport.cpp:556
 
- 3: ./main1d.gnu.MPI.ex(+0x3ece0) [0x557d87c23ce0]
+ 3: ./main1d.gnu.MPI.ex(+0x3ed20) [0x556b25cf8d20]
     pressure(double const&, double const&, double const&, double const&) at /home/afujinawa/amrexReactiveNS/particleNS/Exec/UniformVelocity/../../Source/eulerFunc.cpp:1291
  (inlined by) getPrim(amrex::Vector<double, std::allocator<double> > const&) at /home/afujinawa/amrexReactiveNS/particleNS/Exec/UniformVelocity/../../Source/eulerFunc.cpp:1233
 
- 4: ./main1d.gnu.MPI.ex(+0x3eebb) [0x557d87c23ebb]
+ 4: ./main1d.gnu.MPI.ex(+0x3eefb) [0x556b25cf8efb]
     std::_Vector_base<double, std::allocator<double> >::_Vector_impl_data::_M_copy_data(std::_Vector_base<double, std::allocator<double> >::_Vector_impl_data const&) at /usr/include/c++/9/bits/stl_vector.h:108
  (inlined by) std::_Vector_base<double, std::allocator<double> >::_Vector_impl_data::_M_swap_data(std::_Vector_base<double, std::allocator<double> >::_Vector_impl_data&) at /usr/include/c++/9/bits/stl_vector.h:121
  (inlined by) std::vector<double, std::allocator<double> >::_M_move_assign(std::vector<double, std::allocator<double> >&&, std::integral_constant<bool, true>) at /usr/include/c++/9/bits/stl_vector.h:1816
@@ -31,22 +31,24 @@ Host Name: ironmontreal
  (inlined by) amrex::Vector<double, std::allocator<double> >::operator=(amrex::Vector<double, std::allocator<double> >&&) at /home/afujinawa/amrexReactiveNS/particleNS/Exec/UniformVelocity/../../../../amrex/Src/Base/AMReX_Vector.H:25
  (inlined by) wavespeedEstimate(amrex::Vector<double, std::allocator<double> > const&, amrex::Vector<double, std::allocator<double> > const&, double&, double&, double&, int) at /home/afujinawa/amrexReactiveNS/particleNS/Exec/UniformVelocity/../../Source/eulerFunc.cpp:939
 
- 5: ./main1d.gnu.MPI.ex(+0x2b97d) [0x557d87c1097d]
-    AmrLevelAdv::estTimeStep(double) at /home/afujinawa/amrexReactiveNS/particleNS/Exec/UniformVelocity/../../Source/AmrLevelAdv.cpp:938
+ 5: ./main1d.gnu.MPI.ex(+0x2b94d) [0x556b25ce594d]
+    AmrLevelAdv::estTimeStep(double) at /home/afujinawa/amrexReactiveNS/particleNS/Exec/UniformVelocity/../../Source/AmrLevelAdv.cpp:958
 
- 6: ./main1d.gnu.MPI.ex(+0x2c2c1) [0x557d87c112c1]
-    amrex::Vector<double, std::allocator<double> >::operator[](unsigned long) at /home/afujinawa/amrexReactiveNS/particleNS/Exec/UniformVelocity/../../../../amrex/Src/Base/AMReX_Vector.H:37
- (inlined by) AmrLevelAdv::computeNewDt(int, int, amrex::Vector<int, std::allocator<int> >&, amrex::Vector<amrex::IntVect, std::allocator<amrex::IntVect> > const&, amrex::Vector<double, std::allocator<double> >&, amrex::Vector<double, std::allocator<double> >&, double, int) at /home/afujinawa/amrexReactiveNS/particleNS/Exec/UniformVelocity/../../Source/AmrLevelAdv.cpp:1063
- (inlined by) AmrLevelAdv::computeNewDt(int, int, amrex::Vector<int, std::allocator<int> >&, amrex::Vector<amrex::IntVect, std::allocator<amrex::IntVect> > const&, amrex::Vector<double, std::allocator<double> >&, amrex::Vector<double, std::allocator<double> >&, double, int) at /home/afujinawa/amrexReactiveNS/particleNS/Exec/UniformVelocity/../../Source/AmrLevelAdv.cpp:1040
+ 6: ./main1d.gnu.MPI.ex(+0x2c0e8) [0x556b25ce60e8]
+    AmrLevelAdv::computeInitialDt(int, int, amrex::Vector<int, std::allocator<int> >&, amrex::Vector<amrex::IntVect, std::allocator<amrex::IntVect> > const&, amrex::Vector<double, std::allocator<double> >&, double) at /home/afujinawa/amrexReactiveNS/particleNS/Exec/UniformVelocity/../../Source/AmrLevelAdv.cpp:1033
+ (inlined by) AmrLevelAdv::computeInitialDt(int, int, amrex::Vector<int, std::allocator<int> >&, amrex::Vector<amrex::IntVect, std::allocator<amrex::IntVect> > const&, amrex::Vector<double, std::allocator<double> >&, double) at /home/afujinawa/amrexReactiveNS/particleNS/Exec/UniformVelocity/../../Source/AmrLevelAdv.cpp:1012
 
- 7: ./main1d.gnu.MPI.ex(+0x1c4b75) [0x557d87da9b75]
-    amrex::Amr::coarseTimeStep(double) at /home/afujinawa/amrexReactiveNS/particleNS/Exec/UniformVelocity/../../../../amrex/Src/Amr/AMReX_Amr.cpp:2074
+ 7: ./main1d.gnu.MPI.ex(+0x1c8083) [0x556b25e82083]
+    amrex::Amr::FinalizeInit(double, double) at /home/afujinawa/amrexReactiveNS/particleNS/Exec/UniformVelocity/../../../../amrex/Src/Amr/AMReX_Amr.cpp:1296
 
- 8: ./main1d.gnu.MPI.ex(+0x260f5) [0x557d87c0b0f5]
-    main at /home/afujinawa/amrexReactiveNS/particleNS/Exec/UniformVelocity/../../Source/main.cpp:106
+ 8: ./main1d.gnu.MPI.ex(+0x1ccb75) [0x556b25e86b75]
+    amrex::Amr::init(double, double) at /home/afujinawa/amrexReactiveNS/particleNS/Exec/UniformVelocity/../../../../amrex/Src/Amr/AMReX_Amr.cpp:1113
 
- 9: /lib/x86_64-linux-gnu/libc.so.6(__libc_start_main+0xf3) [0x7fe7b81b1083]
+ 9: ./main1d.gnu.MPI.ex(+0x2607f) [0x556b25ce007f]
+    main at /home/afujinawa/amrexReactiveNS/particleNS/Exec/UniformVelocity/../../Source/main.cpp:102
 
-10: ./main1d.gnu.MPI.ex(+0x2ac8e) [0x557d87c0fc8e]
+10: /lib/x86_64-linux-gnu/libc.so.6(__libc_start_main+0xf3) [0x7fc8d0c84083]
+
+11: ./main1d.gnu.MPI.ex(+0x2ac5e) [0x556b25ce4c5e]
     ?? ??:0
 
