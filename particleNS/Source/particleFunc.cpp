@@ -97,8 +97,8 @@ AmrLevelAdv::initParticles (const MultiFab& S_new, const double& xDisc, const do
             {
                 if ((x_txt < hi.x)&&(x_txt >= lo.x)) {
                     if ((y_txt < hi.y)&&(y_txt >= lo.y)){
-                        x_coord.push_back (x_txt*dp0);
-                        y_coord.push_back (y_txt*dp0);
+                        x_coord.push_back (x_txt);
+                        y_coord.push_back (y_txt);
                         Np += 1;
                         // std::cout << "x, y from locations: " << x_txt << " " << y_txt << std::endl;
                     }
@@ -109,7 +109,7 @@ AmrLevelAdv::initParticles (const MultiFab& S_new, const double& xDisc, const do
             while (locations >> x_txt)
             {
                 if ((x_txt < hi.x)&&(x_txt >= lo.x)) {
-                    x_coord.push_back (x_txt*dp0);
+                    x_coord.push_back (x_txt);  // x_coord directly takes x_txt value as it is already in double variable location
                     Np += 1;
                     // std::cout << "x, y from locations: " << x_txt << " " << y_txt << std::endl;
                 }

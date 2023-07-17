@@ -34,47 +34,47 @@ color = colors
 # matplot subplot
 fig, ax = plt.subplots(figsize=(8,8*yratio))  #fig2,ax2 = plt.subplots(nrows=2,ncols=1,figsize=(8,8*yratio))nrows=2,ncols=1,,dpi=100
 plt.subplots_adjust(left=0.14, bottom=0.15, right=0.90, top=0.94, wspace=0.20, hspace=0.20)
-time = [0]*33
-location = [0]*33
+time = [0]*30
+location = [0]*30
 Np = 0
 
-# for i in range(15):
-#     for j in range(2):
-#         iVal = str(8+i)
-#         jVal = str(j)
-#         # print(iVal)
-#         # print(jVal)
-#         data = np.loadtxt('output/txt/1Dflame/1300/particle/'+jVal+'-'+iVal+'.txt')
-#         # 0=time, 1=x, 2=mFe, 3=mFeO, 4=mFe3O4, 5=Tp, 6=regime
-#         # print(len(data[:,0]))s
-#         for k in range(len(data[:,0])):
-#             length = len(data[:,0])
-#             if (data[length-(k+1),6]-data[length-(k+2),6] == 1):
-#                 time[Np] = data[length-k,0]
-#                 location[Np] = data[length-k,1]
-#                 Np += 1
-#                 break
-for i in range(33):
-    iVal = str(i)
-    # print(iVal)
-    # print(jVal)
-    data = np.loadtxt('output/txt/1Dflame/1300/particle/'+iVal+'.txt')
-    # 0=time, 1=x, 2=mFe, 3=mFeO, 4=mFe3O4, 5=Tp, 6=regime
-    # print(len(data[:,0]))s
-    for k in range(len(data[:,0])):
-        length = len(data[:,0])
-        if (data[length-(k+1),6]-data[length-(k+2),6] == 1):
-            time[Np] = data[length-k,0]
-            location[Np] = data[length-k,1]
-            Np += 1
-            break
+for i in range(14):
+    for j in range(2):
+        iVal = str(8+i)
+        jVal = str(j)
+        # print(iVal)
+        # print(jVal)
+        data = np.loadtxt('output/txt/1Dflame/phi1/particle/'+jVal+'-'+iVal+'.txt')
+        # 0=time, 1=x, 2=mFe, 3=mFeO, 4=mFe3O4, 5=Tp, 6=regime
+        # print(len(data[:,0]))s
+        for k in range(len(data[:,0])):
+            length = len(data[:,0])
+            if (data[length-(k+1),6]-data[length-(k+2),6] == 1):
+                time[Np] = data[length-k,0]
+                location[Np] = data[length-k,1]
+                Np += 1
+                break
+# for i in range(33):
+#     iVal = str(i)
+#     # print(iVal)
+#     # print(jVal)
+#     data = np.loadtxt('output/txt/1Dflame/1300/particle/'+iVal+'.txt')
+#     # 0=time, 1=x, 2=mFe, 3=mFeO, 4=mFe3O4, 5=Tp, 6=regime
+#     # print(len(data[:,0]))s
+#     for k in range(len(data[:,0])):
+#         length = len(data[:,0])
+#         if (data[length-(k+1),6]-data[length-(k+2),6] == 1):
+#             time[Np] = data[length-k,0]
+#             location[Np] = data[length-k,1]
+#             Np += 1
+#             break
 # print(time)
 # print(location)
 
 # time, location = zip(*sorted(zip(time,location)))
 time.sort()
 location.sort()
-LLSlocations = [0]*33
+LLSlocations = [0]*30
 
 print(time)
 print(location)
@@ -156,3 +156,11 @@ plt.show()
 # # plt2.show()
 
 # # fig2.savefig('output/plots/particleCombustion/combustion.pdf')
+
+with open('output/txt/1Dflame/phi1/x-t.txt', 'w') as text_file:
+    for i in range(len(time)):
+        timeval = time[i]
+        locationval = location[i]
+        text_file.write(str(timeval)+' '+str(locationval)+'\n')
+
+text_file.close()

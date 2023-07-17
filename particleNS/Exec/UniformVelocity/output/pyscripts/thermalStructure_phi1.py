@@ -46,13 +46,14 @@ plt.subplots_adjust(left=0.14, bottom=0.15, right=0.90, top=0.94, wspace=0.20, h
 # ax1 = fig.add_subplot(121)
 # ax2 = fig.add_subplot(122)
 
+directory = '1400/field'
 
-data0 = np.loadtxt('output/txt/1Dflame/phi1/field/00.txt')
-data1 = np.loadtxt('output/txt/1Dflame/phi1/field/7500.txt')
-data2 = np.loadtxt('output/txt/1Dflame/phi1/field/15000.txt')
-data3 = np.loadtxt('output/txt/1Dflame/phi1/field/22500.txt')
-data4 = np.loadtxt('output/txt/1Dflame/phi1/field/30000.txt')
-data5 = np.loadtxt('output/txt/1Dflame/phi1/field/37500.txt')
+data0 = np.loadtxt('output/txt/1Dflame/'+directory+'/00.txt')
+data1 = np.loadtxt('output/txt/1Dflame/'+directory+'/7500.txt')
+data2 = np.loadtxt('output/txt/1Dflame/'+directory+'/15000.txt')
+data3 = np.loadtxt('output/txt/1Dflame/'+directory+'/22500.txt')
+data4 = np.loadtxt('output/txt/1Dflame/'+directory+'/30000.txt')
+data5 = np.loadtxt('output/txt/1Dflame/'+directory+'/37500.txt')
 
 data0 = data0[data0[:, 0].argsort()]
 data1 = data1[data1[:, 0].argsort()]

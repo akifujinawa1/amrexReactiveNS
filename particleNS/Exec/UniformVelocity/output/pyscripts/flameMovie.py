@@ -63,7 +63,7 @@ def make_frame(t):
 
     time_ms = int(t*scale/1e3)
 
-    data = np.loadtxt('output/txt/1Dflame/phi1/field/'+string+'.txt')
+    data = np.loadtxt('output/txt/1Dflame/700/'+string+'.txt')
      
     # plotting line
     ax[0].scatter(data[:,0],data[:,1],c='black',s=3,label='$t='+str(time_ms)+'\;\mathrm{ms}$') 
@@ -77,7 +77,7 @@ def make_frame(t):
     ax[1].set_ylabel(r'$Y_\mathrm{O_2}\;[\mathrm{-}]$', fontsize=20)
     ax[2].set_ylabel(r'$u\;[\mathrm{m/s}]$', fontsize=20)
     ax[2].set_xlabel(r'$\mathrm{x}\;[\mathrm{m}]$', fontsize=20)
-    ax[0].legend(ncol=1, loc="top right", fontsize = 12)
+    ax[0].legend(ncol=1, loc="upper right", fontsize = 12)
      
     # returning numpy image
     return mplfig_to_npimage(fig)

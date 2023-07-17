@@ -8,7 +8,7 @@ make DIM=1 USE_MPI=TRUE -j6
 Tp=( 300 )
 tests=( 14 )
 
-python3 setupScripts/setup1D_conc.py
+python3 setupScripts/setup1D_concX.py
 
 for i in "${Tp[@]}"
 do
@@ -28,8 +28,8 @@ cp -r output/txt/1Dflame/isobaric/particle/ output/txt/1Dflame/700/
 rm output/txt/1Dflame/isobaric/field/*.*
 rm output/txt/1Dflame/isobaric/particle/*.*
 
-sed -i 's/conc = 700/conc = 800/g' setupScripts/setup1D_conc.py
-python3 setupScripts/setup1D_conc.py
+sed -i 's/conc = 700/conc = 800/g' setupScripts/setup1D_concX.py
+python3 setupScripts/setup1D_concX.py
 
 for i in "${Tp[@]}"
 do
@@ -48,8 +48,8 @@ cp -r output/txt/1Dflame/isobaric/particle/ output/txt/1Dflame/800/
 rm output/txt/1Dflame/isobaric/field/*.*
 rm output/txt/1Dflame/isobaric/particle/*.*
 
-sed -i 's/conc = 800/conc = 900/g' setupScripts/setup1D_conc.py
-python3 setupScripts/setup1D_conc.py
+sed -i 's/conc = 800/conc = 900/g' setupScripts/setup1D_concX.py
+python3 setupScripts/setup1D_concX.py
 
 for i in "${Tp[@]}"
 do
@@ -68,8 +68,8 @@ cp -r output/txt/1Dflame/isobaric/particle/ output/txt/1Dflame/900/
 rm output/txt/1Dflame/isobaric/field/*.*
 rm output/txt/1Dflame/isobaric/particle/*.*
 
-sed -i 's/conc = 900/conc = 1000/g' setupScripts/setup1D_conc.py
-python3 setupScripts/setup1D_conc.py
+sed -i 's/conc = 900/conc = 1000/g' setupScripts/setup1D_concX.py
+python3 setupScripts/setup1D_concX.py
 
 for i in "${Tp[@]}"
 do
@@ -88,8 +88,8 @@ cp -r output/txt/1Dflame/isobaric/particle/ output/txt/1Dflame/1000/
 rm output/txt/1Dflame/isobaric/field/*.*
 rm output/txt/1Dflame/isobaric/particle/*.*
 
-sed -i 's/conc = 1000/conc = 1100/g' setupScripts/setup1D_conc.py
-python3 setupScripts/setup1D_conc.py
+sed -i 's/conc = 1000/conc = 1100/g' setupScripts/setup1D_concX.py
+python3 setupScripts/setup1D_concX.py
 
 for i in "${Tp[@]}"
 do
@@ -108,8 +108,8 @@ cp -r output/txt/1Dflame/isobaric/particle/ output/txt/1Dflame/1100/
 rm output/txt/1Dflame/isobaric/field/*.*
 rm output/txt/1Dflame/isobaric/particle/*.*
 
-sed -i 's/conc = 1100/conc = 1200/g' setupScripts/setup1D_conc.py
-python3 setupScripts/setup1D_conc.py
+sed -i 's/conc = 1100/conc = 1200/g' setupScripts/setup1D_concX.py
+python3 setupScripts/setup1D_concX.py
 
 for i in "${Tp[@]}"
 do
@@ -128,8 +128,8 @@ cp -r output/txt/1Dflame/isobaric/particle/ output/txt/1Dflame/1200/
 rm output/txt/1Dflame/isobaric/field/*.*
 rm output/txt/1Dflame/isobaric/particle/*.*
 
-sed -i 's/conc = 1200/conc = 1300/g' setupScripts/setup1D_conc.py
-python3 setupScripts/setup1D_conc.py
+sed -i 's/conc = 1200/conc = 1300/g' setupScripts/setup1D_concX.py
+python3 setupScripts/setup1D_concX.py
 
 for i in "${Tp[@]}"
 do
@@ -148,8 +148,8 @@ cp -r output/txt/1Dflame/isobaric/particle/ output/txt/1Dflame/1300/
 rm output/txt/1Dflame/isobaric/field/*.*
 rm output/txt/1Dflame/isobaric/particle/*.*
 
-sed -i 's/conc = 1300/conc = 1400/g' setupScripts/setup1D_conc.py
-python3 setupScripts/setup1D_conc.py
+sed -i 's/conc = 1300/conc = 1400/g' setupScripts/setup1D_concX.py
+python3 setupScripts/setup1D_concX.py
 
 for i in "${Tp[@]}"
 do
