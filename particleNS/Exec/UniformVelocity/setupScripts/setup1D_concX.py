@@ -88,7 +88,7 @@ error = 1
 tol = 1e-3
 iteration = 0
 
-conc = 1300
+conc = 600
 
 while error > tol:
     avg = 0.5*(NpLo+NpHi)
