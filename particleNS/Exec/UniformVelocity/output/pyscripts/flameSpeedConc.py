@@ -38,10 +38,10 @@ plt.subplots_adjust(left=0.14, bottom=0.15, right=0.90, top=0.94, wspace=0.20, h
 time = numpy.empty((35, 8))
 location = numpy.empty((35, 8))
 flameSpeed = numpy.empty(8)
-concArray = [700,800,900,1000,1100,1200,1300,1400]
+concArray = [600,700,800,900,1000,1100,1200,1300]
 
 for i in range(8):
-    concentration = (i+7)*100
+    concentration = (i+6)*100
     directory = 'output/txt/1Dflame/'+str(concentration)+'/particle/'
     Np = 0
 
@@ -64,17 +64,17 @@ for i in range(8):
     time[:,i].sort()
     location[:,i].sort()
 
-    A = np.vstack([time[Np-25:Np,i], np.ones(len(time[Np-25:Np,i]))]).T
-    m, c = np.linalg.lstsq(A, location[Np-25:Np,i], rcond=None)[0]
+    A = np.vstack([time[Np-10:Np,i], np.ones(len(time[Np-10:Np,i]))]).T
+    m, c = np.linalg.lstsq(A, location[Np-10:Np,i], rcond=None)[0]
     flameSpeed[i] = m*1e2
     print('Flame speed estimate for conc. = ',concentration,' is ',m*1e2,' cm/s')
 
-    # ax.scatter(time[:,i],location[:,i],c=colors[i],s=3,label=str(concentration))
+    ax.plot(time[:,i],location[:,i],c=colors[i],linewidth=1,label=str(concentration)) #s=3
 
 
 
-# ax.set_xlim(0.015,0.035)
-# ax.set_ylim(0.005,0.008)
+ax.set_xlim(0.015,0.035)
+ax.set_ylim(0.005,0.008)
 
 ax.scatter(concArray,flameSpeed,c='black',s=3,label='$\mathrm{Flame\;speed}$')
 

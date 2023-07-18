@@ -46,7 +46,7 @@ plt.subplots_adjust(left=0.14, bottom=0.15, right=0.90, top=0.94, wspace=0.20, h
 # ax1 = fig.add_subplot(121)
 # ax2 = fig.add_subplot(122)
 
-directory = '1400/field'
+directory = '1300/field'
 
 data0 = np.loadtxt('output/txt/1Dflame/'+directory+'/00.txt')
 data1 = np.loadtxt('output/txt/1Dflame/'+directory+'/7500.txt')
@@ -178,6 +178,6 @@ elif yIndex == 2:
     fig.savefig('output/plots/flame/O2massFracPhi1.pdf')
 
 
-add = sum(data4[256:656,1])
-avg = add/400
+add = sum(data4[456:656,1])
+avg = add/200
 print(avg)

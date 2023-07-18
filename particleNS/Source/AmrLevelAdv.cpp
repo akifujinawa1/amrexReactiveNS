@@ -72,7 +72,7 @@ int      iter                         = 0;
 int      printlevel                   = 0;
 int      advIter = 0;
 int      counter = 0;
-double   meltFe, meltFeO, meltFe3O4;
+// double   meltFe, meltFeO, meltFe3O4;
 double   dt_super;
 
 

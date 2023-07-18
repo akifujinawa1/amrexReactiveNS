@@ -45,7 +45,7 @@ extern double nO2Fe3O4;
 extern double TpInitial;
 extern double M_O2, M_N2;
 extern double qFeOs,qFeOl,qFe3O4s,qFe2O3s,qFeOg;
-extern double meltFe,meltFeO,meltFe3O4;
+// extern double meltFe,meltFeO,meltFe3O4;
 
 
 using namespace amrex;
@@ -664,7 +664,7 @@ void getSource(Vector<double>& qSource, Vector<double>& pSource, const Vector<do
     // to LFe, LFeO, LFe3O4, depending on which species is melting.
     if (Tp >= 1650){
         if (phaseFeO == 0){
-            meltFeO = mFeO*HfuFeO;
+            double meltFeO = mFeO*HfuFeO;
             pSource[RealData::LFeO] += dHpdt + pSource[RealData::mFeO]*qFeO + pSource[RealData::mFe3O4]*qFe3O4s;
             if (fabs(pReal[RealData::LFeO])>meltFeO){
                 pInt[IntData::FeO] = 1; 
@@ -678,7 +678,7 @@ void getSource(Vector<double>& qSource, Vector<double>& pSource, const Vector<do
     }
     if (Tp >= 1809){
         if (phaseFe == 0){
-            meltFe = mFe*HfuFe;
+            double meltFe = mFe*HfuFe;
             pSource[RealData::LFe] += dHpdt + pSource[RealData::mFeO]*qFeO + pSource[RealData::mFe3O4]*qFe3O4s;
             if (fabs(pReal[RealData::LFe])>meltFe){
                 pInt[IntData::Fe] = 1; 
@@ -692,7 +692,7 @@ void getSource(Vector<double>& qSource, Vector<double>& pSource, const Vector<do
     }
     if (Tp >= 1870){
         if (phaseFe3O4 == 0){
-            meltFe3O4 = mFe3O4*HfuFe3O4;
+            double meltFe3O4 = mFe3O4*HfuFe3O4;
             pSource[RealData::LFe3O4] += dHpdt + pSource[RealData::mFeO]*qFeO + pSource[RealData::mFe3O4]*qFe3O4s;
             if (fabs(pReal[RealData::LFe3O4])>meltFe3O4){
                 pInt[IntData::Fe3O4] = 1; 
