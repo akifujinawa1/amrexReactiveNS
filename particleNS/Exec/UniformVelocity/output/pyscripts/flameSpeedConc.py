@@ -64,12 +64,20 @@ for i in range(1):
     time[:,i].sort()
     location[:,i].sort()
 
-    A = np.vstack([time[Np-15:Np,i], np.ones(len(time[Np-15:Np,i]))]).T
-    m, c = np.linalg.lstsq(A, location[Np-15:Np,i], rcond=None)[0]
+    print(Np)
+    print(time[:,i])
+    print(location[:,i])
+
+    end = len(time[:,i])
+    start = len(time[:,i])-10
+
+    A = np.vstack([time[start:end,i], np.ones(len(time[start:end,i]))]).T
+    m, c = np.linalg.lstsq(A, location[start:end,i], rcond=None)[0]
     flameSpeed[i] = m*1e2
     print('Flame speed estimate for conc. = ',concentration,' is ',m*1e2,' cm/s')
 
     ax.scatter(time[:,i],location[:,i],c=colors[i],s=4,label=str(concentration)) #s=3
+    ax.plot(time[:,i],m*time[:,i]+c,c=colors[3],linewidth=4,label=str(concentration)) #s=3
 
 
 

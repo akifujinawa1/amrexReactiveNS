@@ -37,6 +37,8 @@ extern   int       conv;
 extern   int       Da;
 extern   int       particle;
 extern   int       Nsub;
+extern   double       conc;   //from main.cpp
+
 // extern   double       dp0;             // from main.cpp
 // extern   double       delta0;          // from constants.H
 extern   double       Gamma;           // ratio of specific heats -
@@ -54,7 +56,7 @@ extern   double       Mavg;            // average molecular weight of the gas mi
 extern   double       mFe0;            // from constants.H
 extern   double       mFeO0;
 extern   double       mFe3O40;
-extern   double       interDist;
+
 
 // define the remaining global variables here. NUM_GROW should be defined based on the value of slope limiting.
 int      AmrLevelAdv::verbose         = 0;
@@ -74,6 +76,7 @@ int      advIter = 0;
 int      counter = 0;
 // double   meltFe, meltFeO, meltFe3O4;
 double   dt_super;
+// const double interDist = pow(1.0e3*(mFe0+mFeO0+mFe3O40)/conc,1.0/3.0);
 
 
 
@@ -778,7 +781,7 @@ AmrLevelAdv::advance (Real time,
       // for (int i = 0; i < Nsub; i++){
       //   updateParticleInfo(Sborder,dt_super,dX,dY);
       // }
-      
+      const double interDist = pow(1.0e3*(mFe0+mFeO0+mFe3O40)/conc,1.0/3.0);      
       double dt_sub = dt/Nsub;
       for (int i = 0; i < Nsub; i++){
         updateParticleInfo(Sborder,mFe0,interDist,dt_sub,dX,dY);

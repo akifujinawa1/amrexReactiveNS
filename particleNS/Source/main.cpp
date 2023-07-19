@@ -31,6 +31,7 @@ int particle;         // =0 if no particles, =1 if enabled
 int Nsub;
 double TpInitial;
 double TgInitial;
+double conc;
 // double dp0;           // initial particle size
 
 
@@ -69,6 +70,8 @@ main (int   argc,
         pp.query("TgInitial",TgInitial);
         pp.query("stop_time",stop_time);
         pp.query("Nsub",Nsub);
+        pp.query("conc",conc);
+
 
         std::cout << "end time is: " << stop_time << std::endl;
     }
