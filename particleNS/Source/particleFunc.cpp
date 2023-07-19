@@ -233,17 +233,15 @@ AmrLevelAdv::updateParticleInfo(MultiFab& Sborder, const double& mFe0, const dou
                                 const double& dt, const double& dx, const double& dy)
 {
   const int lev = 0;
-  Real x, y, lx, ly, vCell;
-  int  i=0, j=0, k=0;
-  Vector<double> q(NUM_STATE,0);
-  Vector<double> qSource(NUM_STATE,0);
-  Vector<double> pSource(RealData::ncomps,0);
-  Vector<double> pReal(RealData::ncomps,0);
-  Vector<int>    pInt(IntData::ncomps,0);
-
-//   std::cout << "in updateParticleInfo" << std::endl;
-
   for (MFIter mfi(Sborder); mfi.isValid(); ++mfi){
+
+    Real x, y, lx, ly, vCell;
+    int  i=0, j=0, k=0;
+    Vector<double> q(NUM_STATE,0);
+    Vector<double> qSource(NUM_STATE,0);
+    Vector<double> pSource(RealData::ncomps,0);
+    Vector<double> pReal(RealData::ncomps,0);
+    Vector<int>    pInt(IntData::ncomps,0);
 
     const int grid_id = mfi.index();
     const int tile_id = mfi.LocalTileIndex();
@@ -353,10 +351,7 @@ AmrLevelAdv::updateParticleInfo(MultiFab& Sborder, const double& mFe0, const dou
                 }
             }
         }
-        
-        
     }
-    // Redistribute();
   }
   Redistribute();
 }

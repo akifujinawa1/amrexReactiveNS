@@ -40,7 +40,7 @@ location = numpy.empty((35, 8))
 flameSpeed = numpy.empty(8)
 concArray = [600,700,800,900,1000,1100,1200,1300]
 
-for i in range(8):
+for i in range(1):
     concentration = (i+6)*100
     directory = 'output/txt/1Dflame/'+str(concentration)+'/particle/'
     Np = 0
@@ -73,10 +73,10 @@ for i in range(8):
 
 
 
-ax.set_xlim(0.015,0.035)
-ax.set_ylim(0.005,0.008)
+# ax.set_xlim(0.015,0.035)
+# ax.set_ylim(0.005,0.008)
 
-ax.scatter(concArray,flameSpeed,c='black',s=3,label='$\mathrm{Flame\;speed}$')
+# ax.scatter(concArray,flameSpeed,c='black',s=3,label='$\mathrm{Flame\;speed}$')
 
 # time = [0]*30
 # location = [0]*30
