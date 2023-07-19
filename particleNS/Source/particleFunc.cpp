@@ -235,14 +235,6 @@ AmrLevelAdv::updateParticleInfo(MultiFab& Sborder, const double& mFe0, const dou
   const int lev = 0;
   for (MFIter mfi(Sborder); mfi.isValid(); ++mfi){
 
-    Real x, y, lx, ly, vCell;
-    int  i=0, j=0, k=0;
-    Vector<double> q(NUM_STATE,0);
-    Vector<double> qSource(NUM_STATE,0);
-    Vector<double> pSource(RealData::ncomps,0);
-    Vector<double> pReal(RealData::ncomps,0);
-    Vector<int>    pInt(IntData::ncomps,0);
-
     const int grid_id = mfi.index();
     const int tile_id = mfi.LocalTileIndex();
     auto& particle_tile = GetParticles(lev)[std::make_pair(grid_id,tile_id)];
@@ -257,6 +249,15 @@ AmrLevelAdv::updateParticleInfo(MultiFab& Sborder, const double& mFe0, const dou
     const auto& arr = Sborder.array(mfi);
 
     for(int pindex = 0; pindex < np; ++pindex) {
+
+        Real x, y, lx, ly, vCell;
+        int  i=0, j=0, k=0;
+        Vector<double> q(NUM_STATE,0);
+        Vector<double> qSource(NUM_STATE,0);
+        Vector<double> pSource(RealData::ncomps,0);
+        Vector<double> pReal(RealData::ncomps,0);
+        Vector<int>    pInt(IntData::ncomps,0);
+
         ParticleType& p = particles[pindex];
         const IntVect& iv = this->Index(p, lev);
 
@@ -301,18 +302,8 @@ AmrLevelAdv::updateParticleInfo(MultiFab& Sborder, const double& mFe0, const dou
         p.idata(IntData::FeO)     = pInt[IntData::FeO];
         p.idata(IntData::Fe3O4)   = pInt[IntData::Fe3O4];
         p.idata(IntData::regime)  = pInt[IntData::regime];
-        
-        // double pos = p.pos(0) + dt*p.rdata(RealData::u);
-        // if ((pos <= 1.0e-7)||(p.idata(IntData::lock) == 1)){
-        //     p.pos(0) = 1.0e-7;             // if the particle is about to leave the domain, lock it in the first cell
-        //     p.rdata(RealData::u) = 0.0;    // give it zero velocity
-        //     pSource[RealData::u] = 0.0;    // make source term for particle zero
-        //     qSource[gasVar::rhou] = 0.0;   // make source term for gas zero
-        //     p.idata(IntData::lock) = 1;    // and initiate lock flag such that it will remain in place
-        // }
-        // else {
-        //     p.pos(0) = p.pos(0) + dt*p.rdata(RealData::u);   // otherwise, update the particle position
-        // }
+
+        // update particle position
         p.pos(0) = p.pos(0) + dt*p.rdata(RealData::u);
         if (spacedim == 2){
             p.pos(1) = p.pos(1) + dt*p.rdata(RealData::v);

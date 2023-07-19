@@ -42,7 +42,7 @@ concArray = [600,700,800,900,1000,1100,1200,1300]
 
 for i in range(1):
     concentration = (i+6)*100
-    directory = 'output/txt/1Dflame/'+str(concentration)+'/particle/'
+    directory = 'output/txt/1Dflame/isobaric/particle/'
     Np = 0
 
     for filename in os.listdir(directory):
@@ -64,12 +64,12 @@ for i in range(1):
     time[:,i].sort()
     location[:,i].sort()
 
-    A = np.vstack([time[Np-10:Np,i], np.ones(len(time[Np-10:Np,i]))]).T
-    m, c = np.linalg.lstsq(A, location[Np-10:Np,i], rcond=None)[0]
+    A = np.vstack([time[Np-15:Np,i], np.ones(len(time[Np-15:Np,i]))]).T
+    m, c = np.linalg.lstsq(A, location[Np-15:Np,i], rcond=None)[0]
     flameSpeed[i] = m*1e2
     print('Flame speed estimate for conc. = ',concentration,' is ',m*1e2,' cm/s')
 
-    ax.plot(time[:,i],location[:,i],c=colors[i],linewidth=1,label=str(concentration)) #s=3
+    ax.scatter(time[:,i],location[:,i],c=colors[i],s=4,label=str(concentration)) #s=3
 
 
 

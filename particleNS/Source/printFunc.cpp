@@ -153,12 +153,12 @@ void AmrLevelAdv::writePlotFile()
 
         int rank, size;
         MPI_Comm_rank(MPI_COMM_WORLD, &rank);
-        Real x, y=0, up, vp, wp, mFe, mFeO, mFe3O4, Hp, Tp, LFe, LFeO, LFe3O4;
-        int  phaseFe, phaseFeO, phaseFe3O4;
-
+        
         // for (MFIter mfi = MakeMFIter(lev); mfi.isValid(); ++mfi)
         for (MFIter mfi(S_plot); mfi.isValid(); ++mfi)
         {
+            Real x, y=0, up, vp, wp, mFe, mFeO, mFe3O4, Hp, Tp, LFe, LFeO, LFe3O4;
+            int  phaseFe, phaseFeO, phaseFe3O4;
 
             const int grid_id = mfi.index();
             const int tile_id = mfi.LocalTileIndex();
