@@ -82,7 +82,7 @@ void AmrLevelAdv::writePlotFile()
     int rank, size;
     MPI_Comm_rank(MPI_COMM_WORLD, &rank);
     
-    if ((enIC == 14)&&(cur_time > 1e-5*counter)) { // 1D isobaric flame case
+    if ((enIC == 14)&&(cur_time > 2e-4*counter)) { // 1D isobaric flame case
         counter += 1;
         const MultiFab &S_plot = get_new_data(Phi_Type);
 
@@ -91,7 +91,7 @@ void AmrLevelAdv::writePlotFile()
         Vector<double> Tg_x(NxCell);
         Vector<double> YO2_x(NxCell);
 
-        std::cout << "Printing data on AMR level: " << level << " with CPU rank: " << rank << std::endl;
+        // std::cout << "Printing data on AMR level: " << level << " with CPU rank: " << rank << std::endl;
 
         const Real dX = dx[0];
         const Real dY = (amrex::SpaceDim > 1 ? dx[1] : 0.0);
