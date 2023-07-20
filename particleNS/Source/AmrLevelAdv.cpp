@@ -803,7 +803,7 @@ AmrLevelAdv::advance (Real time,
 
   double dtTotal = 0;
   double dtConvSub = dt/convSub;   // if convSub == 1, dtConvSub = dt
-  while (dtTotal <= dt)
+  while (dtTotal < dt)
   {
     dtTotal += dtConvSub;
     if (dtTotal > dt){
