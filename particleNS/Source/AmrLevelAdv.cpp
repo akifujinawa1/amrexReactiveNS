@@ -74,7 +74,7 @@ int      iter                         = 0;
 int      printlevel                   = 0;
 int      advIter = 0;
 int      counter = 0;
-int      convSub;
+int      convSub = 1;
 // double   meltFe, meltFeO, meltFe3O4;
 double   dt_super;
 // const double interDist = pow(1.0e3*(mFe0+mFeO0+mFe3O40)/conc,1.0/3.0);
@@ -801,7 +801,6 @@ AmrLevelAdv::advance (Real time,
 
   // ____ EULER ____ //
 
-  double dtTotal = 0;
   double dtConvSub = dt/convSub;   // if convSub == 1, dtConvSub = dt
   for (int i = 0; i < convSub; i++)
   {
@@ -836,18 +835,7 @@ AmrLevelAdv::advance (Real time,
   // ____ VISCOUS ____ //
 
   for (int d = 0; d < amrex::SpaceDim ; d++)   
-  {
-    // double dt_total=0;
-    // double dt_sub = dt;
-    // while (dt_total < dt_super){
-    //   dt_total+=dt_sub;
-    //   if (dt_total > dt_super){
-    //     dt_sub = dt_super - (dt_total - dt);
-    //   }
-    //    updateViscous(Sborder, fluxes, qL, qR, qLlo, qRlo, qLhi, qRhi, viscSlice, \
-    //             d, dt_sub, dX, dY, amrex::SpaceDim, viscous);
-    // }
-    
+  {    
     updateViscous(Sborder, fluxes, qL, qR, qLlo, qRlo, qLhi, qRhi, viscSlice, \
                 d, dt, dX, dY, amrex::SpaceDim, viscous);
     
