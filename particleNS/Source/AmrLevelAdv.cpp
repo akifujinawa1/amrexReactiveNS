@@ -917,6 +917,7 @@ AmrLevelAdv::estTimeStep (Real)
 {
   // This is just a dummy value to start with 
   Real dt_est  = 1.0e+20;
+  int   NsubConv = 1;
 
   const Real* dx = geom.CellSize();
   const Real* prob_lo = geom.ProbLo();
@@ -977,10 +978,10 @@ AmrLevelAdv::estTimeStep (Real)
         // dt_est = std::min(dt_est, diffT);
 
         if (diffT>convT){ // if the convective timescale is shorter than the diffusive
-          convSub = ceil(diffT/convT);         // # of convection subcycles to perform
+          NconvSub = ceil(diffT/convT);         // # of convection subcycles to perform
         }
         else {            // if diffusive timescale shorter than convective
-          convSub = 1;                          // do not subcycle
+          NconvSub = 1;                          // do not subcycle
         }
         std::cout << "N subcycles for convective: " << convSub << std::endl;
         
@@ -1002,6 +1003,8 @@ AmrLevelAdv::estTimeStep (Real)
 
   // Ensure that we really do have the minimum across all processors
   ParallelDescriptor::ReduceRealMin(dt_est);
+  ParallelDescriptor::ReduceRealMin(NconvSub);
+  convSub = NconvSub;
     
   if (verbose) {
     amrex::Print() << "AmrLevelAdv::estTimeStep at level " << level 
