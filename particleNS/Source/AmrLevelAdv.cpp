@@ -966,7 +966,7 @@ AmrLevelAdv::estTimeStep (Real)
         }
       }
     }
-
+  double NconvSub=1;
   //const Real velMag = sqrt(2.);
   for(unsigned int d = 0; d < amrex::SpaceDim; ++d)
   {
