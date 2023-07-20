@@ -46,7 +46,7 @@ plt.subplots_adjust(left=0.14, bottom=0.15, right=0.90, top=0.94, wspace=0.20, h
 # ax1 = fig.add_subplot(121)
 # ax2 = fig.add_subplot(122)
 
-directory = '1300/field'
+directory = '900/field'
 
 data0 = np.loadtxt('output/txt/1Dflame/'+directory+'/00.txt')
 data1 = np.loadtxt('output/txt/1Dflame/'+directory+'/7500.txt')
@@ -72,7 +72,7 @@ for i in range(768):
         data0[i,1] = 300
 
 # plotting either temperature or mass fraction
-yIndex = 1
+yIndex = 2
 
 if yIndex == 1:
     ax[0].plot(data0[256:307,0]-0.00256,data0[256:307,yIndex],c='black',linewidth=2,label='$t=t_0$') 

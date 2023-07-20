@@ -74,6 +74,7 @@ int      iter                         = 0;
 int      printlevel                   = 0;
 int      advIter = 0;
 int      counter = 0;
+int      convSub;
 // double   meltFe, meltFeO, meltFe3O4;
 double   dt_super;
 // const double interDist = pow(1.0e3*(mFe0+mFeO0+mFe3O40)/conc,1.0/3.0);
@@ -800,29 +801,40 @@ AmrLevelAdv::advance (Real time,
 
   // ____ EULER ____ //
 
-  for (int d = 0; d < amrex::SpaceDim ; d++)   
+  double dtTotal = 0;
+  double dtConvSub = dt/convSub;   // if convSub == 1, dtConvSub = dt
+  while (dtTotal <= dt)
   {
-    updateEuler(Sborder, fluxes, qL, qR, fluxvals, d, dt, dX, dY, euler);
-    
-    Sborder.FillBoundary(geom.periodicity());
-    FillDomainBoundary(Sborder,geom,BCVec);   // use this to fill cell-centred data outside domain (AMReX_BCUtil.H) -2023W2
-    
-    // Flux scaling for reflux. By the size of the boundary through which the flux passes, e.g. the x-flux needs scaling by the dy, dz and dt
-    if(do_reflux)
-    {
-      Real scaleFactor = dt;
-      for(int scaledir = 0; scaledir < amrex::SpaceDim; ++scaledir)
-      {
-        // Fluxes don't need scaling by dx[d]
-        if(scaledir == d)
-        {
-          continue;
-        }
-        scaleFactor *= dx[scaledir];
-      }
-      fluxes[d].mult(scaleFactor, 0, NUM_STATE);
+    dtTotal += dtConvSub;
+    if (dtTotal > dt){
+      dtConvSub = dt - (dtTotal - dtConvSub);
     }
-  } //this closes the d=0 to d=spacedim loop for the EULER update
+    for (int d = 0; d < amrex::SpaceDim ; d++)   
+    {
+      updateEuler(Sborder, fluxes, qL, qR, fluxvals, d, dtConvSub, dX, dY, euler);
+      
+      Sborder.FillBoundary(geom.periodicity());
+      FillDomainBoundary(Sborder,geom,BCVec);   // use this to fill cell-centred data outside domain (AMReX_BCUtil.H) -2023W2
+      
+      // Flux scaling for reflux. By the size of the boundary through which the flux passes, e.g. the x-flux needs scaling by the dy, dz and dt
+      if(do_reflux)
+      {
+        Real scaleFactor = dt;
+        for(int scaledir = 0; scaledir < amrex::SpaceDim; ++scaledir)
+        {
+          // Fluxes don't need scaling by dx[d]
+          if(scaledir == d)
+          {
+            continue;
+          }
+          scaleFactor *= dx[scaledir];
+        }
+        fluxes[d].mult(scaleFactor, 0, NUM_STATE);
+      }
+    } //this closes the d=0 to d=spacedim loop for the EULER update
+
+  }
+
 
 
   // ____ VISCOUS ____ //
@@ -974,9 +986,23 @@ AmrLevelAdv::estTimeStep (Real)
   for(unsigned int d = 0; d < amrex::SpaceDim; ++d)
   {
     if (euler > 0){ // if we are solving the convective subsystem
-      dt_est = std::min(dt_est, cfl*dx[d]/sMax);
+      double convT = cfl*dx[d]/sMax;
+
       if (viscous > 0){ // if we are also solving the viscous subsystem
-        dt_est = std::min(dt_est, fourier*dx[d]*dx[d]/sMaxDiff);
+        double diffT = fourier*dx[d]*dx[d]/sMaxDiff;
+        
+        if (diffT>convT){ // if the convective timescale is shorter than the diffusive
+          convSub = floor(diffT/convT);         // # of convection subcycles to perform
+          dt_est = std::min(dt_est, diffT);     // diffusive timestep for viscous and particle update 
+        }
+        else {            // if diffusive timescale shorter than convective
+          convSub = 1;                          // do not subcycle
+          dt_est = std::min(dt_est, diffT);     // global stable timestep is diffusion timescale
+        }
+
+      }
+      else {              // if only Euler subsystem is solved
+        dt_est = std::min(dt_est, convT);
       }
     }
     else if (viscous > 0){ // if we are only solving the viscous subsystem
