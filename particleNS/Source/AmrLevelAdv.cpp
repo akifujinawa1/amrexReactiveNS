@@ -971,18 +971,19 @@ AmrLevelAdv::estTimeStep (Real)
   {
     if (euler > 0){ // if we are solving the convective subsystem
       double convT = cfl*dx[d]/sMax;
-
+      // dt_est = std::min(dt_est, convT);
       if (viscous > 0){ // if we are also solving the viscous subsystem
         double diffT = fourier*dx[d]*dx[d]/sMaxDiff;
-        
+        // dt_est = std::min(dt_est, diffT);
+
         if (diffT>convT){ // if the convective timescale is shorter than the diffusive
           convSub = ceil(diffT/convT);         // # of convection subcycles to perform
-          dt_est = std::min(dt_est, diffT);     // diffusive timestep for viscous and particle update 
         }
         else {            // if diffusive timescale shorter than convective
           convSub = 1;                          // do not subcycle
-          dt_est = std::min(dt_est, diffT);     // global stable timestep is diffusion timescale
         }
+        
+        dt_est = std::min(dt_est, diffT);     // diffusive timestep for viscous and particle update 
 
       }
       else {              // if only Euler subsystem is solved
