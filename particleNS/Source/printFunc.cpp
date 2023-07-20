@@ -61,7 +61,6 @@ void AmrLevelAdv::writePlotFile()
     // const std::string &dir,
     //                             std::ostream &os,
     //                             VisMF::How how
-    iter+= 1;
 
     int finest_level = parent->finestLevel();
 
@@ -147,7 +146,8 @@ void AmrLevelAdv::writePlotFile()
         }
         approx.close();
     }
-    if ((enIC == 14)&&((iter%500)==0)) { // 1D isobaric flame case
+    if ((enIC == 14)&&(cur_time > 5e-6*iter) { // 1D isobaric flame case
+        iter+= 1;
         const MultiFab &S_plot = get_new_data(Phi_Type);
         const int lev = 0;
 
