@@ -982,6 +982,7 @@ AmrLevelAdv::estTimeStep (Real)
         else {            // if diffusive timescale shorter than convective
           convSub = 1;                          // do not subcycle
         }
+        std::cout << "N subcycles for convective: " << convSub << std::endl;
         
         dt_est = std::min(dt_est, diffT);     // diffusive timestep for viscous and particle update 
 
