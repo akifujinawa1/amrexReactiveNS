@@ -1008,7 +1008,7 @@ AmrLevelAdv::estTimeStep (Real)
     
   if (verbose) {
     amrex::Print() << "AmrLevelAdv::estTimeStep at level " << level 
-		   << ":  dt_est = " << dt_est << std::endl;
+		   << ":  dt_est = " << dt_est << ", NconvSub: " << convSub << std::endl;
   }
 
   return dt_est;
