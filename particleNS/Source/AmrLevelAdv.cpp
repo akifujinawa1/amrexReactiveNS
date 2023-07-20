@@ -803,12 +803,8 @@ AmrLevelAdv::advance (Real time,
 
   double dtTotal = 0;
   double dtConvSub = dt/convSub;   // if convSub == 1, dtConvSub = dt
-  while ((dt - dtTotal) > 1.0e-15)
+  for (int i = 0; i < convSub; i++)
   {
-    dtTotal += dtConvSub;
-    if (dtTotal > dt){
-      dtConvSub = dt - (dtTotal - dtConvSub);
-    }
     for (int d = 0; d < amrex::SpaceDim ; d++)   
     {
       updateEuler(Sborder, fluxes, qL, qR, fluxvals, d, dtConvSub, dX, dY, euler);
@@ -992,7 +988,7 @@ AmrLevelAdv::estTimeStep (Real)
         double diffT = fourier*dx[d]*dx[d]/sMaxDiff;
         
         if (diffT>convT){ // if the convective timescale is shorter than the diffusive
-          convSub = floor(diffT/convT);         // # of convection subcycles to perform
+          convSub = ceil(diffT/convT);         // # of convection subcycles to perform
           dt_est = std::min(dt_est, diffT);     // diffusive timestep for viscous and particle update 
         }
         else {            // if diffusive timescale shorter than convective
