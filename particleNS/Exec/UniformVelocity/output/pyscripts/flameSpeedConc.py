@@ -41,7 +41,7 @@ concArray = [600,700,800,900,1000,1100,1200,1300]
 
 for i in range(8):
     concentration = (i+6)*100
-    directory = 'output/txt/1Dflame/'+str(concentration)+'/particle/'
+    directory = 'output/txt/1Dflame/'+str(concentration)+'/particle/'  #
     Np = 0
         
     for filename in os.listdir(directory):
@@ -115,7 +115,7 @@ plt.show()
 # # # plt2.legend()
 # # # plt2.show()
 
-fig.savefig('output/plots/flame/flameSpeedX-T.pdf')
+# fig.savefig('output/plots/flame/flameSpeedX-T.pdf')
 
 # with open('output/txt/1Dflame/phi1/x-t.txt', 'w') as text_file:
 #     for i in range(len(time)):

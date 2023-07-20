@@ -46,14 +46,14 @@ plt.subplots_adjust(left=0.14, bottom=0.15, right=0.90, top=0.94, wspace=0.20, h
 # ax1 = fig.add_subplot(121)
 # ax2 = fig.add_subplot(122)
 
-directory = '900/field'
+directory = 'isobaric/field'
 
 data0 = np.loadtxt('output/txt/1Dflame/'+directory+'/00.txt')
-data1 = np.loadtxt('output/txt/1Dflame/'+directory+'/7500.txt')
-data2 = np.loadtxt('output/txt/1Dflame/'+directory+'/15000.txt')
-data3 = np.loadtxt('output/txt/1Dflame/'+directory+'/22500.txt')
+data1 = np.loadtxt('output/txt/1Dflame/'+directory+'/7600.txt')
+data2 = np.loadtxt('output/txt/1Dflame/'+directory+'/16000.txt')
+data3 = np.loadtxt('output/txt/1Dflame/'+directory+'/22600.txt')
 data4 = np.loadtxt('output/txt/1Dflame/'+directory+'/30000.txt')
-data5 = np.loadtxt('output/txt/1Dflame/'+directory+'/37500.txt')
+data5 = np.loadtxt('output/txt/1Dflame/'+directory+'/37600.txt')
 
 data0 = data0[data0[:, 0].argsort()]
 data1 = data1[data1[:, 0].argsort()]
@@ -72,7 +72,7 @@ for i in range(768):
         data0[i,1] = 300
 
 # plotting either temperature or mass fraction
-yIndex = 2
+yIndex = 1
 
 if yIndex == 1:
     ax[0].plot(data0[256:307,0]-0.00256,data0[256:307,yIndex],c='black',linewidth=2,label='$t=t_0$') 
