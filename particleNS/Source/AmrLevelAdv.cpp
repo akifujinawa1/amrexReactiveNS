@@ -980,8 +980,9 @@ Real
 AmrLevelAdv::estTimeStep (Real)
 {
   // This is just a dummy value to start with 
-  Real dt_est  = 1.0e+20;
-  int   NsubConv = 1;
+  Real dt_conv  = 1.0e+20;
+  Real dt_diff  = 1.0e+20;
+  Real dt_est   = 1.0e+20;
 
   const Real* dx = geom.CellSize();
   const Real* prob_lo = geom.ProbLo();
@@ -1030,44 +1031,65 @@ AmrLevelAdv::estTimeStep (Real)
       }
     }
   }
+  double NsubConv = 1.0;
   //const Real velMag = sqrt(2.);
   for(unsigned int d = 0; d < amrex::SpaceDim; ++d)
   {
-    if (euler > 0){ // if we are solving the convective subsystem
-      double convT = cfl*dx[d]/sMax;
-      // dt_est = std::min(dt_est, convT);
-      if (viscous > 0){ // if we are also solving the viscous subsystem
-        double diffT = fourier*dx[d]*dx[d]/sMaxDiff;
-        // dt_est = std::min(dt_est, diffT);
+    double convT = cfl*dx[d]/sMax;
+    double diffT = fourier*dx[d]*dx[d]/sMaxDiff;
+  //       // dt_est = std::min(dt_est, diffT);
 
-        if (diffT>convT){ // if the convective timescale is shorter than the diffusive
-          NconvSub = ceil(diffT/convT);         // # of convection subcycles to perform
-        }
-        else {            // if diffusive timescale shorter than convective
-          NconvSub = 1;                          // do not subcycle
-        }
-        // std::cout << "N subcycles for convective: " << convSub << std::endl;
+  //       if (diffT>convT){ // if the convective timescale is shorter than the diffusive
+  //         NconvSub = ceil(diffT/convT);         // # of convection subcycles to perform
+  //       }
+  //       else {            // if diffusive timescale shorter than convective
+  //         NconvSub = 1.0;                          // do not subcycle
+  //       }
+  //       // std::cout << "N subcycles for convective: " << convSub << std::endl;
         
-        dt_est = std::min(dt_est, diffT);     // diffusive timestep for viscous and particle update 
+  //       dt_est = std::min(dt_est, diffT);     // diffusive timestep for viscous and particle update 
 
-      }
-      else {              // if only Euler subsystem is solved
-        dt_est = std::min(dt_est, convT);
-      }
-    }
-    else if (viscous > 0){ // if we are only solving the viscous subsystem
-      dt_est = std::min(dt_est, fourier*dx[d]*dx[d]/sMaxDiff);
-    }    
-    else { // if we are solving neither (only the particle)
-      dt_est = 1e-7;
-    }
+  //     }
+  //     else {              // if only Euler subsystem is solved
+  //       dt_est = std::min(dt_est, convT);
+  //     }
+  //   }
+  //   else if (viscous > 0){ // if we are only solving the viscous subsystem
+  //     dt_est = std::min(dt_est, fourier*dx[d]*dx[d]/sMaxDiff);
+  //   }    
+  //   else { // if we are solving neither (only the particle)
+  //     dt_est = 1e-7;
+  //   }
 
   }
 
   // Ensure that we really do have the minimum across all processors
-  ParallelDescriptor::ReduceRealMin(dt_est);
-  ParallelDescriptor::ReduceRealMin(NconvSub);
-  convSub = double(NconvSub);
+  ParallelDescriptor::ReduceRealMin(dt_conv);
+  ParallelDescriptor::ReduceRealMin(dt_diff);
+
+  if ((enIC == 14)||(enIC == 15)||(enIC == 16)){
+    dt_est = dt_diff;
+    if (dt_diff > dt_conv){
+      convSub = double(ceil(dt_diff/dt_conv));
+    }
+    else{
+      convSub = 1.0;
+    }
+  }
+  else{
+    if (euler > 0){
+      dt_est = std::min(dt_est,dt_conv);
+      if (viscous > 0){
+        dt_est = std::min(dt_est,dt_diff);
+      }
+    }
+    else if (viscous > 0){
+      dt_est = std::min(dt_est,dt_diff);
+    }
+    else {
+      dt_est = 1.0e-7;
+    }
+  }
     
   if (verbose) {
     amrex::Print() << "AmrLevelAdv::estTimeStep at level " << level 
