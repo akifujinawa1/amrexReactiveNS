@@ -29,7 +29,7 @@ Nsub               = 20       #subcycling frequency
 TgInitial          = 300
 TpInitial          = 300
 conc               = 600
-boundary           = 1
+
 
 # VERBOSITY - controls the number of messages output to screen
 adv.v              = 1       # verbosity in Adv
