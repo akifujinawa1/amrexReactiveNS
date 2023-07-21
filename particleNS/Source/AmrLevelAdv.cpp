@@ -38,6 +38,7 @@ extern   int       Da;
 extern   int       particle;
 extern   int       Nsub;
 extern   int       boundary;
+extern   int       subcycleConvection;
 extern   double       conc;   //from main.cpp
 
 // extern   double       dp0;             // from main.cpp
@@ -1020,7 +1021,7 @@ AmrLevelAdv::estTimeStep (Real)
   {
     if (euler > 0){ // if we are solving the convective subsystem
       double convT = cfl*dx[d]/sMax;
-      // dt_est = std::min(dt_est, convT);
+      dt_est = std::min(dt_est, convT);
       if (viscous > 0){ // if we are also solving the viscous subsystem
         double diffT = fourier*dx[d]*dx[d]/sMaxDiff;
         // dt_est = std::min(dt_est, diffT);
