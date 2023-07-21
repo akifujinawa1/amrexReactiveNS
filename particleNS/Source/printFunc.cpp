@@ -40,7 +40,6 @@ extern   int       iter;
 extern   int       printlevel;
 extern   int       n_cell;
 extern   int       counter;
-extern   int       boundary;
 
 extern   double       Gamma;           // ratio of specific heats -
 extern   double       R;               // univeral gas constant   J/K/mol
@@ -105,10 +104,10 @@ void AmrLevelAdv::writePlotFile()
         int microTime         = std::floor(cur_time * 1.0e5);
         std::string curtime   = std::to_string(microTime);
 
-        if (boundary == 1){
+        if (enIC == 14){
             approx.open("output/txt/1Dflame/isobaric/field/" + curtime + "0.txt", std::ofstream::app);
         }
-        else if (boundary == 2){
+        else if (enIC == 15){
             approx.open("output/txt/1DflameConfined/isochoric/field/" + curtime + "0.txt", std::ofstream::app);
         }
 
@@ -183,7 +182,14 @@ void AmrLevelAdv::writePlotFile()
                 std::string id        = std::to_string(p.idata(IntData::pIter));
                 std::string cpu        = std::to_string(p.cpu());
 
-                parOut.open("output/txt/1Dflame/isobaric/particle/" + id + "-" + cpu + ".txt", std::ofstream::app);
+                if (enIC == 14){
+                    parOut.open("output/txt/1Dflame/isobaric/particle/" + id + "-" + cpu + ".txt", std::ofstream::app);
+                }
+                else if (enIC == 15){
+                    parOut.open("output/txt/1DflameConfined/isochoric/particle/" + id + "-" + cpu + ".txt", std::ofstream::app);
+                }
+
+                
 
                 x  = p.pos(0);   //given in meters, lo.x is in cell count, so scale by dx to get meters
                 if (spacedim == 2){
