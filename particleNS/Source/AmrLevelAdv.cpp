@@ -1035,8 +1035,8 @@ AmrLevelAdv::estTimeStep (Real)
   //const Real velMag = sqrt(2.);
   for(unsigned int d = 0; d < amrex::SpaceDim; ++d)
   {
-    convT = cfl*dx[d]/sMax;
-    diffT = fourier*dx[d]*dx[d]/sMaxDiff;
+    dt_conv = cfl*dx[d]/sMax;
+    dt_diff = fourier*dx[d]*dx[d]/sMaxDiff;
   //       // dt_est = std::min(dt_est, diffT);
 
   //       if (diffT>convT){ // if the convective timescale is shorter than the diffusive
