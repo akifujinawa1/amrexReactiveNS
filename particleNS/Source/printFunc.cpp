@@ -40,6 +40,7 @@ extern   int       iter;
 extern   int       printlevel;
 extern   int       n_cell;
 extern   int       counter;
+extern   int       boundary;
 
 extern   double       Gamma;           // ratio of specific heats -
 extern   double       R;               // univeral gas constant   J/K/mol
@@ -82,7 +83,7 @@ void AmrLevelAdv::writePlotFile()
     int rank, size;
     MPI_Comm_rank(MPI_COMM_WORLD, &rank);
     
-    if ((enIC == 14)&&(cur_time > 2e-4*counter)) { // 1D isobaric flame case
+    if (((enIC == 14)||(enIC == 15))&&(cur_time > 1e-4*counter)) { // 1D isobaric flame case
         counter += 1;
         const MultiFab &S_plot = get_new_data(Phi_Type);
 
@@ -104,7 +105,14 @@ void AmrLevelAdv::writePlotFile()
         int microTime         = std::floor(cur_time * 1.0e5);
         std::string curtime   = std::to_string(microTime);
 
-        approx.open("output/txt/1Dflame/isobaric/field/" + curtime + "0.txt", std::ofstream::app);
+        if (boundary == 1){
+            approx.open("output/txt/1Dflame/isobaric/field/" + curtime + "0.txt", std::ofstream::app);
+        }
+        else if (boundary == 2){
+            approx.open("output/txt/1DflameConfined/isochoric/field/" + curtime + "0.txt", std::ofstream::app);
+        }
+
+        
 
         for (MFIter mfi(S_plot); mfi.isValid(); ++mfi)
         {
@@ -146,7 +154,7 @@ void AmrLevelAdv::writePlotFile()
         }
         approx.close();
     }
-    if ((enIC == 14)&&(cur_time > 5e-6*iter)) { // 1D isobaric flame case
+    if (((enIC == 14)||(enIC == 15))&&(cur_time > 5e-6*iter)) { // 1D isobaric flame case
         iter+= 1;
         const MultiFab &S_plot = get_new_data(Phi_Type);
         const int lev = 0;

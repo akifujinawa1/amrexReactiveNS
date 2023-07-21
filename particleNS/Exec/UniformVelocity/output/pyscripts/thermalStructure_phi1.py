@@ -46,7 +46,7 @@ plt.subplots_adjust(left=0.14, bottom=0.15, right=0.90, top=0.94, wspace=0.20, h
 # ax1 = fig.add_subplot(121)
 # ax2 = fig.add_subplot(122)
 
-directory = 'isobaric/field'
+directory = '1000/field'
 
 data0 = np.loadtxt('output/txt/1Dflame/'+directory+'/00.txt')
 data1 = np.loadtxt('output/txt/1Dflame/'+directory+'/7600.txt')

@@ -703,23 +703,70 @@ AmrLevelAdv::advance (Real time,
 
 
   else if (enIC == 14){
-    for (int nVar = 0; nVar < NUM_STATE; nVar++){
-      for (int nDim = 0; nDim < amrex::SpaceDim; nDim++){
-        if (nDim == 0){ // x domain BCs
-          BCVec[nVar].setLo(nDim,BCType::foextrap);      // flame has open end at the left boundary
-          if ((nVar == gasVar::rhou)){
-            BCVec[nVar].setHi(nDim,BCType::reflect_odd);  // closed end at the right, odd-reflect x-momentum
+    if (boundary == 0)  // open-to-close
+    {
+      for (int nVar = 0; nVar < NUM_STATE; nVar++){
+        for (int nDim = 0; nDim < amrex::SpaceDim; nDim++){
+          if (nDim == 0){ // x domain BCs
+            BCVec[nVar].setLo(nDim,BCType::foextrap);      // flame has open end at the left boundary
+            if ((nVar == gasVar::rhou)){
+              BCVec[nVar].setHi(nDim,BCType::reflect_odd);  // closed end at the right, odd-reflect x-momentum
+            }
+            else{
+              BCVec[nVar].setHi(nDim,BCType::reflect_even); // closed end at the right, even-reflect the rest x-momentum
+            }
           }
-          else{
-            BCVec[nVar].setHi(nDim,BCType::reflect_even); // closed end at the right, even-reflect the rest x-momentum
+          else{ // y domain BCs are set to periodic
+            BCVec[nVar].setLo(nDim,BCType::int_dir);
+            BCVec[nVar].setHi(nDim,BCType::int_dir);
           }
-        }
-        else{ // y domain BCs are set to periodic
-          BCVec[nVar].setLo(nDim,BCType::int_dir);
-          BCVec[nVar].setHi(nDim,BCType::int_dir);
         }
       }
     }
+    else if (boundary == 1) // close-to-close
+    {
+      for (int nVar = 0; nVar < NUM_STATE; nVar++){
+        for (int nDim = 0; nDim < amrex::SpaceDim; nDim++){
+          if (nDim == 0){ // x domain BCs
+            if ((nVar == gasVar::rhou)){
+              BCVec[nVar].setLo(nDim,BCType::reflect_odd);  // closed end at the left, odd-reflect x-momentum
+              BCVec[nVar].setHi(nDim,BCType::reflect_odd);  // closed end at the right, odd-reflect x-momentum
+            }
+            else{
+              BCVec[nVar].setLo(nDim,BCType::reflect_even); // closed end at the left, even-reflect the rest x-momentum
+              BCVec[nVar].setHi(nDim,BCType::reflect_even); // closed end at the right, even-reflect the rest x-momentum
+            }
+          }
+          else{ // y domain BCs are set to periodic
+            BCVec[nVar].setLo(nDim,BCType::int_dir);
+            BCVec[nVar].setHi(nDim,BCType::int_dir);
+          }
+        }
+      }
+    }
+    else if (boundary == 2) // close-to-open
+    {
+      for (int nVar = 0; nVar < NUM_STATE; nVar++){
+        for (int nDim = 0; nDim < amrex::SpaceDim; nDim++){
+          if (nDim == 0){ // x domain BCs
+            BCVec[nVar].setHi(nDim,BCType::foextrap);      // flame has open end at the right boundary
+            if ((nVar == gasVar::rhou)){
+              BCVec[nVar].setLo(nDim,BCType::reflect_odd);  // closed end at the left, odd-reflect x-momentum
+            }
+            else{
+              BCVec[nVar].setLo(nDim,BCType::reflect_even); // closed end at the left, even-reflect the rest x-momentum
+            }
+          }
+          else{ // y domain BCs are set to periodic
+            BCVec[nVar].setLo(nDim,BCType::int_dir);
+            BCVec[nVar].setHi(nDim,BCType::int_dir);
+          }
+        }
+      }
+    }
+    
+
+
   }
     
     

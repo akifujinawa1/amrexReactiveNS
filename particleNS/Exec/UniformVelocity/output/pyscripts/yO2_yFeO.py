@@ -46,36 +46,6 @@ plt.subplots_adjust(left=0.14, bottom=0.15, right=0.90, top=0.94, wspace=0.20, h
 # ax1 = fig.add_subplot(121)
 # ax2 = fig.add_subplot(122)
 
-for i in range(9):
-    concentration = (i+6)*100
-    'output/txt/1Dflame/'+str(concentration)+'/field/'
+data4 = np.loadtxt('output/txt/1Dflame/'+str(concentration)+'/field/30000.txt')
+data4 = data4[data4[:, 0].argsort()]
 
-    data0 = np.loadtxt('output/txt/1Dflame/'+str(concentration)+'/field/00.txt')
-    data1 = np.loadtxt('output/txt/1Dflame/'+str(concentration)+'/field/7600.txt')
-    data2 = np.loadtxt('output/txt/1Dflame/'+str(concentration)+'/field/16000.txt')
-    data3 = np.loadtxt('output/txt/1Dflame/'+str(concentration)+'/field/22600.txt')
-    data4 = np.loadtxt('output/txt/1Dflame/'+str(concentration)+'/field/30000.txt')
-    data5 = np.loadtxt('output/txt/1Dflame/'+str(concentration)+'/field/37600.txt')
-
-    data0 = data0[data0[:, 0].argsort()]
-    data1 = data1[data1[:, 0].argsort()]
-    data2 = data2[data2[:, 0].argsort()]
-    data3 = data3[data3[:, 0].argsort()]
-    data4 = data4[data4[:, 0].argsort()]
-    data5 = data5[data5[:, 0].argsort()]
-
-    for i in range(768):
-        data0[i,2] = 0.232917511457580
-        if i < 256:
-            data0[i,1] = 300
-        elif i < 307.2:
-            data0[i,1] = 1270
-        else:
-            data0[i,1] = 300
-
-    # plotting either temperature or mass fraction
-    yIndex = 1
-
-    add = sum(data4[456:656,1])
-    avg = add/200
-    print(avg)

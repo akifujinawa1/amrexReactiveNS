@@ -144,7 +144,7 @@ print('cells between particles in x: ', spacing_x)
 with open('setupScripts/locations.txt', 'w') as text_file:
     for i in range(math.floor(Np)):
         # x = 256+math.ceil(0.5*spacing_x)+spacing_x*i
-        x = 1e-5*256 + (0.5*interDist)+interDist*i
+        x = (0.5*interDist)+interDist*i
         text_file.write(repr(x)+'\n')
 
 text_file.close()
