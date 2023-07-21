@@ -37,7 +37,6 @@ extern   int       conv;
 extern   int       Da;
 extern   int       particle;
 extern   int       Nsub;
-extern   int       subcycleConvection;
 extern   double       conc;   //from main.cpp
 
 // extern   double       dp0;             // from main.cpp
@@ -454,6 +453,24 @@ AmrLevelAdv::initData ()
               // double p = pressure(arr(i,j,k,0),Y_O2,Y_N2,Tgas);
               // std::cout << "x: " << x << ", Density: " << arr(i,j,k,0) << \
               // ", Energy: " << arr(i,j,k,3) << ", Temperature: " << Tgas << ", Pressure: " << p << std::endl; 
+            }
+            else {
+              if (x<xDisc){
+                arr(i,j,k,0) = RPLeftRight[0];
+                arr(i,j,k,1) = RPLeftRight[1];
+                arr(i,j,k,2) = RPLeftRight[2];
+                arr(i,j,k,3) = RPLeftRight[3];
+                arr(i,j,k,4) = RPLeftRight[4];
+                arr(i,j,k,5) = RPLeftRight[5];
+              }
+              else {
+                arr(i,j,k,0) = RPLeftRight[6];
+                arr(i,j,k,1) = RPLeftRight[7];
+                arr(i,j,k,2) = RPLeftRight[8];
+                arr(i,j,k,3) = RPLeftRight[9];
+                arr(i,j,k,4) = RPLeftRight[10];
+                arr(i,j,k,5) = RPLeftRight[11];
+              }
             }
           }
           else // for 2-D tests:
@@ -981,39 +998,38 @@ AmrLevelAdv::estTimeStep (Real)
 
   // std::cout << "in wavespeed calculation" << std::endl;
 
-    // Loop over all the patches at this level
-    // Note we switch the input to mfi from Sborder to S_new -2023W2
-    for (MFIter mfi(S_new); mfi.isValid(); ++mfi)
+  // Loop over all the patches at this level
+  // Note we switch the input to mfi from Sborder to S_new -2023W2
+  for (MFIter mfi(S_new); mfi.isValid(); ++mfi)
+  {
+    const Box& bx = mfi.tilebox();
+    const Dim3 lo = lbound(bx);
+    const Dim3 hi = ubound(bx);
+    const auto& arr = S_new.array(mfi);
+    int dir = 0;
+    for(int k = lo.z; k <= hi.z; k++)
     {
-      const Box& bx = mfi.tilebox();
-      const Dim3 lo = lbound(bx);
-      const Dim3 hi = ubound(bx);
-      const auto& arr = S_new.array(mfi);
-      int dir = 0;
-      for(int k = lo.z; k <= hi.z; k++)
+      for(int j = lo.y; j <= hi.y; j++)
       {
-        for(int j = lo.y; j <= hi.y; j++)
+        for(int i = lo.x; i <= hi.x-1; i++)
         {
-          for(int i = lo.x; i <= hi.x-1; i++)
-          {
-            // calculate velocity in this cell
-            for(int h = 0; h < NUM_STATE; h++){
-              qL[h] = arr(i,j,k,h);
-              qR[h] = arr(i+1,j,k,h);
-            }
-            wavespeedEstimate(qL,qR,sL,sR,sStar,dir);
-            sDiff = diffusiveSpeed(qL,qR);
-            sMaxDiff = std::max(sMaxDiff,sDiff);
-            sMax = std::max(sMax,std::max(std::abs(sL),std::abs(sR)));
-
-            // std::cout << "Wavespeed: " << sMax << ", Diffusive speed: " << sMaxDiff << std::endl;
-                   
-            // i++; // we skip a cell each iteration in the for loop as we use two cells to compute the max wavespeed -2023W2
+          // calculate velocity in this cell
+          for(int h = 0; h < NUM_STATE; h++){
+            qL[h] = arr(i,j,k,h);
+            qR[h] = arr(i+1,j,k,h);
           }
+          wavespeedEstimate(qL,qR,sL,sR,sStar,dir);
+          sDiff = diffusiveSpeed(qL,qR);
+          sMaxDiff = std::max(sMaxDiff,sDiff);
+          sMax = std::max(sMax,std::max(std::abs(sL),std::abs(sR)));
+
+          // std::cout << "Wavespeed: " << sMax << ", Diffusive speed: " << sMaxDiff << std::endl;
+                  
+          // i++; // we skip a cell each iteration in the for loop as we use two cells to compute the max wavespeed -2023W2
         }
       }
     }
-  double NconvSub=1;
+  }
   //const Real velMag = sqrt(2.);
   for(unsigned int d = 0; d < amrex::SpaceDim; ++d)
   {
@@ -1051,7 +1067,7 @@ AmrLevelAdv::estTimeStep (Real)
   // Ensure that we really do have the minimum across all processors
   ParallelDescriptor::ReduceRealMin(dt_est);
   ParallelDescriptor::ReduceRealMin(NconvSub);
-  convSub = NconvSub;
+  convSub = double(NconvSub);
     
   if (verbose) {
     amrex::Print() << "AmrLevelAdv::estTimeStep at level " << level 

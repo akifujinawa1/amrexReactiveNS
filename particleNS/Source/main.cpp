@@ -29,7 +29,6 @@ int conv;             // whether to run convergence study or not
 int Da;               // Damkohler number, ratio of chemical to flow timescale
 int particle;         // =0 if no particles, =1 if enabled
 int Nsub;
-int subcycleConvection;
 double TpInitial;
 double TgInitial;
 double conc;
@@ -72,7 +71,6 @@ main (int   argc,
         pp.query("stop_time",stop_time);
         pp.query("Nsub",Nsub);
         pp.query("conc",conc);
-        pp.query("subcycleConvection",subcycleConvection);
 
         std::cout << "end time is: " << stop_time << std::endl;
     }
