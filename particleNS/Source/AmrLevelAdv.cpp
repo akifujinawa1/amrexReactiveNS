@@ -702,7 +702,7 @@ AmrLevelAdv::advance (Real time,
   }
 
 
-  else if (enIC == 14){
+  else if ((enIC == 14)||(enIC == 15)||(enIC == 16)){
     if (boundary == 0)  // open-to-close
     {
       for (int nVar = 0; nVar < NUM_STATE; nVar++){
