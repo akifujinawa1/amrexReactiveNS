@@ -55,6 +55,7 @@ data3 = np.loadtxt('output/txt/1Dflame/'+directory+'/22600.txt')
 data4 = np.loadtxt('output/txt/1Dflame/'+directory+'/30000.txt')
 data5 = np.loadtxt('output/txt/1Dflame/'+directory+'/37600.txt')
 
+
 data0 = data0[data0[:, 0].argsort()]
 data1 = data1[data1[:, 0].argsort()]
 data2 = data2[data2[:, 0].argsort()]
