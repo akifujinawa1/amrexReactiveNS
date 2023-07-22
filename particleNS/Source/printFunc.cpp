@@ -110,7 +110,6 @@ void AmrLevelAdv::writePlotFile()
         else if (enIC == 15){
             approx.open("output/txt/1DflameConfined/isochoric/field/" + curtime + "0.txt", std::ofstream::app);
         }
-
         
 
         for (MFIter mfi(S_plot); mfi.isValid(); ++mfi)
@@ -188,8 +187,6 @@ void AmrLevelAdv::writePlotFile()
                 else if (enIC == 15){
                     parOut.open("output/txt/1DflameConfined/isochoric/particle/" + id + "-" + cpu + ".txt", std::ofstream::app);
                 }
-
-                
 
                 x  = p.pos(0);   //given in meters, lo.x is in cell count, so scale by dx to get meters
                 if (spacedim == 2){

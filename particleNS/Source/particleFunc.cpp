@@ -134,7 +134,7 @@ AmrLevelAdv::initParticles (const MultiFab& S_new, const double& xDisc, const do
             double energy0;
             particleInit(mFe0, mFeO0, mFe3O40, energy0);
             
-            if (enIC==14){
+            if ((enIC==14)||(enIC==15)||(enIC==16)){
                 // if ((p.pos(0)/10e-6) < n_cell*0.1){
                 if (p.pos(0) < xDisc){
                     energy0 = Hparticle(mFe0,mFeO0,mFe3O40,1270,0,0,0);
