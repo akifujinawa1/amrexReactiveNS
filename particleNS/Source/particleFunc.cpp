@@ -73,7 +73,7 @@ AmrLevelAdv::initParticles (const MultiFab& S_new, const double& xDisc, const do
         if ((enIC==12)||(enIC==13)){
             locations.open("setupScripts/locationSingle.txt", std::ios_base::in);
         }
-        else if (enIC==14){
+        else if ((enIC==14)||(enIC==15)||(enIC==16)){
             locations.open("setupScripts/locations.txt", std::ios_base::in);
         }
 
