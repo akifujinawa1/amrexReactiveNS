@@ -79,16 +79,14 @@ Tgas = 300
 rhogas = p*Mavg/(R*Tgas)
 
 dx = dp0;
-
 NpLo = 1;
 NpHi = 20;
-
 
 error = 1
 tol = 1e-3
 iteration = 0
 
-conc = 700
+conc = 600
 
 while error > tol:
     avg = 0.5*(NpLo+NpHi)
