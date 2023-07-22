@@ -6,7 +6,7 @@ rm output/txt/1DflameConfined/isochoric/particle/*.*
 make DIM=1 USE_MPI=TRUE -j6
 
 Tp=( 300 )
-tests=( 14 )
+tests=( 15 )
 
 python3 setupScripts/setup1D_concClosed.py
 
