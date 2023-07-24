@@ -8,25 +8,25 @@ make DIM=1 USE_MPI=TRUE -j6
 Tp=( 300 )
 tests=( 14 )
 
-# python3 setupScripts/setup1D_concX.py
+python3 setupScripts/setup1D_concX.py
 
-# for i in "${Tp[@]}"
-# do
-#     for j in "${tests[@]}"
-#     do
-# 	    mpirun -np 24 ./main1d.gnu.MPI.ex inputs amr.n_cell = 768 0 0 euler = 2 viscous = 1 source = 0 particle = 2 Da = 1\
-#         enIC = "$j" geometry.prob_lo = 0.0 0.0 0.0 geometry.prob_hi = 0.00768 0.0 0.0 adv.cfl = 0.8 adv.fourier = 0.8\
-#         amr.max_level = 0 amr.ref_ratio = 2 2 4 4 amr.probin_file = prbn/detonation amr.plot_int = 1\
-#         amr.max_grid_size = 64 amr.plot_files_output = 0 amr.plot_file = detonation/plt stop_time = 0.040\
-#         TpInitial = "$i" TgInitial = 300 dp0 = 0.000010 Nsub = 1 conc = 600 boundary = 0
-#     done
-# done
+for i in "${Tp[@]}"
+do
+    for j in "${tests[@]}"
+    do
+	    mpirun -np 24 ./main1d.gnu.MPI.ex inputs amr.n_cell = 768 0 0 euler = 2 viscous = 1 source = 0 particle = 2 Da = 1\
+        enIC = "$j" geometry.prob_lo = 0.0 0.0 0.0 geometry.prob_hi = 0.00768 0.0 0.0 adv.cfl = 0.8 adv.fourier = 0.8\
+        amr.max_level = 0 amr.ref_ratio = 2 2 4 4 amr.probin_file = prbn/detonation amr.plot_int = 1\
+        amr.max_grid_size = 64 amr.plot_files_output = 0 amr.plot_file = detonation/plt stop_time = 0.060\
+        TpInitial = "$i" TgInitial = 300 dp0 = 0.000010 Nsub = 1 conc = 600 boundary = 0
+    done
+done
 
-# cp -r output/txt/1Dflame/isobaric/field/ output/txt/1Dflame/600/
-# cp -r output/txt/1Dflame/isobaric/particle/ output/txt/1Dflame/600/
+cp -r output/txt/1Dflame/isobaric/field/ output/txt/1Dflame/600/
+cp -r output/txt/1Dflame/isobaric/particle/ output/txt/1Dflame/600/
 
-# rm output/txt/1Dflame/isobaric/field/*.*
-# rm output/txt/1Dflame/isobaric/particle/*.*
+rm output/txt/1Dflame/isobaric/field/*.*
+rm output/txt/1Dflame/isobaric/particle/*.*
 
 sed -i 's/conc = 600/conc = 700/g' setupScripts/setup1D_concX.py
 python3 setupScripts/setup1D_concX.py
@@ -38,7 +38,7 @@ do
 	    mpirun -np 24 ./main1d.gnu.MPI.ex inputs amr.n_cell = 768 0 0 euler = 2 viscous = 1 source = 0 particle = 2 Da = 1\
         enIC = "$j" geometry.prob_lo = 0.0 0.0 0.0 geometry.prob_hi = 0.00768 0.0 0.0 adv.cfl = 0.8 adv.fourier = 0.8\
         amr.max_level = 0 amr.ref_ratio = 2 2 4 4 amr.probin_file = prbn/detonation amr.plot_int = 1\
-        amr.max_grid_size = 64 amr.plot_files_output = 0 amr.plot_file = detonation/plt stop_time = 0.040\
+        amr.max_grid_size = 64 amr.plot_files_output = 0 amr.plot_file = detonation/plt stop_time = 0.060\
         TpInitial = "$i" TgInitial = 300 dp0 = 0.000010 Nsub = 1 conc = 700 boundary = 0
     done
 done
@@ -59,7 +59,7 @@ do
 	    mpirun -np 24 ./main1d.gnu.MPI.ex inputs amr.n_cell = 768 0 0 euler = 2 viscous = 1 source = 0 particle = 2 Da = 1\
         enIC = "$j" geometry.prob_lo = 0.0 0.0 0.0 geometry.prob_hi = 0.00768 0.0 0.0 adv.cfl = 0.8 adv.fourier = 0.8\
         amr.max_level = 0 amr.ref_ratio = 2 2 4 4 amr.probin_file = prbn/detonation amr.plot_int = 1\
-        amr.max_grid_size = 64 amr.plot_files_output = 0 amr.plot_file = detonation/plt stop_time = 0.040\
+        amr.max_grid_size = 64 amr.plot_files_output = 0 amr.plot_file = detonation/plt stop_time = 0.060\
         TpInitial = "$i" TgInitial = 300 dp0 = 0.000010 Nsub = 1 conc = 800 boundary = 0
     done
 done
@@ -79,7 +79,7 @@ do
 	    mpirun -np 24 ./main1d.gnu.MPI.ex inputs amr.n_cell = 768 0 0 euler = 2 viscous = 1 source = 0 particle = 2 Da = 1\
         enIC = "$j" geometry.prob_lo = 0.0 0.0 0.0 geometry.prob_hi = 0.00768 0.0 0.0 adv.cfl = 0.8 adv.fourier = 0.8\
         amr.max_level = 0 amr.ref_ratio = 2 2 4 4 amr.probin_file = prbn/detonation amr.plot_int = 1\
-        amr.max_grid_size = 64 amr.plot_files_output = 0 amr.plot_file = detonation/plt stop_time = 0.040\
+        amr.max_grid_size = 64 amr.plot_files_output = 0 amr.plot_file = detonation/plt stop_time = 0.060\
         TpInitial = "$i" TgInitial = 300 dp0 = 0.000010 Nsub = 1 conc = 900 boundary = 0
     done
 done
@@ -99,7 +99,7 @@ do
 	    mpirun -np 24 ./main1d.gnu.MPI.ex inputs amr.n_cell = 768 0 0 euler = 2 viscous = 1 source = 0 particle = 2 Da = 1\
         enIC = "$j" geometry.prob_lo = 0.0 0.0 0.0 geometry.prob_hi = 0.00768 0.0 0.0 adv.cfl = 0.8 adv.fourier = 0.8\
         amr.max_level = 0 amr.ref_ratio = 2 2 4 4 amr.probin_file = prbn/detonation amr.plot_int = 1\
-        amr.max_grid_size = 64 amr.plot_files_output = 0 amr.plot_file = detonation/plt stop_time = 0.040\
+        amr.max_grid_size = 64 amr.plot_files_output = 0 amr.plot_file = detonation/plt stop_time = 0.060\
         TpInitial = "$i" TgInitial = 300 dp0 = 0.000010 Nsub = 1 conc = 1000 boundary = 0
     done
 done
@@ -119,7 +119,7 @@ do
 	    mpirun -np 24 ./main1d.gnu.MPI.ex inputs amr.n_cell = 768 0 0 euler = 2 viscous = 1 source = 0 particle = 2 Da = 1\
         enIC = "$j" geometry.prob_lo = 0.0 0.0 0.0 geometry.prob_hi = 0.00768 0.0 0.0 adv.cfl = 0.8 adv.fourier = 0.8\
         amr.max_level = 0 amr.ref_ratio = 2 2 4 4 amr.probin_file = prbn/detonation amr.plot_int = 1\
-        amr.max_grid_size = 64 amr.plot_files_output = 0 amr.plot_file = detonation/plt stop_time = 0.040\
+        amr.max_grid_size = 64 amr.plot_files_output = 0 amr.plot_file = detonation/plt stop_time = 0.060\
         TpInitial = "$i" TgInitial = 300 dp0 = 0.000010 Nsub = 1 conc = 1100 boundary = 0
     done
 done
@@ -139,7 +139,7 @@ do
 	    mpirun -np 24 ./main1d.gnu.MPI.ex inputs amr.n_cell = 768 0 0 euler = 2 viscous = 1 source = 0 particle = 2 Da = 1\
         enIC = "$j" geometry.prob_lo = 0.0 0.0 0.0 geometry.prob_hi = 0.00768 0.0 0.0 adv.cfl = 0.8 adv.fourier = 0.8\
         amr.max_level = 0 amr.ref_ratio = 2 2 4 4 amr.probin_file = prbn/detonation amr.plot_int = 1\
-        amr.max_grid_size = 64 amr.plot_files_output = 0 amr.plot_file = detonation/plt stop_time = 0.040\
+        amr.max_grid_size = 64 amr.plot_files_output = 0 amr.plot_file = detonation/plt stop_time = 0.060\
         TpInitial = "$i" TgInitial = 300 dp0 = 0.000010 Nsub = 1 conc = 1200 boundary = 0
     done
 done
@@ -159,7 +159,7 @@ do
 	    mpirun -np 24 ./main1d.gnu.MPI.ex inputs amr.n_cell = 768 0 0 euler = 2 viscous = 1 source = 0 particle = 2 Da = 1\
         enIC = "$j" geometry.prob_lo = 0.0 0.0 0.0 geometry.prob_hi = 0.00768 0.0 0.0 adv.cfl = 0.8 adv.fourier = 0.8\
         amr.max_level = 0 amr.ref_ratio = 2 2 4 4 amr.probin_file = prbn/detonation amr.plot_int = 1\
-        amr.max_grid_size = 64 amr.plot_files_output = 0 amr.plot_file = detonation/plt stop_time = 0.040\
+        amr.max_grid_size = 64 amr.plot_files_output = 0 amr.plot_file = detonation/plt stop_time = 0.060\
         TpInitial = "$i" TgInitial = 300 dp0 = 0.000010 Nsub = 1 conc = 1300 boundary = 0
     done
 done
@@ -179,7 +179,7 @@ do
 	    mpirun -np 24 ./main1d.gnu.MPI.ex inputs amr.n_cell = 768 0 0 euler = 2 viscous = 1 source = 0 particle = 2 Da = 1\
         enIC = "$j" geometry.prob_lo = 0.0 0.0 0.0 geometry.prob_hi = 0.00768 0.0 0.0 adv.cfl = 0.8 adv.fourier = 0.8\
         amr.max_level = 0 amr.ref_ratio = 2 2 4 4 amr.probin_file = prbn/detonation amr.plot_int = 1\
-        amr.max_grid_size = 64 amr.plot_files_output = 0 amr.plot_file = detonation/plt stop_time = 0.040\
+        amr.max_grid_size = 64 amr.plot_files_output = 0 amr.plot_file = detonation/plt stop_time = 0.060\
         TpInitial = "$i" TgInitial = 300 dp0 = 0.000010 Nsub = 1 conc = 1400 boundary = 0
     done
 done
