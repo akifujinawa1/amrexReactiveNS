@@ -88,7 +88,7 @@ error = 1
 tol = 1e-3
 iteration = 0
 
-conc = 1400
+conc = 600
 
 while error > tol:
     avg = 0.5*(NpLo+NpHi)
@@ -112,7 +112,8 @@ while error > tol:
     print('predicted y-domain length is: ', Ly)
 
     numberDensity = Np/(Lx*Ly*Lz)
-    interDist     = (1/numberDensity)**(1.0/3.0)
+    # interDist     = (1/numberDensity)**(1.0/3.0)
+    interDist     = (mTot0/865)**(1.0/3.0)
 
     print('predicted interparticle distance is: ', interDist)
 
@@ -137,14 +138,14 @@ print('Nz_cell for 3D: ', Ly/dp0)
 print('number of particles: ', Np)
 Np = math.floor(Np)
 
-spacing_x = math.floor((Lx/dp0)/Np)
+spacing_x = (Lx/Np)
 
-print('cells between particles in x: ', spacing_x)
+print('spacing between particles in x: ', spacing_x)
 
 with open('setupScripts/locations.txt', 'w') as text_file:
     for i in range(math.floor(Np)):
         # x = 256+math.ceil(0.5*spacing_x)+spacing_x*i
-        x = 1e-5*256 + (0.5*interDist)+interDist*i
+        x = 1e-5*256 + (0.5*spacing_x)+spacing_x*i
         text_file.write(repr(x)+'\n')
 
 text_file.close()

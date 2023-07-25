@@ -66,6 +66,8 @@ mFe3O40 = rhoFe3O4*(4.0/3.0)*pi*(rp0**3 - rFeO0**3)     #  %kg Initial FeO mass
 
 mTot0 = 1.0e3*(mFe0+mFeO0+mFe3O40)  # total initial particle mass in grams
 mFeTot = mFe0
+
+print(mFe0)
  
 # matplot subplot
 fig, ax = plt.subplots(nrows=1,ncols=1,figsize=(8,8*yratio))  # ,dpi=100   fig2,ax2 = plt.subplots(nrows=2,ncols=1,figsize=(8,8*yratio))
@@ -73,36 +75,16 @@ plt.subplots_adjust(left=0.14, bottom=0.15, right=0.90, top=0.94, wspace=0.20, h
 
 Nparams = 9
 
-Tflame = np.empty(Nparams)
+mFeBurned = np.empty(Nparams)*0
 phiArray = np.empty(Nparams)
+concArray = np.empty(Nparams)
+
+time = 30000
 
 for i in range(Nparams):
     concentration = (i+6)*100
-    'output/txt/1Dflame/'+str(concentration)+'/field/'
-
-    data0 = np.loadtxt('output/txt/1Dflame/'+str(concentration)+'/field/00.txt')
-    data1 = np.loadtxt('output/txt/1Dflame/'+str(concentration)+'/field/7600.txt')
-    data2 = np.loadtxt('output/txt/1Dflame/'+str(concentration)+'/field/16000.txt')
-    data3 = np.loadtxt('output/txt/1Dflame/'+str(concentration)+'/field/22600.txt')
-    data4 = np.loadtxt('output/txt/1Dflame/'+str(concentration)+'/field/30000.txt')
-    data5 = np.loadtxt('output/txt/1Dflame/'+str(concentration)+'/field/37600.txt')
-
-    data0 = data0[data0[:, 0].argsort()]
-    data1 = data1[data1[:, 0].argsort()]
-    data2 = data2[data2[:, 0].argsort()]
-    data3 = data3[data3[:, 0].argsort()]
-    data4 = data4[data4[:, 0].argsort()]
-    data5 = data5[data5[:, 0].argsort()]
-
-    # for P in range(768):
-    #     data0[i,2] = 0.232917511457580
-    #     if i < 256:
-    #         data0[i,1] = 300
-    #     elif i < 307.2:
-    #         data0[i,1] = 1270
-    #     else:
-    #         data0[i,1] = 300
-
+    concArray[i]=concentration
+    Np=0
     directory = 'output/txt/1Dflame/'+str(concentration)+'/particle/'
     TotalNp = 0
     for path in os.scandir(directory):
@@ -113,21 +95,33 @@ for i in range(Nparams):
     mO2_all   = 512*dp0*interDist*interDist*Y_O2*(0.1*rhoHi+0.9*rhoLo)
     phiArray[i] = (TotalNp*mFe0/mO2_all)/(2*M_Fe/M_O2)
 
-    # plotting either temperature or mass fraction
-    yIndex = 1
+    for filename in os.listdir(directory):
+        f = os.path.join(directory, filename)
+        # checking if it is a file
+        if os.path.isfile(f):
+            data = np.loadtxt(f)
+            # 0=time, 1=x, 2=mFe, 3=mFeO, 4=mFe3O4, 5=Tp, 6=regime
+            # print(len(data[:,0]))s
+            for k in range(len(data[:,0])):
+                length = len(data[:,0])
+                if (data[k,0]>time*1e-6):
+                    mFe = data[k,2]
+                    mFeO = data[k,3]
+                    mFe3O4 = data[k,4]
+                    mFeBurned[i] += mFe0-mFe
+                    Np += 1
+                    # print('position is:',location[Np])
+                    # print('FeO mass fraction is,',YFeO[Np])
+                    break
 
-    add = sum(data4[456:656,1])
-    avg = add/200
-    Tflame[i] =avg
-    print('conc=',concentration,', Tavg=',avg)
+    print('conc=',concentration,', mFe burned=',mFeBurned[i])
+            
 
-dataAFT = np.loadtxt('output/pyscripts/aft_phi.txt')
-ax.plot(dataAFT[:,0],dataAFT[:,1],c='red',lw=3,linestyle='--',label='$\mathrm{ad.,Fe}$-$\mathrm{to}$-$\mathrm{FeO}$')
-ax.scatter(phiArray,Tflame,c='black',s=15,label='$\mathrm{post}$-$\mathrm{flame,avg.}$')
+ax.scatter(concArray,mFeBurned,c='black',s=15) #,label='$\mathrm{post}$-$\mathrm{flame,avg.}$')
+ax.set_ylabel(r'$m_\mathrm{Fe,burned}[\mathrm{kg}]$', fontsize=20)
 ax.set_xlabel(r'$\phi\;[\mathrm{-}]$', fontsize=20)
-ax.set_ylabel(r'$T_\mathrm{g}\;[\mathrm{K}]$', fontsize=20)
 # ax.errorbar(phiArray,flameSpeed,yerr=error,fmt='o',c='black',linewidth=2,label='$\sigma$')
 # ax.set_xlim([phiPlotLo,phiPlotHi])
 ax.legend(ncol=1, loc="best", fontsize = 14)
 plt.show()
-fig.savefig('output/plots/flame/postFlameTemperature.pdf')
+# fig.savefig('output/plots/flame/mFeBurned.pdf')

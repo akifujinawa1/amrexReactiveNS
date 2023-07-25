@@ -14,6 +14,13 @@ from moviepy.video.io.bindings import mplfig_to_npimage
 # sys.path.append(os.path.join('pyblish','plots'))
 # import publish 
 
+# CHOOSE PLOTTING PARAMETERS HERE
+
+condition = 1   # 1 for isobaric, 2 for isochoric
+plotVar = 1     # 1 for x-t, 2 for flame speed
+Nparam = 8
+
+
 yratio = 1/1.618
 
 M_O2  = 31.9988*1e-3;       # molecular mass of O2 in kg/mol
@@ -63,18 +70,17 @@ mpl.rcParams["mathtext.fontset"] = 'cm'
 plt.rc('font', family='serif', size='14')
 
 mpl.rcParams['axes.spines.right'] = False
-mpl.rcParams['axes.spines.top'] = False
+if plotVar == 1:
+    mpl.rcParams['axes.spines.top'] = False
+
 
 colors = ['#000000', '#9B0909', '#7E301E', '#B42E0F', '#FE3C0F', '#fe770f', '#F35D0D', '#f3d00d', '#9b9765']
 markers = ['o', 'v', '^', '<', '>', 's', 'p', '*', 'P']
 
 # matplot subplot
 fig, ax = plt.subplots(figsize=(8,8*yratio))  #fig2,ax2 = plt.subplots(nrows=2,ncols=1,figsize=(8,8*yratio))nrows=2,ncols=1,,dpi=100
-plt.subplots_adjust(left=0.125, bottom=0.137, right=0.96, top=0.96, wspace=0.20, hspace=0.20)
+plt.subplots_adjust(left=0.125, bottom=0.137, right=0.96, top=0.86, wspace=0.20, hspace=0.20)
 
-condition = 1   # 1 for isobaric, 2 for isochoric
-plotVar = 1     # 1 for x-t, 2 for flame speed
-Nparam = 8
 
 time = numpy.empty((36, Nparam))
 location = numpy.empty((36, Nparam))
@@ -116,13 +122,22 @@ for i in range(Nparam):
     # print(time[:,i])
     # print(location[:,i])
 
+    if i==0:
+        interDist = (mTot0/(concentration-50))**(1/3)
+        mO2_all   = 512*dp0*interDist*interDist*Y_O2*(0.1*rhoHi+0.9*rhoLo)
+        phiPlotLo = (Np*mFe0/mO2_all)/(2*M_Fe/M_O2)
+    elif i==(Nparam-1):
+        interDist = (mTot0/(concentration+50))**(1/3)
+        mO2_all   = 512*dp0*interDist*interDist*Y_O2*(0.1*rhoHi+0.9*rhoLo)
+        phiPlotHi = (Np*mFe0/mO2_all)/(2*M_Fe/M_O2)
+
     interDist = (mTot0/concentration)**(1/3)
     mO2_all   = 512*dp0*interDist*interDist*Y_O2*(0.1*rhoHi+0.9*rhoLo)
     phiArray[i] = (Np*mFe0/mO2_all)/(2*M_Fe/M_O2)
 
     Nranges = 3
     Ndistance = 5
-    offEnd = 0
+    offEnd = 5
     fsVals = np.empty(Nranges)
     for offset in range(Nranges):
         End = len(time[:,i])-(offset+offEnd)
@@ -155,25 +170,58 @@ for i in range(Nparam):
     # ax.errorbar(phiArray[i],flameSpeed[i],yerr=error[:,i],fmt=markers[i],c=colors[i])
 
     if plotVar==1:
-        ax.scatter(time[:,i],100*location[:,i],c=colors[i],s=15,marker=markers[i],label='$'+str(concentration)+'\;\mathrm{g/cm^3}$') #s=3
+        ax.scatter(time[:,i],100*location[:,i]-0.256,c=colors[i],s=15,marker=markers[i],label='$'+str(concentration)+'\;\mathrm{g/cm^3}$') #s=3
     # ax.plot(time[:,i],m*time[:,i]+c,c=colors[3],linewidth=4,label=str(concentration)) #s=3
 
 
 # plt.yscale("log")
 # plt.xscale("log")
 
+print(phiPlotLo)
+print(phiArray)
+print(phiPlotHi)
+
+
 # ax.ticklabel_format(useOffset=False)
-if plotVar == 1:
-    # ax.set_ylim([0.256,0.768])
+if plotVar == 1:   # for x-t diagram
+    ax.set_ylim([0,0.512])
     ax.set_ylabel(r'$x\;[\mathrm{cm}]$', fontsize=20)
     ax.set_xlabel(r'$\mathrm{time}\;[\mathrm{s}]$', fontsize=20)
-if plotVar == 2:
+if plotVar == 2:   # for flame speed diagram
     ax.set_ylabel(r'$\eta\;[\mathrm{cm/s}]$', fontsize=20)
 
     # to plot concentration on x
-    ax.set_xlabel(r'$\mathrm{Concentration}\;[\mathrm{g/m^3}]$', fontsize=20)
-    ax.scatter(concArray,flameSpeed,c='black',s=3,label='$\mathrm{Reactive\;front\;speed}$')
-    ax.errorbar(concArray,flameSpeed,yerr=error,fmt='o',c='black',linewidth=2,label='$\sigma$')
+    # ax.set_xlabel(r'$\mathrm{Concentration}\;[\mathrm{g/m^3}]$', fontsize=20)
+    # ax.scatter(concArray,flameSpeed,c='black',s=3,label='$\mathrm{Reactive\;front\;speed}$')
+    # ax.errorbar(concArray,flameSpeed,yerr=error,fmt='o',c='black',linewidth=2,label='$\sigma$')
+
+    # # to add equivalence ratio on top
+    # axTop = ax.twiny()
+    # axTop.scatter(phiArray,flameSpeed,c='black',alpha=0.0)
+    # axTop.set_xlabel(r'$\phi\;[\mathrm{-}]$', fontsize=20)
+    # # mpl.rcParams['axes.spines.top'] = False                 # to set top bounding line on or off
+
+
+    # to do opposite:
+    ax.set_xlabel(r'$\phi\;[\mathrm{-}]$', fontsize=20)
+    ax.scatter(phiArray,flameSpeed,c='black',alpha=0.0) #s=3,label='$\mathrm{Reactive\;front\;speed}$')
+    # ax.errorbar(phiArray,flameSpeed,yerr=error,fmt='o',c='black',linewidth=2,label='$\sigma$')
+    ax.set_xlim([phiPlotLo,phiPlotHi])
+
+    # to add concentration on top
+    axTop = ax.twiny()
+    axTop.scatter(concArray,flameSpeed,c='black',s=15,label='$\mathrm{Reactive\;front\;speed}$') #alpha=0.0)
+    axTop.errorbar(concArray,flameSpeed,yerr=error,fmt='o',c='black',linewidth=2,label='$\sigma$')
+    axTop.set_xlabel(r'$\mathrm{Concentration}\;[\mathrm{g/m^3}]$', fontsize=16)
+    axTop.tick_params(axis='x', which='major', labelsize=12)
+    axTop.set_xlim([550,1350])
+    axTop.legend(ncol=1, loc="best", fontsize = 16)
+    
+    # mpl.rcParams['axes.spines.top'] = False                 # to set top bounding line on or off
+
+
+
+    # ax.errorbar(concArray,flameSpeed,yerr=error,fmt='o',c='black',linewidth=2,label='$\sigma$')
 
     # to plot equivalence ratio on x
     # ax.set_xlabel(r'$\phi\;[\mathrm{-}]$', fontsize=20)
@@ -236,7 +284,6 @@ if plotVar == 1:
     else:
         fig.savefig('output/plots/flame/ignition_isochoric_X-T.pdf')
 else:
-    ax.legend(ncol=1, loc="best", fontsize = 16)
     plt.show()
     if condition == 1:
         fig.savefig('output/plots/flame/flameSpeed_isobaric.pdf')

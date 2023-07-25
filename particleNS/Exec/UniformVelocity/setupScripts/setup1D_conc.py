@@ -112,7 +112,7 @@ while error > tol:
     print('predicted y-domain length is: ', Ly)
 
     numberDensity = Np/(Lx*Ly*Lz)
-    interDist     = (1/numberDensity)**(1.0/3.0)
+    interDist     = (mTot0/865)**(1.0/3.0)
 
     print('predicted interparticle distance is: ', interDist)
 
@@ -141,12 +141,12 @@ spacing_x = math.floor((Lx/dp0)/Np)
 
 print('cells between particles in x: ', spacing_x)
 
-with open('setupScripts/locations.txt', 'w') as text_file:
-    for i in range(math.floor(Np)):
-        x = 256+math.ceil(0.5*spacing_x)+spacing_x*i
-        text_file.write(repr(x)+'\n')
+# with open('setupScripts/locations.txt', 'w') as text_file:
+#     for i in range(math.floor(Np)):
+#         x = 256+math.ceil(0.5*spacing_x)+spacing_x*i
+#         text_file.write(repr(x)+'\n')
 
-text_file.close()
+# text_file.close()
 
 equiv = (Np*mFe0/mO2_all)/(2*M_Fe/M_O2)
 print('equivalence ratio of sim: ', equiv)
