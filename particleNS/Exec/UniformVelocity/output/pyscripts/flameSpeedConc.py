@@ -82,8 +82,8 @@ fig, ax = plt.subplots(figsize=(8,8*yratio))  #fig2,ax2 = plt.subplots(nrows=2,n
 plt.subplots_adjust(left=0.125, bottom=0.137, right=0.96, top=0.86, wspace=0.20, hspace=0.20)
 
 
-time = numpy.empty((36, Nparam))
-location = numpy.empty((36, Nparam))
+time = numpy.empty((50, Nparam))
+location = numpy.empty((50, Nparam))
 flameSpeed = numpy.empty(Nparam)
 stDev      = numpy.empty(Nparam)
 error        = numpy.empty((2,Nparam))
@@ -106,9 +106,9 @@ for i in range(Nparam):
             data = np.loadtxt(f)
             # 0=time, 1=x, 2=mFe, 3=mFeO, 4=mFe3O4, 5=Tp, 6=regime
             # print(len(data[:,0]))s
-            for k in range(len(data[:,0])):
-                length = len(data[:,0])
-                if (data[length-(k+1),6]-data[length-(k+2),6] == 1):
+            for k in range(len(data[:,0])-2):
+                length = len(data[:,0])-1
+                if (data[length-(k),6]-data[length-(k+1),6] == 1):
                     time[Np][i]=(data[length-k,0])
                     location[Np][i]=(data[length-k,1])
                     # print(time)
@@ -135,9 +135,12 @@ for i in range(Nparam):
     mO2_all   = 512*dp0*interDist*interDist*Y_O2*(0.1*rhoHi+0.9*rhoLo)
     phiArray[i] = (Np*mFe0/mO2_all)/(2*M_Fe/M_O2)
 
+    # Nranges = 3
+    # Ndistance = 5
+    # offEnd = 8
     Nranges = 3
     Ndistance = 5
-    offEnd = 5
+    offEnd = int(0.3*Np)
     fsVals = np.empty(Nranges)
     for offset in range(Nranges):
         End = len(time[:,i])-(offset+offEnd)
@@ -279,16 +282,16 @@ if plotVar == 2:   # for flame speed diagram
 if plotVar == 1:
     ax.legend(ncol=2, loc="best", fontsize = 16)
     plt.show()
-    if condition == 1:
-        fig.savefig('output/plots/flame/ignition_isobaric_X-T.pdf')
-    else:
-        fig.savefig('output/plots/flame/ignition_isochoric_X-T.pdf')
+    # if condition == 1:
+    #     fig.savefig('output/plots/flame/ignition_isobaric_X-T.pdf')
+    # else:
+    #     fig.savefig('output/plots/flame/ignition_isochoric_X-T.pdf')
 else:
     plt.show()
-    if condition == 1:
-        fig.savefig('output/plots/flame/flameSpeed_isobaric.pdf')
-    else:
-        fig.savefig('output/plots/flame/flameSpeed_isochoric.pdf')
+    # if condition == 1:
+    #     fig.savefig('output/plots/flame/flameSpeed_isobaric.pdf')
+    # else:
+    #     fig.savefig('output/plots/flame/flameSpeed_isochoric.pdf')
 # with open('output/txt/1Dflame/phi1/x-t.txt', 'w') as text_file:
 #     for i in range(len(time)):
 #         timeval = time[i]
