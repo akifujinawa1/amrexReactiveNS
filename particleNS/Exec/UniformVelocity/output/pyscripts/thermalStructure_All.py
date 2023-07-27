@@ -46,7 +46,7 @@ plt.subplots_adjust(left=0.14, bottom=0.15, right=0.90, top=0.94, wspace=0.20, h
 # ax1 = fig.add_subplot(121)
 # ax2 = fig.add_subplot(122)
 
-directory = '1400/field'
+directory = '900/field'
 
 data0 = np.loadtxt('output/txt/1Dflame/'+directory+'/00.txt')
 data1 = np.loadtxt('output/txt/1Dflame/'+directory+'/7600.txt')
@@ -73,29 +73,30 @@ for i in range(768):
         data0[i,1] = 300
 
 # plotting either temperature or mass fraction
-yIndex = 1
+yIndex = 2
 
 if yIndex == 1:
-    ax[0].plot(data0[256:307,0]-0.00256,data0[256:307,yIndex],c='black',linewidth=2,label='$t=t_0$') 
-    ax[0].plot(data0[308:767,0]-0.00256,data0[308:767,yIndex],c='black',linewidth=2) 
-    ax[0].plot(data0[256:767,0]-0.00256,data0[256:767,yIndex]*0+2331,c='red',linestyle='dashed',linewidth=2,label='$\mathrm{AFT,Fe}$-$\mathrm{to}$-$\mathrm{FeO}$') 
-    ax[0].plot(data0[256:767,0]-0.00256,data0[256:767,yIndex]*0+2230,c=colors[0],linestyle='dotted',linewidth=2,label='$\mathrm{AFT,equilibrium}$') 
+    ax[0].plot(data0[0:255,0],data0[0:255,yIndex],c='black',linewidth=2) 
+    ax[0].plot(data0[256:307,0],data0[256:307,yIndex],c='black',linewidth=2,label='$t=t_0$') 
+    ax[0].plot(data0[308:767,0],data0[308:767,yIndex],c='black',linewidth=2) 
+    ax[0].plot(data0[0:767,0],data0[0:767,yIndex]*0+2331,c='red',linestyle='dashed',linewidth=2,label='$\mathrm{AFT,Fe}$-$\mathrm{to}$-$\mathrm{FeO}$') 
+    ax[0].plot(data0[0:767,0],data0[0:767,yIndex]*0+2230,c=colors[0],linestyle='dotted',linewidth=2,label='$\mathrm{AFT,equilibrium}$') 
 
-    ax[1].plot(data1[256:767,0]-0.00256,data1[256:767,yIndex],c='black',linewidth=2,label='$t=7.5\;\mathrm{ms}$') 
-    ax[1].plot(data0[256:767,0]-0.00256,data0[256:767,yIndex]*0+2331,c='red',linestyle='dashed',linewidth=2) 
-    ax[1].plot(data0[256:767,0]-0.00256,data0[256:767,yIndex]*0+2230,c=colors[0],linestyle='dotted',linewidth=2)
+    ax[1].plot(data1[0:767,0],data1[0:767,yIndex],c='black',linewidth=2,label='$t=7.5\;\mathrm{ms}$') 
+    ax[1].plot(data0[0:767,0],data0[0:767,yIndex]*0+2331,c='red',linestyle='dashed',linewidth=2) 
+    ax[1].plot(data0[0:767,0],data0[0:767,yIndex]*0+2230,c=colors[0],linestyle='dotted',linewidth=2)
 
-    ax[2].plot(data2[256:767,0]-0.00256,data2[256:767,yIndex],c='black',linewidth=2,label='$t=15.0\mathrm{ms}$') 
-    ax[2].plot(data0[256:767,0]-0.00256,data0[256:767,yIndex]*0+2331,c='red',linestyle='dashed',linewidth=2) 
-    ax[2].plot(data0[256:767,0]-0.00256,data0[256:767,yIndex]*0+2230,c=colors[0],linestyle='dotted',linewidth=2) 
+    ax[2].plot(data2[0:767,0],data2[0:767,yIndex],c='black',linewidth=2,label='$t=15.0\mathrm{ms}$') 
+    ax[2].plot(data0[0:767,0],data0[0:767,yIndex]*0+2331,c='red',linestyle='dashed',linewidth=2) 
+    ax[2].plot(data0[0:767,0],data0[0:767,yIndex]*0+2230,c=colors[0],linestyle='dotted',linewidth=2) 
     
-    ax[3].plot(data3[256:767,0]-0.00256,data3[256:767,yIndex],c='black',linewidth=2,label='$t=22.5\;\mathrm{ms}$') 
-    ax[3].plot(data0[256:767,0]-0.00256,data0[256:767,yIndex]*0+2331,c='red',linestyle='dashed',linewidth=2) 
-    ax[3].plot(data0[256:767,0]-0.00256,data0[256:767,yIndex]*0+2230,c=colors[0],linestyle='dotted',linewidth=2) 
+    ax[3].plot(data3[0:767,0],data3[0:767,yIndex],c='black',linewidth=2,label='$t=22.5\;\mathrm{ms}$') 
+    ax[3].plot(data0[0:767,0],data0[0:767,yIndex]*0+2331,c='red',linestyle='dashed',linewidth=2) 
+    ax[3].plot(data0[0:767,0],data0[0:767,yIndex]*0+2230,c=colors[0],linestyle='dotted',linewidth=2) 
     
-    ax[4].plot(data4[256:767,0]-0.00256,data4[256:767,yIndex],c='black',linewidth=2,label='$t=30.0\;\mathrm{ms}$') 
-    ax[4].plot(data0[256:767,0]-0.00256,data0[256:767,yIndex]*0+2331,c='red',linestyle='dashed',linewidth=2) 
-    ax[4].plot(data0[256:767,0]-0.00256,data0[256:767,yIndex]*0+2230,c=colors[0],linestyle='dotted',linewidth=2) 
+    ax[4].plot(data4[0:767,0],data4[0:767,yIndex],c='black',linewidth=2,label='$t=30.0\;\mathrm{ms}$') 
+    ax[4].plot(data0[0:767,0],data0[0:767,yIndex]*0+2331,c='red',linestyle='dashed',linewidth=2) 
+    ax[4].plot(data0[0:767,0],data0[0:767,yIndex]*0+2230,c=colors[0],linestyle='dotted',linewidth=2) 
     
     ax[0].set_ylim(0,2600)
     ax[1].set_ylim(0,2600)
@@ -103,11 +104,11 @@ if yIndex == 1:
     ax[3].set_ylim(0,2600)
     ax[4].set_ylim(0,2600)
 
-    ax[0].set_xlim(0,0.00512)
-    ax[1].set_xlim(0,0.00512)
-    ax[2].set_xlim(0,0.00512)
-    ax[3].set_xlim(0,0.00512)
-    ax[4].set_xlim(0,0.00512)
+    ax[0].set_xlim(0,0.00768)
+    ax[1].set_xlim(0,0.00768)
+    ax[2].set_xlim(0,0.00768)
+    ax[3].set_xlim(0,0.00768)
+    ax[4].set_xlim(0,0.00768)
 
     # ax.set_ylabel(r'$T_\mathrm{g}\;[\mathrm{K}]$', fontsize=20)
     # ax[4].set_xlabel(r'$\mathrm{x}\;[\mathrm{m}]$', fontsize=20)
@@ -130,21 +131,22 @@ if yIndex == 1:
     # fig.savefig('output/plots/flame/thermalStructurePhi1.pdf')
 
 elif yIndex == 2:
-    ax[0].plot(data0[256:307,0]-0.00256,data0[256:307,yIndex],c='black',linewidth=3,label='$t=t_0$') 
-    ax[0].plot(data0[308:767,0]-0.00256,data0[308:767,yIndex],c='black',linewidth=3) 
-    ax[0].plot(data0[256:767,0]-0.00256,data0[256:767,yIndex]*0+0.232917511457580,c='red',linestyle='dashed',linewidth=3,label='$Y_\mathrm{O_2,0}$') 
+    ax[0].plot(data0[0:255,0],data0[0:255,yIndex],c='black',linewidth=3) 
+    ax[0].plot(data0[256:307,0],data0[256:307,yIndex],c='black',linewidth=3,label='$t=t_0$') 
+    ax[0].plot(data0[308:767,0],data0[308:767,yIndex],c='black',linewidth=3) 
+    ax[0].plot(data0[0:767,0],data0[0:767,yIndex]*0+0.232917511457580,c='red',linestyle='dashed',linewidth=3,label='$Y_\mathrm{O_2,0}$') 
 
-    ax[1].plot(data1[256:767,0]-0.00256,data1[256:767,yIndex],c='black',linewidth=3,label='$t=7.5\;\mathrm{ms}$') 
-    ax[1].plot(data1[256:767,0]-0.00256,data1[256:767,yIndex]*0+0.232917511457580,c='red',linestyle='dashed',linewidth=3) 
+    ax[1].plot(data1[0:767,0],data1[0:767,yIndex],c='black',linewidth=3,label='$t=7.5\;\mathrm{ms}$') 
+    ax[1].plot(data1[0:767,0],data1[0:767,yIndex]*0+0.232917511457580,c='red',linestyle='dashed',linewidth=3) 
 
-    ax[2].plot(data2[256:767,0]-0.00256,data2[256:767,yIndex],c='black',linewidth=3,label='$t=15.0\mathrm{ms}$') 
-    ax[2].plot(data2[256:767,0]-0.00256,data2[256:767,yIndex]*0+0.232917511457580,c='red',linestyle='dashed',linewidth=3) 
+    ax[2].plot(data2[0:767,0],data2[0:767,yIndex],c='black',linewidth=3,label='$t=15.0\mathrm{ms}$') 
+    ax[2].plot(data2[0:767,0],data2[0:767,yIndex]*0+0.232917511457580,c='red',linestyle='dashed',linewidth=3) 
 
-    ax[3].plot(data3[256:767,0]-0.00256,data3[256:767,yIndex],c='black',linewidth=3,label='$t=22.5\;\mathrm{ms}$') 
-    ax[3].plot(data3[256:767,0]-0.00256,data3[256:767,yIndex]*0+0.232917511457580,c='red',linestyle='dashed',linewidth=3) 
+    ax[3].plot(data3[0:767,0],data3[0:767,yIndex],c='black',linewidth=3,label='$t=22.5\;\mathrm{ms}$') 
+    ax[3].plot(data3[0:767,0],data3[0:767,yIndex]*0+0.232917511457580,c='red',linestyle='dashed',linewidth=3) 
 
-    ax[4].plot(data4[256:767,0]-0.00256,data4[256:767,yIndex],c='black',linewidth=3,label='$t=30.0\;\mathrm{ms}$') 
-    ax[4].plot(data4[256:767,0]-0.00256,data4[256:767,yIndex]*0+0.232917511457580,c='red',linestyle='dashed',linewidth=3) 
+    ax[4].plot(data4[0:767,0],data4[0:767,yIndex],c='black',linewidth=3,label='$t=30.0\;\mathrm{ms}$') 
+    ax[4].plot(data4[0:767,0],data4[0:767,yIndex]*0+0.232917511457580,c='red',linestyle='dashed',linewidth=3) 
 
     ax[0].set_ylim(0,0.232917511457580)
     ax[1].set_ylim(0,0.232917511457580)
@@ -152,11 +154,11 @@ elif yIndex == 2:
     ax[3].set_ylim(0,0.232917511457580)
     ax[4].set_ylim(0,0.232917511457580)
 
-    ax[0].set_xlim(0,0.00512)
-    ax[1].set_xlim(0,0.00512)
-    ax[2].set_xlim(0,0.00512)
-    ax[3].set_xlim(0,0.00512)
-    ax[4].set_xlim(0,0.00512)
+    ax[0].set_xlim(0,0.00768)
+    ax[1].set_xlim(0,0.00768)
+    ax[2].set_xlim(0,0.00768)
+    ax[3].set_xlim(0,0.00768)
+    ax[4].set_xlim(0,0.00768)
 
     # ax.set_ylabel(r'$T_\mathrm{g}\;[\mathrm{K}]$', fontsize=20)
     # ax[4].set_xlabel(r'$\mathrm{x}\;[\mathrm{m}]$', fontsize=20)
@@ -178,7 +180,3 @@ elif yIndex == 2:
 
     # fig.savefig('output/plots/flame/O2massFracPhi1.pdf')
 
-
-add = sum(data4[456:656,1])
-avg = add/200
-print(avg)

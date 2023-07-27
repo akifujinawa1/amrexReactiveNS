@@ -4,6 +4,7 @@ import numpy as np
 import pandas as pd
 import matplotlib.ticker as ticker
 import numpy.matlib
+from thermo import *
 
 import os
 import sys
@@ -23,7 +24,7 @@ mpl.rcParams['font.family'] = 'serif'
 mpl.rcParams["mathtext.fontset"] = 'cm'
 plt.rc('font', family='serif', size='14')
 
-mpl.rcParams['axes.spines.right'] = False
+# mpl.rcParams['axes.spines.right'] = False
 mpl.rcParams['axes.spines.top'] = False
 
 colors = ['#9B0909', '#7E301E', '#B42E0F', '#FE3C0F', '#fe770f', '#F35D0D']
@@ -71,11 +72,12 @@ print(mFe0)
  
 # matplot subplot
 fig, ax = plt.subplots(nrows=1,ncols=1,figsize=(8,8*yratio))  # ,dpi=100   fig2,ax2 = plt.subplots(nrows=2,ncols=1,figsize=(8,8*yratio))
-plt.subplots_adjust(left=0.14, bottom=0.15, right=0.90, top=0.94, wspace=0.20, hspace=0.20)
+plt.subplots_adjust(left=0.1, bottom=0.15, right=0.90, top=0.94, wspace=0.20, hspace=0.20)
 
 Nparams = 9
 
 mFeBurned = np.empty(Nparams)*0
+totalCp = np.empty(Nparams)
 phiArray = np.empty(Nparams)
 concArray = np.empty(Nparams)
 
@@ -91,7 +93,13 @@ for i in range(Nparams):
         if path.is_file():
             TotalNp += 1
 
-    interDist = (mTot0/concentration)**(1/3)
+    fixedID    = (mTot0/865)**(1/3)
+    cpParticle = 0.1*TotalNp*1.856370123362867e-09 + 0.9*TotalNp*3.091198097151238e-09
+    cpGas      = (0.1*rhoHi*cpMix(cpO2(1270),cpN2(1270),Y_O2,Y_N2)+0.9*rhoLo*cpMix(cpO2(300),cpN2(300),Y_O2,Y_N2))
+    fixedVol   = fixedID*fixedID*dp0*512
+    totalCp[i] = cpParticle+cpGas*fixedVol
+
+    interDist = (mTot0/865)**(1/3)
     mO2_all   = 512*dp0*interDist*interDist*Y_O2*(0.1*rhoHi+0.9*rhoLo)
     phiArray[i] = (TotalNp*mFe0/mO2_all)/(2*M_Fe/M_O2)
 
@@ -117,11 +125,19 @@ for i in range(Nparams):
     print('conc=',concentration,', mFe burned=',mFeBurned[i])
             
 
-ax.scatter(concArray,mFeBurned,c='black',s=15) #,label='$\mathrm{post}$-$\mathrm{flame,avg.}$')
-ax.set_ylabel(r'$m_\mathrm{Fe,burned}[\mathrm{kg}]$', fontsize=20)
+ax.scatter(phiArray,mFeBurned,c='black',s=15,label='$m_\mathrm{Fe}$')
+ax.set_ylim([4.2e-11,9.8e-11])
+ax.set_ylabel(r'$m_\mathrm{Fe,burned}\;[\mathrm{kg}]$', fontsize=20)
 ax.set_xlabel(r'$\phi\;[\mathrm{-}]$', fontsize=20)
+
+ax2 = ax.twinx()
+ax2.scatter(phiArray,totalCp,c='red',s=15,label='$c_{p,\mathrm{total}}$')
+ax2.set_ylabel(r'$c_{p,\mathrm{total}}\;[\mathrm{J/K}]$', fontsize=20)
+# ax.set_xlabel(r'$\phi\;[\mathrm{-}]$', fontsize=20)
+
 # ax.errorbar(phiArray,flameSpeed,yerr=error,fmt='o',c='black',linewidth=2,label='$\sigma$')
 # ax.set_xlim([phiPlotLo,phiPlotHi])
-ax.legend(ncol=1, loc="best", fontsize = 14)
+ax.legend(ncol=1, loc="best", fontsize = 16, frameon=False)
+ax2.legend(ncol=1, loc=(0.016,0.78), fontsize = 16, frameon=False)
 plt.show()
-# fig.savefig('output/plots/flame/mFeBurned.pdf')
+fig.savefig('output/plots/flame/burnMassVsCp.pdf')

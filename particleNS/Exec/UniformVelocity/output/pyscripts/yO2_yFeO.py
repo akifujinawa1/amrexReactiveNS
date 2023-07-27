@@ -80,7 +80,7 @@ color = colors
 fig1, ax1 = plt.subplots(nrows=4,ncols=1,figsize=(8,16*yratio))  # ,dpi=100   fig2,ax2 = plt.subplots(nrows=2,ncols=1,figsize=(8,8*yratio))
 plt.subplots_adjust(left=0.14, bottom=0.08, right=0.90, top=0.97, wspace=0.20, hspace=0.20)
 
-setConcentrations = 1
+setConcentrations = 2
 
 for i in range(4):
     if setConcentrations == 1:
@@ -144,7 +144,7 @@ for i in range(4):
     # print(Np)
     # print(data4[:,2])
 
-    interDist = (mTot0/concentration)**(1/3)
+    interDist = (mTot0/865)**(1/3)
     mO2_all   = 512*dp0*interDist*interDist*Y_O2*(0.1*rhoHi+0.9*rhoLo)
     phival    = (Np*mFe0/mO2_all)/(2*M_Fe/M_O2)
     phival    = round(phival,2)
@@ -206,6 +206,6 @@ ax1[2].get_xaxis().set_visible(False)
 plt.show()
 
 if setConcentrations == 1:
-    fig1.savefig('output/plots/flame/yO2yFeO_lean.pdf')
+    fig1.savefig('output/plots/flame/yO2yFeO_lean_isobaric.pdf')
 else:
-    fig1.savefig('output/plots/flame/yO2yFeO_rich.pdf')
+    fig1.savefig('output/plots/flame/yO2yFeO_rich_isobaric.pdf')

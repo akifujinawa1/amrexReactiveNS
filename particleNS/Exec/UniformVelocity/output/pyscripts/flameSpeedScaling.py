@@ -123,7 +123,7 @@ for i in range(9):
                 particleT[i,particleCount-1] = 0.5*(burnoutPoint + ignitionPoint) 
                 particleX[i,particleCount-1] = 0.5*(burnoutX + ignitionX) 
             
-    interDist = (mTot0/concentration)**(1/3)
+    interDist = (mTot0/865)**(1/3)
     mO2_all   = 512*dp0*interDist*interDist*Y_O2*(0.1*rhoHi+0.9*rhoLo)
     phiArray[i] = (TotalNp*mFe0/mO2_all)/(2*M_Fe/M_O2)
 

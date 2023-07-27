@@ -17,8 +17,8 @@ from moviepy.video.io.bindings import mplfig_to_npimage
 # CHOOSE PLOTTING PARAMETERS HERE
 
 condition = 1   # 1 for isobaric, 2 for isochoric
-plotVar = 1     # 1 for x-t, 2 for flame speed
-Nparam = 8
+plotVar = 2     # 1 for x-t, 2 for flame speed
+Nparam = 9
 
 
 yratio = 1/1.618
@@ -78,8 +78,14 @@ colors = ['#000000', '#9B0909', '#7E301E', '#B42E0F', '#FE3C0F', '#fe770f', '#F3
 markers = ['o', 'v', '^', '<', '>', 's', 'p', '*', 'P']
 
 # matplot subplot
+
+if plotVar == 1:
+    topval = 0.96
+else:
+    topval = 0.86
+
 fig, ax = plt.subplots(figsize=(8,8*yratio))  #fig2,ax2 = plt.subplots(nrows=2,ncols=1,figsize=(8,8*yratio))nrows=2,ncols=1,,dpi=100
-plt.subplots_adjust(left=0.125, bottom=0.137, right=0.96, top=0.86, wspace=0.20, hspace=0.20)
+plt.subplots_adjust(left=0.125, bottom=0.137, right=0.96, top=topval, wspace=0.20, hspace=0.20)
 
 
 time = numpy.empty((50, Nparam))
@@ -88,11 +94,12 @@ flameSpeed = numpy.empty(Nparam)
 stDev      = numpy.empty(Nparam)
 error        = numpy.empty((2,Nparam))
 flameSpeedAvg = numpy.empty(Nparam)
-concArray = [600,700,800,900,1000,1100,1200,1300]
+concArray = numpy.empty(Nparam)
 phiArray  = numpy.empty(Nparam)
 
 for i in range(Nparam):
     concentration = (i+6)*100
+    concArray[i] = concentration
     if condition == 1:
         directory = 'output/txt/1Dflame/'+str(concentration)+'/particle/'  #
     else:
@@ -115,6 +122,11 @@ for i in range(Nparam):
                     # print(location)
                     break
             Np += 1
+
+    # time1 = time[0:Np,i]
+    # location1 = location[0:Np,i]
+    # time1.sort()
+    # location1.sort()
     time[:,i].sort()
     location[:,i].sort()
 
@@ -122,35 +134,60 @@ for i in range(Nparam):
     # print(time[:,i])
     # print(location[:,i])
 
+    interDist = (mTot0/(865))**(1/3)
+
     if i==0:
-        interDist = (mTot0/(concentration-50))**(1/3)
+        # interDist = (mTot0/(concentration-50))**(1/3)
         mO2_all   = 512*dp0*interDist*interDist*Y_O2*(0.1*rhoHi+0.9*rhoLo)
         phiPlotLo = (Np*mFe0/mO2_all)/(2*M_Fe/M_O2)
     elif i==(Nparam-1):
-        interDist = (mTot0/(concentration+50))**(1/3)
+        # interDist = (mTot0/(concentration+50))**(1/3)
         mO2_all   = 512*dp0*interDist*interDist*Y_O2*(0.1*rhoHi+0.9*rhoLo)
         phiPlotHi = (Np*mFe0/mO2_all)/(2*M_Fe/M_O2)
 
-    interDist = (mTot0/concentration)**(1/3)
+    # interDist = (mTot0/concentration)**(1/3)
     mO2_all   = 512*dp0*interDist*interDist*Y_O2*(0.1*rhoHi+0.9*rhoLo)
     phiArray[i] = (Np*mFe0/mO2_all)/(2*M_Fe/M_O2)
 
     # Nranges = 3
     # Ndistance = 5
     # offEnd = 8
+    # numLo = 1
+    # numHi = 1
+    # loTime = 0.024
+    # hiTime = 0.038
+    # loCheck = 0
+    # hiCheck = 0
+    # for num in range(Np):
+    #     if (time1[num] > loTime) and (loCheck == 0):
+    #         numLo = num
+    #         loCheck = 1
+    #     if (time1[num] > hiTime) and (hiCheck == 0):
+    #         numHi = num
+    #         hiCheck = 1
+
+
     Nranges = 3
     Ndistance = 5
-    offEnd = int(0.3*Np)
+    offEnd = 8 # int(0.1*Np) # 8
     fsVals = np.empty(Nranges)
     for offset in range(Nranges):
         End = len(time[:,i])-(offset+offEnd)
         Start = len(time[:,i])-(offset+offEnd+Ndistance)
-
+        
         # fsVals[offset] = 100*(location[End-1,i] - location[Start,i])/(time[End-1,i] - time[Start,i])
-
         A = np.vstack([time[Start:End,i], np.ones(len(time[Start:End,i]))]).T
         m, c = np.linalg.lstsq(A, location[Start:End,i], rcond=None)[0]
         fsVals[offset] = 1e2*m
+
+        # End = numHi
+        # Start = numLo
+        # A = np.vstack([time1[Start:End], np.ones(len(time1[Start:End]))]).T
+        # m, c = np.linalg.lstsq(A, location1[Start:End], rcond=None)[0]
+        # fsVals[offset] = 1e2*m
+
+
+
     
     flameSpeed[i] = np.mean(fsVals)
     stDev[i]      = np.std(fsVals)
@@ -218,7 +255,7 @@ if plotVar == 2:   # for flame speed diagram
     axTop.set_xlabel(r'$\mathrm{Concentration}\;[\mathrm{g/m^3}]$', fontsize=16)
     axTop.tick_params(axis='x', which='major', labelsize=12)
     axTop.set_xlim([550,1350])
-    axTop.legend(ncol=1, loc="best", fontsize = 16)
+    axTop.legend(ncol=1, loc="best", fontsize = 16, frameon = False )
     
     # mpl.rcParams['axes.spines.top'] = False                 # to set top bounding line on or off
 
@@ -280,18 +317,18 @@ if plotVar == 2:   # for flame speed diagram
 # # # plt2.show()
 
 if plotVar == 1:
-    ax.legend(ncol=2, loc="best", fontsize = 16)
+    ax.legend(ncol=2, loc="best", fontsize = 16, frameon = False )
     plt.show()
-    # if condition == 1:
-    #     fig.savefig('output/plots/flame/ignition_isobaric_X-T.pdf')
-    # else:
-    #     fig.savefig('output/plots/flame/ignition_isochoric_X-T.pdf')
+    if condition == 1:
+        fig.savefig('output/plots/flame/ignition_isobaric_X-T.pdf')
+    else:
+        fig.savefig('output/plots/flame/ignition_isochoric_X-T.pdf')
 else:
     plt.show()
-    # if condition == 1:
-    #     fig.savefig('output/plots/flame/flameSpeed_isobaric.pdf')
-    # else:
-    #     fig.savefig('output/plots/flame/flameSpeed_isochoric.pdf')
+    if condition == 1:
+        fig.savefig('output/plots/flame/flameSpeed_isobaric.pdf')
+    else:
+        fig.savefig('output/plots/flame/flameSpeed_isochoric.pdf')
 # with open('output/txt/1Dflame/phi1/x-t.txt', 'w') as text_file:
 #     for i in range(len(time)):
 #         timeval = time[i]

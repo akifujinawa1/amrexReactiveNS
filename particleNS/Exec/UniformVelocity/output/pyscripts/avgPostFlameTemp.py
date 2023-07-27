@@ -2,6 +2,7 @@ import matplotlib as mpl
 import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
+import math
 import matplotlib.ticker as ticker
 import numpy.matlib
 
@@ -71,6 +72,7 @@ mFeTot = mFe0
 fig, ax = plt.subplots(nrows=1,ncols=1,figsize=(8,8*yratio))  # ,dpi=100   fig2,ax2 = plt.subplots(nrows=2,ncols=1,figsize=(8,8*yratio))
 plt.subplots_adjust(left=0.14, bottom=0.15, right=0.90, top=0.94, wspace=0.20, hspace=0.20)
 
+condition = 2    #1 if isobaric, 2 if isochoric
 Nparams = 9
 
 Tflame = np.empty(Nparams)
@@ -78,14 +80,18 @@ phiArray = np.empty(Nparams)
 
 for i in range(Nparams):
     concentration = (i+6)*100
-    'output/txt/1Dflame/'+str(concentration)+'/field/'
+    # 'output/txt/1Dflame/'+str(concentration)+'/field/'
+    if condition == 1:
+        folder = '1Dflame'
+    else:
+        folder = '1DflameConfined'
 
-    data0 = np.loadtxt('output/txt/1Dflame/'+str(concentration)+'/field/00.txt')
-    data1 = np.loadtxt('output/txt/1Dflame/'+str(concentration)+'/field/7600.txt')
-    data2 = np.loadtxt('output/txt/1Dflame/'+str(concentration)+'/field/16000.txt')
-    data3 = np.loadtxt('output/txt/1Dflame/'+str(concentration)+'/field/22600.txt')
-    data4 = np.loadtxt('output/txt/1Dflame/'+str(concentration)+'/field/30000.txt')
-    data5 = np.loadtxt('output/txt/1Dflame/'+str(concentration)+'/field/37600.txt')
+    data0 = np.loadtxt('output/txt/'+folder+'/'+str(concentration)+'/field/00.txt')
+    data1 = np.loadtxt('output/txt/'+folder+'/'+str(concentration)+'/field/7600.txt')
+    data2 = np.loadtxt('output/txt/'+folder+'/'+str(concentration)+'/field/16000.txt')
+    data3 = np.loadtxt('output/txt/'+folder+'/'+str(concentration)+'/field/22600.txt')
+    data4 = np.loadtxt('output/txt/'+folder+'/'+str(concentration)+'/field/30000.txt')
+    data5 = np.loadtxt('output/txt/'+folder+'/'+str(concentration)+'/field/59900.txt')
 
     data0 = data0[data0[:, 0].argsort()]
     data1 = data1[data1[:, 0].argsort()]
@@ -93,35 +99,94 @@ for i in range(Nparams):
     data3 = data3[data3[:, 0].argsort()]
     data4 = data4[data4[:, 0].argsort()]
     data5 = data5[data5[:, 0].argsort()]
+    
 
-    # for P in range(768):
-    #     data0[i,2] = 0.232917511457580
-    #     if i < 256:
-    #         data0[i,1] = 300
-    #     elif i < 307.2:
-    #         data0[i,1] = 1270
-    #     else:
-    #         data0[i,1] = 300
-
-    directory = 'output/txt/1Dflame/'+str(concentration)+'/particle/'
+    directory = 'output/txt/'+folder+'/'+str(concentration)+'/particle/'
     TotalNp = 0
     for path in os.scandir(directory):
         if path.is_file():
             TotalNp += 1
-
-    interDist = (mTot0/concentration)**(1/3)
+    print(TotalNp)
+    interDist = (mTot0/865)**(1/3)
+    # interDist = (mTot0/concentration)**(1/3)
     mO2_all   = 512*dp0*interDist*interDist*Y_O2*(0.1*rhoHi+0.9*rhoLo)
     phiArray[i] = (TotalNp*mFe0/mO2_all)/(2*M_Fe/M_O2)
 
-    # plotting either temperature or mass fraction
-    yIndex = 1
+    iCheck = 0
+    time = 1e5
+    location = 1e5
+    iter = 0
+    times = np.empty(50)
+    locations = np.empty(50)
 
-    add = sum(data4[456:656,1])
-    avg = add/200
-    Tflame[i] =avg
-    print('conc=',concentration,', Tavg=',avg)
+    for filename in os.listdir(directory):      # looping through all particles for a given concentration
+        f = os.path.join(directory, filename)
+        # checking if it is a file
+        if (os.path.isfile(f) and (iCheck == 0)):
+            data = np.loadtxt(f)
+            # 0=time, 1=x, 2=mFe, 3=mFeO, 4=mFe3O4, 5=Tp, 6=regime
+            # print(len(data[:,0]))s
+            for k in range(len(data[:,0])-2):
+                length = len(data[:,0])-1
+                if (data[length-(k),6]-data[length-(k+1),6] == 1):
+                    
+                    location=(data[length-k,1])
 
-dataAFT = np.loadtxt('output/pyscripts/aft_phi.txt')
+                    if (location-0.00256 > 0.00415):
+                        locations[iter] = location
+                        times[iter] = data[length-k,0]
+                        iter += 1
+                        # iCheck = 1
+                        break
+    if condition == 1:
+
+        iter -= 1
+        times = times[0:iter]
+        locations = locations[0:iter]    
+        print('total number of ignited particles in region of interest: ',iter)
+
+        for k in range(iter):
+            if times[k] < time:
+                time = times[k]
+                location = locations[k]
+
+
+        time = time*1e6
+        time = int(math.ceil(time / 100.0)) * 100
+        print(time)
+        print(int(location*1e5))
+
+
+        data4 = np.loadtxt('output/txt/1Dflame/'+str(concentration)+'/field/'+str(time)+'.txt')
+        data4 = data4[data4[:, 0].argsort()]
+
+        avgLength = 75
+        offset = 50
+
+        left = int(location*1e5) - avgLength - offset 
+        right = int(location*1e5) - offset 
+        add = sum(data4[left:right,1])
+        avg = add/(avgLength)
+        Tflame[i] =avg
+        print('conc=',concentration,', Tavg=',avg)
+    else:
+        time = 59000
+        data4 = np.loadtxt('output/txt/1DflameConfined/'+str(concentration)+'/field/'+str(time)+'.txt')
+        data4 = data4[data4[:, 0].argsort()]
+        left = 0
+        right = 511
+        avgLength = right-left
+        add = sum(data4[left:right,1])
+        avg = add/(avgLength)
+        Tflame[i] =avg
+        print('conc=',concentration,', Tavg=',avg)
+
+
+
+if condition == 1:
+    dataAFT = np.loadtxt('output/pyscripts/aft_phi.txt')
+else:
+    dataAFT = np.loadtxt('output/pyscripts/aft_phi_closed.txt')
 ax.plot(dataAFT[:,0],dataAFT[:,1],c='red',lw=3,linestyle='--',label='$\mathrm{ad.,Fe}$-$\mathrm{to}$-$\mathrm{FeO}$')
 ax.scatter(phiArray,Tflame,c='black',s=15,label='$\mathrm{post}$-$\mathrm{flame,avg.}$')
 ax.set_xlabel(r'$\phi\;[\mathrm{-}]$', fontsize=20)
@@ -130,4 +195,8 @@ ax.set_ylabel(r'$T_\mathrm{g}\;[\mathrm{K}]$', fontsize=20)
 # ax.set_xlim([phiPlotLo,phiPlotHi])
 ax.legend(ncol=1, loc="best", fontsize = 14)
 plt.show()
-fig.savefig('output/plots/flame/postFlameTemperature.pdf')
+if condition == 1:
+    fig.savefig('output/plots/flame/postFlameTemperature_isobaric.pdf')
+else:
+    fig.savefig('output/plots/flame/postFlameTemperature_isochoric.pdf')
+    
