@@ -719,6 +719,18 @@ Vector<double> setIC(const int dim, const double& probLoX, const double& probHiX
                 rhoR = pR*Mavg/(R*TgR);
                 break;
             }
+            case 16: // Close-to-open flame
+            {
+                xDisc = xEnd*0.1; tEnd=0.25;
+                vxL = 0.0;  pL = 1.0*one_atm_Pa; 
+                vxR = 0.0;  pR = 1.0*one_atm_Pa; 
+                YO2L = Y_O2; YN2L = Y_N2; YO2R = Y_O2; YN2R = Y_N2;
+                TgL = 1270;
+                TgR = 300;
+                rhoL = pL*Mavg/(R*TgL);
+                rhoR = pR*Mavg/(R*TgR);
+                break;
+            }
         }
     } //closes dimension=0 if statement
     else {
