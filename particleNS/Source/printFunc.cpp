@@ -82,7 +82,7 @@ void AmrLevelAdv::writePlotFile()
     int rank, size;
     MPI_Comm_rank(MPI_COMM_WORLD, &rank);
     
-    if (((enIC == 14)||(enIC == 15))&&(cur_time > 1e-4*counter)) { // 1D isobaric flame case
+    if (((enIC == 14)||(enIC == 15)||(enIC==16))&&(cur_time > 1e-4*counter)) { // 1D isobaric flame case
         counter += 1;
         const MultiFab &S_plot = get_new_data(Phi_Type);
 
@@ -109,6 +109,9 @@ void AmrLevelAdv::writePlotFile()
         }
         else if (enIC == 15){
             approx.open("output/txt/1DflameConfined/isochoric/field/" + curtime + "0.txt", std::ofstream::app);
+        }
+        else if (enIC == 16){
+            approx.open("output/txt/1DflamecloseOpen/isobaric/field/" + curtime + "0.txt", std::ofstream::app);
         }
         
 
@@ -152,7 +155,7 @@ void AmrLevelAdv::writePlotFile()
         }
         approx.close();
     }
-    if (((enIC == 14)||(enIC == 15))&&(cur_time > 5e-6*iter)) { // 1D isobaric flame case
+    if (((enIC == 14)||(enIC == 15)||(enIC==16))&&(cur_time > 5e-6*iter)) { // 1D isobaric flame case
         iter+= 1;
         const MultiFab &S_plot = get_new_data(Phi_Type);
         const int lev = 0;
@@ -186,6 +189,9 @@ void AmrLevelAdv::writePlotFile()
                 }
                 else if (enIC == 15){
                     parOut.open("output/txt/1DflameConfined/isochoric/particle/" + id + "-" + cpu + ".txt", std::ofstream::app);
+                }
+                else if (enIC == 16){
+                    parOut.open("output/txt/1DflamecloseOpen/isobaric/particle/" + id + "-" + cpu + ".txt", std::ofstream::app);
                 }
 
                 x  = p.pos(0);   //given in meters, lo.x is in cell count, so scale by dx to get meters
