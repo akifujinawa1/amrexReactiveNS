@@ -130,11 +130,14 @@ for i in range(Nparams):
                 length = len(data[:,0])-1
                 if (data[length-(k),6]-data[length-(k+1),6] == 1):
                     
-                    location=(data[length-k,1])
+                    locationVal= data[length-k,1]
+                    timeVal    = data[length-k,0]
 
-                    if (location-0.00256 > 0.00415):
-                        locations[iter] = location
-                        times[iter] = data[length-k,0]
+                    # if (location-0.00256 > 0.00415):
+                    if (timeVal > 0.03):
+                        # print(time)
+                        locations[iter] = locationVal
+                        times[iter] = timeVal
                         iter += 1
                         # iCheck = 1
                         break
@@ -147,6 +150,7 @@ for i in range(Nparams):
 
         for k in range(iter):
             if times[k] < time:
+                print(times[k])
                 time = times[k]
                 location = locations[k]
 
@@ -170,8 +174,9 @@ for i in range(Nparams):
         Tflame[i] =avg
         print('conc=',concentration,', Tavg=',avg)
     else:
-        time = 59000
-        data4 = np.loadtxt('output/txt/1DflameConfined/'+str(concentration)+'/field/'+str(time)+'.txt')
+        time = 59900
+
+        data4 = np.loadtxt('output/txt/'+folder+'/'+str(concentration)+'/field/'+str(time)+'.txt')
         data4 = data4[data4[:, 0].argsort()]
         left = 0
         right = 511

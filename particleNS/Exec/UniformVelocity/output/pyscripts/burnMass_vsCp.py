@@ -29,6 +29,8 @@ mpl.rcParams['axes.spines.top'] = False
 
 colors = ['#9B0909', '#7E301E', '#B42E0F', '#FE3C0F', '#fe770f', '#F35D0D']
 color = colors
+markers = ['o', 'v', '^', '<', '>', 's', 'p', '*', 'P']
+
 
 M_O2  = 31.9988*1e-3;       # molecular mass of O2 in kg/mol
 M_N2  = 28.0134*1e-3;       # molecular mass of N2 in kg/mol
@@ -76,7 +78,7 @@ plt.subplots_adjust(left=0.1, bottom=0.15, right=0.90, top=0.94, wspace=0.20, hs
 
 Nparams = 9
 
-mFeBurned = np.empty(Nparams)*0
+mFeBurned = np.empty(Nparams)
 totalCp = np.empty(Nparams)
 phiArray = np.empty(Nparams)
 concArray = np.empty(Nparams)
@@ -87,6 +89,7 @@ for i in range(Nparams):
     concentration = (i+6)*100
     concArray[i]=concentration
     Np=0
+    totalmFe = 0
     directory = 'output/txt/1Dflame/'+str(concentration)+'/particle/'
     TotalNp = 0
     for path in os.scandir(directory):
@@ -116,22 +119,25 @@ for i in range(Nparams):
                     mFe = data[k,2]
                     mFeO = data[k,3]
                     mFe3O4 = data[k,4]
-                    mFeBurned[i] += mFe0-mFe
+                    totalmFe = totalmFe + mFe0-mFe
+                    
                     Np += 1
                     # print('position is:',location[Np])
                     # print('FeO mass fraction is,',YFeO[Np])
                     break
-
+    mFeBurned[i] = totalmFe
     print('conc=',concentration,', mFe burned=',mFeBurned[i])
-            
 
-ax.scatter(phiArray,mFeBurned,c='black',s=15,label='$m_\mathrm{Fe}$')
-ax.set_ylim([4.2e-11,9.8e-11])
+# totalmassO2 = phiArray*0+mO2_all*2*M_Fe/M_O2
+# print(mO2_all*2*M_Fe/M_O2)
+# ax.plot(phiArray,totalmassO2,c='black',linewidth=3,linestyle='dashed',label='$m_\mathrm{Fe,st.}$')
+ax.scatter(phiArray,mFeBurned,c='black',marker=markers[0],s=20,label='$m_\mathrm{Fe}$')
+# ax.set_ylim([4.2e-11,9.8e-11])
 ax.set_ylabel(r'$m_\mathrm{Fe,burned}\;[\mathrm{kg}]$', fontsize=20)
 ax.set_xlabel(r'$\phi\;[\mathrm{-}]$', fontsize=20)
 
 ax2 = ax.twinx()
-ax2.scatter(phiArray,totalCp,c='red',s=15,label='$c_{p,\mathrm{total}}$')
+ax2.scatter(phiArray,totalCp,c='red',marker=markers[1],s=20,label='$c_{p,\mathrm{total}}$')
 ax2.set_ylabel(r'$c_{p,\mathrm{total}}\;[\mathrm{J/K}]$', fontsize=20)
 # ax.set_xlabel(r'$\phi\;[\mathrm{-}]$', fontsize=20)
 

@@ -4,6 +4,7 @@ import numpy as np
 import pandas as pd
 import matplotlib.ticker as ticker
 import numpy.matlib
+from thermo import *
 
 import os
 import sys
@@ -16,7 +17,7 @@ from moviepy.video.io.bindings import mplfig_to_npimage
 
 # CHOOSE PLOTTING PARAMETERS HERE
 
-condition = 1   # 1 for isobaric, 2 for isochoric
+condition = 2   # 1 for isobaric, 2 for isochoric
 plotVar = 2     # 1 for x-t, 2 for flame speed
 Nparam = 9
 
@@ -85,7 +86,7 @@ else:
     topval = 0.86
 
 fig, ax = plt.subplots(figsize=(8,8*yratio))  #fig2,ax2 = plt.subplots(nrows=2,ncols=1,figsize=(8,8*yratio))nrows=2,ncols=1,,dpi=100
-plt.subplots_adjust(left=0.125, bottom=0.137, right=0.96, top=topval, wspace=0.20, hspace=0.20)
+plt.subplots_adjust(left=0.125, bottom=0.137, right=0.86, top=topval, wspace=0.20, hspace=0.20)
 
 
 time = numpy.empty((50, Nparam))
@@ -210,7 +211,10 @@ for i in range(Nparam):
     # ax.errorbar(phiArray[i],flameSpeed[i],yerr=error[:,i],fmt=markers[i],c=colors[i])
 
     if plotVar==1:
-        ax.scatter(time[:,i],100*location[:,i]-0.256,c=colors[i],s=15,marker=markers[i],label='$'+str(concentration)+'\;\mathrm{g/cm^3}$') #s=3
+        if condition == 1:
+            ax.scatter(time[:,i],100*location[:,i]-0.256,c=colors[i],s=15,marker=markers[i],label='$'+str(concentration)+'\;\mathrm{g/cm^3}$') #s=3
+        else:
+            ax.scatter(time[:,i],100*location[:,i],c=colors[i],s=15,marker=markers[i],label='$'+str(concentration)+'\;\mathrm{g/cm^3}$') #s=3
     # ax.plot(time[:,i],m*time[:,i]+c,c=colors[3],linewidth=4,label=str(concentration)) #s=3
 
 
@@ -220,6 +224,29 @@ for i in range(Nparam):
 print(phiPlotLo)
 print(phiArray)
 print(phiPlotHi)
+
+dataAFT = np.loadtxt('output/pyscripts/aft_phi.txt')
+N = len(dataAFT[:,0])
+phiLo = dataAFT[0,0]
+yO2offset = 0.0
+yO2lo = 0.5*((1-phiLo)*Y_O2+Y_O2)+yO2offset
+yO2hi = 0.5*(Y_O2)+yO2offset
+YO2first = np.linspace(yO2lo,yO2hi,46)
+YO2next = np.empty(N-46) + 0.5*(Y_O2)+yO2offset
+YO2range = np.concatenate((YO2first,YO2next),axis=None)
+
+Trange = dataAFT[:,1]
+phirange = dataAFT[:,0]
+eta = np.empty(N)
+kTcp     = np.empty(N)
+
+for i in range(N):
+    T = Trange[i]
+    YO2 = YO2range[i]
+    Mavg  = 1/(YO2/M_O2+(1-YO2)/M_N2);
+    const = np.sqrt(R*2*pi*rp0*2/mTot0)
+    kTcp[i] = T*kMix(kO2(T),kN2(T),YO2,1-YO2)/cpMix(cpO2(T),cpN2(T),YO2,1-YO2)
+    eta[i] = const*(1/Mavg)*YO2*np.sqrt(1/(YO2+(1-YO2)*M_O2/M_N2))*np.sqrt(kTcp[i])/1e2    # predicted flame speed in cm/s
 
 
 # ax.ticklabel_format(useOffset=False)
@@ -246,7 +273,8 @@ if plotVar == 2:   # for flame speed diagram
     ax.set_xlabel(r'$\phi\;[\mathrm{-}]$', fontsize=20)
     ax.scatter(phiArray,flameSpeed,c='black',alpha=0.0) #s=3,label='$\mathrm{Reactive\;front\;speed}$')
     # ax.errorbar(phiArray,flameSpeed,yerr=error,fmt='o',c='black',linewidth=2,label='$\sigma$')
-    ax.set_xlim([phiPlotLo,phiPlotHi])
+    # ax.set_xlim([phiPlotLo,phiPlotHi])
+    ax.set_xlim([0.5,1.6])
 
     # to add concentration on top
     axTop = ax.twiny()
@@ -256,6 +284,21 @@ if plotVar == 2:   # for flame speed diagram
     axTop.tick_params(axis='x', which='major', labelsize=12)
     axTop.set_xlim([550,1350])
     axTop.legend(ncol=1, loc="best", fontsize = 16, frameon = False )
+
+    # add plot for theoretical flame speed
+
+    # dimensional
+    # ax.plot(phirange,eta,c='red',linewidth=2,linestyle='dashed',label='$\mathrm{Normalized\;theoretical\;flame\;speed}$')
+    # ax.set_ylabel('$\eta *\;[\mathrm{m/s}]$')
+    # ax.legend(ncol=1, loc="lower left", fontsize = 16, frameon = False )
+
+    # normalized
+    # eta = eta/max(eta)
+    # axRight = ax.twinx()
+    # axRight.plot(phirange,eta,c='red',linewidth=2,linestyle='dashed',label='$\mathrm{Normalized\;theoretical\;flame\;speed}$')
+    # axRight.set_ylabel('$\eta *\;[\mathrm{-}]$', fontsize = 20)
+    # # axTop.tick_params(axis='y', which='major', labelsize=14)
+    # axRight.legend(ncol=1, loc="lower left", fontsize = 16, frameon = False )
     
     # mpl.rcParams['axes.spines.top'] = False                 # to set top bounding line on or off
 

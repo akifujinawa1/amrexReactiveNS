@@ -46,14 +46,21 @@ plt.subplots_adjust(left=0.14, bottom=0.15, right=0.90, top=0.94, wspace=0.20, h
 # ax1 = fig.add_subplot(121)
 # ax2 = fig.add_subplot(122)
 
-directory = '1400/field'
+condition = 1;
+yIndex = 1
 
-data0 = np.loadtxt('output/txt/1Dflame/'+directory+'/00.txt')
-data1 = np.loadtxt('output/txt/1Dflame/'+directory+'/7600.txt')
-data2 = np.loadtxt('output/txt/1Dflame/'+directory+'/16000.txt')
-data3 = np.loadtxt('output/txt/1Dflame/'+directory+'/22600.txt')
-data4 = np.loadtxt('output/txt/1Dflame/'+directory+'/59000.txt')
-data5 = np.loadtxt('output/txt/1Dflame/'+directory+'/40000.txt')
+if condition == 1:
+    folder = '1Dflame'
+else:
+    folder = '1DflameConfined'
+directory = '1000/field'
+
+data0 = np.loadtxt('output/txt/'+folder+'/'+directory+'/00.txt')
+data1 = np.loadtxt('output/txt/'+folder+'/'+directory+'/7600.txt')
+data2 = np.loadtxt('output/txt/'+folder+'/'+directory+'/16000.txt')
+data3 = np.loadtxt('output/txt/'+folder+'/'+directory+'/22600.txt')
+data4 = np.loadtxt('output/txt/'+folder+'/'+directory+'/30000.txt')
+data5 = np.loadtxt('output/txt/'+folder+'/'+directory+'/37600.txt')
 # data5 = np.loadtxt('output/txt/1Dflame/'+directory+'/45000.txt')
 
 data0 = data0[data0[:, 0].argsort()]
@@ -73,7 +80,6 @@ for i in range(768):
         data0[i,1] = 300
 
 # plotting either temperature or mass fraction
-yIndex = 1
 
 if yIndex == 1:
     ax[0].plot(data0[256:307,0]-0.00256,data0[256:307,yIndex],c='black',linewidth=2,label='$t=t_0$') 

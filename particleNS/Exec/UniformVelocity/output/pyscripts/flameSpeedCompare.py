@@ -73,11 +73,11 @@ fig, ax = plt.subplots(figsize=(8,8*yratio))  #fig2,ax2 = plt.subplots(nrows=2,n
 plt.subplots_adjust(left=0.125, bottom=0.137, right=0.96, top=0.96, wspace=0.20, hspace=0.20)
 
 condition = 2   # 1 for isobaric, 2 for isochoric
-plotVar = 1     # 1 for x-t, 2 for flame speed
+plotVar = 2     # 1 for x-t, 2 for flame speed
 Nparam = 8
 
-time = numpy.empty(((36, Nparam,2)))
-location = numpy.empty(((36, Nparam,2)))
+time = numpy.empty(((50, Nparam,2)))
+location = numpy.empty(((50, Nparam,2)))
 flameSpeed = numpy.empty((Nparam,2))
 stDev      = numpy.empty((Nparam,2))
 error        = numpy.empty(((2,Nparam,2)))
@@ -126,7 +126,7 @@ for plotTing in range(2):
 
         Nranges = 3
         Ndistance = 5
-        offEnd = 0
+        offEnd = 8
         fsVals = np.empty(Nranges)
         for offset in range(Nranges):
             End = len(time[:,i,plotTing])-(offset+offEnd)

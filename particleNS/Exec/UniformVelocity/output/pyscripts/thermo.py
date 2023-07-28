@@ -47,15 +47,15 @@ def cpO2(Tg):
     M8=    [0.0,	        0.0,	        0.0]
 
     if Tg <= 700:
-        j = 1;
+        j = 0;
         cp_O2 = (1/MO2)*(M1[j] + M2[j]*(Tg/1000) + M3[j]*(Tg/1000)**2 +M4[j]*(Tg/1000)**3 + M5[j]/(Tg/1000)**2);
 
     elif Tg > 700 and Tg <= 2000:
-        j = 2;
+        j = 1;
         cp_O2 = (1/MO2)*(M1[j] + M2[j]*(Tg/1000) + M3[j]*(Tg/1000)**2 +M4[j]*(Tg/1000)**3 + M5[j]/(Tg/1000)**2);
 
     else: #%Tp > 2000 and Tp <= 6000 
-        j = 3;
+        j = 2;
         cp_O2 = (1/MO2)*(M1[j] + M2[j]*(Tg/1000) + M3[j]*(Tg/1000)**2 +M4[j]*(Tg/1000)**3 + M5[j]/(Tg/1000)**2);
 
     return cp_O2
@@ -74,15 +74,15 @@ def cpN2(Tg):
     M8 =    [0.0,	        0.0,	        0.0]
 
     if Tg <= 500:
-        j = 1;
+        j = 0;
         cp_N2 = (1/MN2)*(M1[j] + M2[j]*(Tg/1000) + M3[j]*(Tg/1000)**2 +M4[j]*(Tg/1000)**3 + M5[j]/(Tg/1000)**2);
 
     elif Tg > 500 and Tg <= 2000:
-        j = 2;
+        j = 1;
         cp_N2 = (1/MN2)*(M1[j] + M2[j]*(Tg/1000) + M3[j]*(Tg/1000)**2 +M4[j]*(Tg/1000)**3 + M5[j]/(Tg/1000)**2);
 
     else: # %Tp > 2000 && Tp <= 6000 
-        j = 3;
+        j = 2;
         cp_N2 = (1/MN2)*(M1[j] + M2[j]*(Tg/1000) + M3[j]*(Tg/1000)**2 +M4[j]*(Tg/1000)**3 + M5[j]/(Tg/1000)**2);
 
     return cp_N2
@@ -90,3 +90,34 @@ def cpN2(Tg):
 def cpMix(cpO2,cpN2,Y_O2,Y_N2):
     cp_Mix = cpO2*Y_O2+cpN2*Y_N2
     return cp_Mix
+
+def omega(T, eps):
+    kb      = 1.380649e-23;
+    Tstar = T*kb/eps;
+    a = 1.06036;
+    b = 0.15610;
+    c = 0.19300;
+    d = 0.47635;
+    e = 1.03587;
+    f = 1.52996;
+    g = 1.76474;
+    h = 3.89411;
+    omega_val = a/(Tstar**b) + c/np.exp(d*Tstar) + e/np.exp(f*Tstar) + g/np.exp(h*Tstar);
+    return omega_val;
+
+
+def DO2N2(T,p):
+    kb      = 1.380649e-23;
+    sigmaO2 = 3.46;
+    sigmaN2 = 3.621; 
+    epsO2    = 107.40*kb;
+    epsN2    = 97.53*kb;
+
+    sigmaO2N2  = 0.5*(sigmaO2+sigmaN2);
+    epsO2N2  = np.sqrt(epsO2*epsN2);
+    MO2 = 31.9988*1e-3;
+    MN2 = 28.0134*1e-3;
+    p_bar = p/1e5
+    M_O2N2   = 2.0/(1.0/(1e3*MO2) + 1.0/(1e3*MN2));
+    D_O2N2  = 0.00266*1e-4*T**(3.0/2.0)/(p_bar*np.sqrt(M_O2N2)*sigmaO2N2*sigmaO2N2*omega(T,epsO2N2));
+    return D_O2N2

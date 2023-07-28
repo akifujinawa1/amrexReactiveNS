@@ -46,13 +46,13 @@ plt.subplots_adjust(left=0.14, bottom=0.15, right=0.90, top=0.94, wspace=0.20, h
 # ax1 = fig.add_subplot(121)
 # ax2 = fig.add_subplot(122)
 
-directory = 'isochoric/field'
+directory = '900/field'
 
 data0 = np.loadtxt('output/txt/1DflameConfined/'+directory+'/00.txt')
 data1 = np.loadtxt('output/txt/1DflameConfined/'+directory+'/7600.txt')
 data2 = np.loadtxt('output/txt/1DflameConfined/'+directory+'/16000.txt')
 data3 = np.loadtxt('output/txt/1DflameConfined/'+directory+'/22600.txt')
-data4 = np.loadtxt('output/txt/1DflameConfined/'+directory+'/39900.txt')
+data4 = np.loadtxt('output/txt/1DflameConfined/'+directory+'/30000.txt')
 data5 = np.loadtxt('output/txt/1DflameConfined/'+directory+'/37600.txt')
 
 
@@ -78,8 +78,8 @@ yIndex = 1
 if yIndex == 1:
     ax[0].plot(data0[0:51,0],data0[0:51,yIndex],c='black',linewidth=2,label='$t=t_0$') 
     ax[0].plot(data0[52:511,0],data0[52:511,yIndex],c='black',linewidth=2) 
-    ax[0].plot(data0[:,0],data0[:,yIndex]*0+2331,c='red',linestyle='dashed',linewidth=2,label='$\mathrm{AFT,Fe}$-$\mathrm{to}$-$\mathrm{FeO}$') 
-    ax[0].plot(data0[:,0],data0[:,yIndex]*0+2230,c=colors[0],linestyle='dotted',linewidth=2,label='$\mathrm{AFT,equilibrium}$') 
+    ax[0].plot(data0[:,0],data0[:,yIndex]*0+2588,c='red',linestyle='dashed',linewidth=2,label='$\mathrm{AFT,Fe}$-$\mathrm{to}$-$\mathrm{FeO}$') 
+    # ax[0].plot(data0[:,0],data0[:,yIndex]*0+2230,c=colors[0],linestyle='dotted',linewidth=2,label='$\mathrm{AFT,equilibrium}$') 
 
     ax[1].plot(data1[:,0],data1[:,yIndex],c='black',linewidth=2,label='$t=7.5\;\mathrm{ms}$') 
     ax[1].plot(data0[:,0],data0[:,yIndex]*0+2331,c='red',linestyle='dashed',linewidth=2) 
@@ -179,6 +179,6 @@ elif yIndex == 2:
     # fig.savefig('output/plots/flame/O2massFracPhi1.pdf')
 
 
-add = sum(data4[456:656,1])
-avg = add/200
-print(avg)
+# add = sum(data4[456:656,1])
+# avg = add/200
+# print(avg)
