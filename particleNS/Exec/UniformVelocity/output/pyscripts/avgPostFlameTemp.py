@@ -160,8 +160,10 @@ for i in range(Nparams):
         print(time)
         print(int(location*1e5))
 
-
-        data4 = np.loadtxt('output/txt/1Dflame/'+str(concentration)+'/field/'+str(time)+'.txt')
+        if condition == 1:
+            data4 = np.loadtxt('output/txt/1Dflame/'+str(concentration)+'/field/'+str(time)+'.txt')
+        else:
+            data4 = np.loadtxt('output/txt/1DflameConfined/'+str(concentration)+'/field/'+str(time)+'.txt')
         data4 = data4[data4[:, 0].argsort()]
 
         avgLength = 75

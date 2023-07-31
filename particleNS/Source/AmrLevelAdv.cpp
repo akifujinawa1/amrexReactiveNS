@@ -725,7 +725,7 @@ AmrLevelAdv::advance (Real time,
     for (int nVar = 0; nVar < NUM_STATE; nVar++){
       for (int nDim = 0; nDim < amrex::SpaceDim; nDim++){
         if (nDim == 0){ // x domain BCs
-          BCVec[nVar].setLo(nDim,BCType::foextrap);      // flame has open end at the left boundary
+          BCVec[nVar].setLo(nDim,BCType::ext_dir);      // flame has open end at the left boundary
           if ((nVar == gasVar::rhou)){
             BCVec[nVar].setHi(nDim,BCType::reflect_odd);  // closed end at the right, odd-reflect x-momentum
           }
@@ -766,7 +766,7 @@ AmrLevelAdv::advance (Real time,
     for (int nVar = 0; nVar < NUM_STATE; nVar++){
       for (int nDim = 0; nDim < amrex::SpaceDim; nDim++){
         if (nDim == 0){ // x domain BCs
-          BCVec[nVar].setHi(nDim,BCType::foextrap);      // flame has open end at the right boundary
+          BCVec[nVar].setHi(nDim,BCType::ext_dir);      // flame has open end at the right boundary
           if ((nVar == gasVar::rhou)){
             BCVec[nVar].setLo(nDim,BCType::reflect_odd);  // closed end at the left, odd-reflect x-momentum
           }
@@ -783,8 +783,6 @@ AmrLevelAdv::advance (Real time,
   }
     
 
-
-  
     
     
   // }

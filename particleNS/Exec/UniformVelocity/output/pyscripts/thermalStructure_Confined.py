@@ -72,8 +72,8 @@ data5 = data5[data5[:, 0].argsort()]
 #     else:
 #         data0[i,1] = 300
 
-# plotting either temperature or mass fraction
-yIndex = 1
+# plotting either temperature or mass fraction or pressure 
+yIndex = 3 
 
 if yIndex == 1:
     ax[0].plot(data0[0:51,0],data0[0:51,yIndex],c='black',linewidth=2,label='$t=t_0$') 
@@ -177,6 +177,54 @@ elif yIndex == 2:
     plt.show()
 
     # fig.savefig('output/plots/flame/O2massFracPhi1.pdf')
+elif yIndex == 3:
+    ax[0].plot(data0[0:51,0],data0[0:51,yIndex],c='black',linewidth=3,label='$t=t_0$') 
+    ax[0].plot(data0[52:511,0],data0[52:511,yIndex],c='black',linewidth=3) 
+    # ax[0].plot(data0[:,0],data0[:,yIndex]*0+0.232917511457580,c='red',linestyle='dashed',linewidth=3,label='$Y_\mathrm{O_2,0}$') 
+
+    ax[1].plot(data1[:,0],data1[:,yIndex],c='black',linewidth=3,label='$t=7.5\;\mathrm{ms}$') 
+    # ax[1].plot(data1[:,0],data1[:,yIndex]*0+0.232917511457580,c='red',linestyle='dashed',linewidth=3) 
+
+    ax[2].plot(data2[:,0],data2[:,yIndex],c='black',linewidth=3,label='$t=15.0\mathrm{ms}$') 
+    # ax[2].plot(data2[:,0],data2[:,yIndex]*0+0.232917511457580,c='red',linestyle='dashed',linewidth=3) 
+
+    ax[3].plot(data3[:,0],data3[:,yIndex],c='black',linewidth=3,label='$t=22.5\;\mathrm{ms}$') 
+    # ax[3].plot(data3[:,0],data3[:,yIndex]*0+0.232917511457580,c='red',linestyle='dashed',linewidth=3) 
+
+    ax[4].plot(data4[:,0],data4[:,yIndex],c='black',linewidth=3,label='$t=30.0\;\mathrm{ms}$') 
+    # ax[4].plot(data4[:,0],data4[:,yIndex]*0+0.232917511457580,c='red',linestyle='dashed',linewidth=3) 
+
+    # ax[0].set_ylim(0,6e5)
+    # ax[1].set_ylim(0,6e5)
+    # ax[2].set_ylim(0,6e5)
+    # ax[3].set_ylim(0,6e5)
+    # ax[4].set_ylim(0,6e5)
+
+    ax[0].set_xlim(0,0.00512)
+    ax[1].set_xlim(0,0.00512)
+    ax[2].set_xlim(0,0.00512)
+    ax[3].set_xlim(0,0.00512)
+    ax[4].set_xlim(0,0.00512)
+
+    # ax.set_ylabel(r'$T_\mathrm{g}\;[\mathrm{K}]$', fontsize=20)
+    # ax[4].set_xlabel(r'$\mathrm{x}\;[\mathrm{m}]$', fontsize=20)
+    fig.supylabel(r'$p\;[\mathrm{Pa}]$', fontsize=20)
+    ax[4].set_xlabel(r'$x\;[\mathrm{m}]$', fontsize=20)
+    # fig.suptitle('Figure')
+    ax[0].legend(ncol=1, loc="best", fontsize = 14, frameon=False)
+    ax[1].legend(ncol=1, loc="upper left", fontsize = 14, frameon=False)
+    ax[2].legend(ncol=1, loc="upper left", fontsize = 14, frameon=False)
+    ax[3].legend(ncol=1, loc="upper left", fontsize = 14, frameon=False)
+    ax[4].legend(ncol=1, loc="upper left", fontsize = 14, frameon=False)
+
+    ax[0].get_xaxis().set_visible(False)
+    ax[1].get_xaxis().set_visible(False)
+    ax[2].get_xaxis().set_visible(False)
+    ax[3].get_xaxis().set_visible(False)
+
+    plt.show()
+
+
 
 
 # add = sum(data4[456:656,1])
