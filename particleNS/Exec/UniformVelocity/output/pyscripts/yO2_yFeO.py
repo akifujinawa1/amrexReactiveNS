@@ -80,7 +80,8 @@ color = colors
 fig1, ax1 = plt.subplots(nrows=4,ncols=1,figsize=(8,16*yratio))  # ,dpi=100   fig2,ax2 = plt.subplots(nrows=2,ncols=1,figsize=(8,8*yratio))
 plt.subplots_adjust(left=0.14, bottom=0.08, right=0.90, top=0.97, wspace=0.20, hspace=0.20)
 
-setConcentrations = 2
+condition = 2
+setConcentrations = 1
 
 for i in range(4):
     if setConcentrations == 1:
@@ -90,10 +91,15 @@ for i in range(4):
     time = 30000
     #27600
 
-    data4 = np.loadtxt('output/txt/1Dflame/'+str(concentration)+'/field/'+str(time)+'.txt')
+    if condition == 1:
+        folder = '1Dflame'
+    else:
+        folder = '1DflameConfined'
+
+    data4 = np.loadtxt('output/txt/'+folder+'/'+str(concentration)+'/field/'+str(time)+'.txt')
     data4 = data4[data4[:, 0].argsort()]
 
-    directory = 'output/txt/1Dflame/'+str(concentration)+'/particle/'
+    directory = 'output/txt/'+folder+'/'+str(concentration)+'/particle/'
 
     TotalNp = 0
 
@@ -138,7 +144,17 @@ for i in range(4):
     location = matrix[:,0]
     YFeO     = matrix[:,1]
 
-    location = location - 0.00256
+    
+    if condition == 1:
+        start = 256
+        end = 767
+        offset = 0.00256
+    else:
+        start = 0
+        end = 511
+        offset = 0
+
+    location = location - offset
     # print(location)
     # print(YFeO)
     # print(Np)
@@ -149,14 +165,15 @@ for i in range(4):
     phival    = (Np*mFe0/mO2_all)/(2*M_Fe/M_O2)
     phival    = round(phival,2)
 
+
     if i == 0:
-        ax1[i].plot(data4[256:767,0]-0.00256,data4[256:767,2],c='black',linewidth=3,label='$Y_\mathrm{O_2}$') 
+        ax1[i].plot(data4[start:end,0]-offset,data4[start:end,2],c='black',linewidth=3,label='$Y_\mathrm{O_2}$') 
         if setConcentrations == 1:
             ax1[i].legend(ncol=1, loc=(0,0.15), fontsize = 16, frameon=False)
         else: 
             ax1[i].legend(ncol=1, loc=(0,0.32), fontsize = 16, frameon=False)    
     else:
-        ax1[i].plot(data4[256:767,0]-0.00256,data4[256:767,2],c='black',linewidth=3)
+        ax1[i].plot(data4[start:end,0]-offset,data4[start:end,2],c='black',linewidth=3)
         
 
     # ax[i].set_ylabel(r'$Y_\mathrm{O_2}\;[-]$', fontsize=20)
@@ -206,6 +223,12 @@ ax1[2].get_xaxis().set_visible(False)
 plt.show()
 
 if setConcentrations == 1:
-    fig1.savefig('output/plots/flame/yO2yFeO_lean_isobaric.pdf')
+    if condition == 1:
+        fig1.savefig('output/plots/flame/yO2yFeO_lean_isobaric.pdf')
+    else:
+        fig1.savefig('output/plots/flame/yO2yFeO_lean_isochoric.pdf')
 else:
-    fig1.savefig('output/plots/flame/yO2yFeO_rich_isobaric.pdf')
+    if condition == 1:
+        fig1.savefig('output/plots/flame/yO2yFeO_rich_isobaric.pdf')
+    else:
+        fig1.savefig('output/plots/flame/yO2yFeO_rich_isochoric.pdf')

@@ -76,6 +76,7 @@ print(mFe0)
 fig, ax = plt.subplots(nrows=1,ncols=1,figsize=(8,8*yratio))  # ,dpi=100   fig2,ax2 = plt.subplots(nrows=2,ncols=1,figsize=(8,8*yratio))
 plt.subplots_adjust(left=0.1, bottom=0.15, right=0.90, top=0.94, wspace=0.20, hspace=0.20)
 
+condition = 2
 Nparams = 9
 
 mFeBurned = np.empty(Nparams)
@@ -83,14 +84,19 @@ totalCp = np.empty(Nparams)
 phiArray = np.empty(Nparams)
 concArray = np.empty(Nparams)
 
-time = 30000
+if condition == 1:
+    folder = '1Dflame'
+else:
+    folder = '1DflameConfined'
+
+time = 59900
 
 for i in range(Nparams):
     concentration = (i+6)*100
     concArray[i]=concentration
     Np=0
     totalmFe = 0
-    directory = 'output/txt/1Dflame/'+str(concentration)+'/particle/'
+    directory = 'output/txt/'+folder+'/'+str(concentration)+'/particle/'
     TotalNp = 0
     for path in os.scandir(directory):
         if path.is_file():
@@ -146,4 +152,8 @@ ax2.set_ylabel(r'$c_{p,\mathrm{total}}\;[\mathrm{J/K}]$', fontsize=20)
 ax.legend(ncol=1, loc="best", fontsize = 16, frameon=False)
 ax2.legend(ncol=1, loc=(0.016,0.78), fontsize = 16, frameon=False)
 plt.show()
-fig.savefig('output/plots/flame/burnMassVsCp.pdf')
+
+if condition == 1:
+    fig.savefig('output/plots/flame/burnMassVsCp_isobaric.pdf')
+else:
+    fig.savefig('output/plots/flame/burnMassVsCp_isochoric.pdf')
