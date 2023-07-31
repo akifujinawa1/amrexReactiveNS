@@ -806,7 +806,7 @@ AmrLevelAdv::advance (Real time,
   // FillBoundary call will fill overlapping boundaries (with periodic
   // domains effectively being overlapping).  It also takes care of
   // AMR patch and CPU boundaries.
-  Sborder.FillBoundary(geom.periodicity());
+  // Sborder.FillBoundary(geom.periodicity());
 
   // We need to fill the domain boundary using FillDomainBoundary
   // in order to fill cell-centered data outside the physical domain, following
@@ -852,7 +852,7 @@ AmrLevelAdv::advance (Real time,
       
     // }
 
-    Sborder.FillBoundary(geom.periodicity());
+    // Sborder.FillBoundary(geom.periodicity());
     FillDomainBoundary(Sborder,geom,BCVec);   // use this to fill cell-centred data outside domain (AMReX_BCUtil.H) -2023W2
     
   }
@@ -870,7 +870,7 @@ AmrLevelAdv::advance (Real time,
     {
       updateEuler(Sborder, fluxes, qL, qR, fluxvals, d, dtConvSub, dX, dY, euler);
       
-      Sborder.FillBoundary(geom.periodicity());
+      // Sborder.FillBoundary(geom.periodicity());
       FillDomainBoundary(Sborder,geom,BCVec);   // use this to fill cell-centred data outside domain (AMReX_BCUtil.H) -2023W2
       
       // Flux scaling for reflux. By the size of the boundary through which the flux passes, e.g. the x-flux needs scaling by the dy, dz and dt
@@ -901,7 +901,7 @@ AmrLevelAdv::advance (Real time,
     updateViscous(Sborder, fluxes, qL, qR, qLlo, qRlo, qLhi, qRhi, viscSlice, \
                 d, dt, dX, dY, amrex::SpaceDim, viscous);
     
-    Sborder.FillBoundary(geom.periodicity());
+    // Sborder.FillBoundary(geom.periodicity());
     FillDomainBoundary(Sborder,geom,BCVec);   // use this to fill cell-centred data outside domain (AMReX_BCUtil.H) -2023W2
     
     // Flux scaling for reflux. By the size of the boundary through which the flux passes, e.g. the x-flux needs scaling by the dy, dz and dt
