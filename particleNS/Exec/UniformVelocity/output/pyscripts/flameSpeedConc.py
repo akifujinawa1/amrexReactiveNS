@@ -17,9 +17,9 @@ from moviepy.video.io.bindings import mplfig_to_npimage
 
 # CHOOSE PLOTTING PARAMETERS HERE
 
-condition = 3   # 1 for isobaric, 2 for isochoric
+condition = 1   # 1 for isobaric, 2 for isochoric
 plotVar = 1     # 1 for x-t, 2 for flame speed
-Nparam = 9
+Nparam = 5
 
 
 yratio = 1/1.618
@@ -99,7 +99,7 @@ concArray = numpy.empty(Nparam)
 phiArray  = numpy.empty(Nparam)
 
 for i in range(Nparam):
-    concentration = (i+6)*100
+    concentration = (i+8)*100
     concArray[i] = concentration
     if condition == 1:
         directory = 'output/txt/1Dflame/'+str(concentration)+'/particle/'  #
@@ -172,7 +172,7 @@ for i in range(Nparam):
 
     Nranges = 3
     Ndistance = 5
-    offEnd = int(0.1*Np) # 8
+    offEnd = 0 #int(0.1*Np) # 8
     fsVals = np.empty(Nranges)
     for offset in range(Nranges):
         End = len(time[:,i])-(offset+offEnd)
@@ -254,7 +254,8 @@ for i in range(N):
 
 # ax.ticklabel_format(useOffset=False)
 if plotVar == 1:   # for x-t diagram
-    # ax.set_ylim([0,0.512])
+    if condition == 1 or condition == 2:
+        ax.set_ylim([0,0.512])
     ax.set_ylabel(r'$x\;[\mathrm{cm}]$', fontsize=20)
     ax.set_xlabel(r'$\mathrm{time}\;[\mathrm{s}]$', fontsize=20)
 if plotVar == 2:   # for flame speed diagram
@@ -365,20 +366,20 @@ if plotVar == 2:   # for flame speed diagram
 if plotVar == 1:
     ax.legend(ncol=2, loc="best", fontsize = 16, frameon = False )
     plt.show()
-    if condition == 1:
-        fig.savefig('output/plots/flame/ignition_isobaric_X-T.pdf')
-    elif condition == 2:
-        fig.savefig('output/plots/flame/ignition_isochoric_X-T.pdf')
-    else:
-        fig.savefig('output/plots/flame/ignition_closeOpen_X-T.pdf')
+    # if condition == 1:
+    #     fig.savefig('output/plots/flame/ignition_isobaric_X-T.pdf')
+    # elif condition == 2:
+    #     fig.savefig('output/plots/flame/ignition_isochoric_X-T.pdf')
+    # else:
+    #     fig.savefig('output/plots/flame/ignition_closeOpen_X-T.pdf')
 else:
     plt.show()
-    if condition == 1:
-        fig.savefig('output/plots/flame/flameSpeed_isobaric.pdf')
-    elif condition == 2:
-        fig.savefig('output/plots/flame/flameSpeed_isochoric.pdf')
-    else:
-        fig.savefig('output/plots/flame/flameSpeed_openClose.pdf')
+    # if condition == 1:
+    #     fig.savefig('output/plots/flame/flameSpeed_isobaric.pdf')
+    # elif condition == 2:
+    #     fig.savefig('output/plots/flame/flameSpeed_isochoric.pdf')
+    # else:
+    #     fig.savefig('output/plots/flame/flameSpeed_openClose.pdf')
 # with open('output/txt/1Dflame/phi1/x-t.txt', 'w') as text_file:
 #     for i in range(len(time)):
 #         timeval = time[i]

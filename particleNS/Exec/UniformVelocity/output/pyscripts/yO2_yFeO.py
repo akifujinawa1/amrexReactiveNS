@@ -80,7 +80,7 @@ color = colors
 fig1, ax1 = plt.subplots(nrows=4,ncols=1,figsize=(8,16*yratio))  # ,dpi=100   fig2,ax2 = plt.subplots(nrows=2,ncols=1,figsize=(8,8*yratio))
 plt.subplots_adjust(left=0.14, bottom=0.08, right=0.90, top=0.97, wspace=0.20, hspace=0.20)
 
-condition = 2
+condition = 1
 setConcentrations = 1
 
 for i in range(4):
@@ -88,7 +88,7 @@ for i in range(4):
         concentration = 700+i*100
     else:
         concentration = 700+(i+4)*100
-    time = 30000
+    time = 50000
     #27600
 
     if condition == 1:
@@ -222,13 +222,13 @@ ax1[2].get_xaxis().set_visible(False)
 
 plt.show()
 
-if setConcentrations == 1:
-    if condition == 1:
-        fig1.savefig('output/plots/flame/yO2yFeO_lean_isobaric.pdf')
-    else:
-        fig1.savefig('output/plots/flame/yO2yFeO_lean_isochoric.pdf')
-else:
-    if condition == 1:
-        fig1.savefig('output/plots/flame/yO2yFeO_rich_isobaric.pdf')
-    else:
-        fig1.savefig('output/plots/flame/yO2yFeO_rich_isochoric.pdf')
+# if setConcentrations == 1:
+#     if condition == 1:
+#         fig1.savefig('output/plots/flame/yO2yFeO_lean_isobaric.pdf')
+#     else:
+#         fig1.savefig('output/plots/flame/yO2yFeO_lean_isochoric.pdf')
+# else:
+#     if condition == 1:
+#         fig1.savefig('output/plots/flame/yO2yFeO_rich_isobaric.pdf')
+#     else:
+#         fig1.savefig('output/plots/flame/yO2yFeO_rich_isochoric.pdf')

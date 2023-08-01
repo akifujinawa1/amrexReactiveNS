@@ -53,14 +53,21 @@ if condition == 1:
     folder = '1Dflame'
 else:
     folder = '1DflameConfined'
-directory = '1000/field'
+directory = '1200/field'
 
-data0 = np.loadtxt('output/txt/'+folder+'/'+directory+'/00.txt')
-data1 = np.loadtxt('output/txt/'+folder+'/'+directory+'/7600.txt')
-data2 = np.loadtxt('output/txt/'+folder+'/'+directory+'/16000.txt')
-data3 = np.loadtxt('output/txt/'+folder+'/'+directory+'/22600.txt')
-data4 = np.loadtxt('output/txt/'+folder+'/'+directory+'/30000.txt')
-data5 = np.loadtxt('output/txt/'+folder+'/'+directory+'/37600.txt')
+# data0 = np.loadtxt('output/txt/'+folder+'/'+directory+'/00.txt')
+# data1 = np.loadtxt('output/txt/'+folder+'/'+directory+'/7600.txt')
+# data2 = np.loadtxt('output/txt/'+folder+'/'+directory+'/16000.txt')
+# data3 = np.loadtxt('output/txt/'+folder+'/'+directory+'/22600.txt')
+# data4 = np.loadtxt('output/txt/'+folder+'/'+directory+'/30000.txt')
+
+data0 = np.loadtxt('output/txt/'+folder+'/'+directory+'/10000.txt')
+data1 = np.loadtxt('output/txt/'+folder+'/'+directory+'/20000.txt')
+data2 = np.loadtxt('output/txt/'+folder+'/'+directory+'/30000.txt')
+data3 = np.loadtxt('output/txt/'+folder+'/'+directory+'/40000.txt')
+data4 = np.loadtxt('output/txt/'+folder+'/'+directory+'/50000.txt')
+
+# data5 = np.loadtxt('output/txt/'+folder+'/'+directory+'/37600.txt')
 # data5 = np.loadtxt('output/txt/1Dflame/'+directory+'/45000.txt')
 
 data0 = data0[data0[:, 0].argsort()]

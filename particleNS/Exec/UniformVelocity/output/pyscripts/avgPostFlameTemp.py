@@ -72,14 +72,14 @@ mFeTot = mFe0
 fig, ax = plt.subplots(nrows=1,ncols=1,figsize=(8,8*yratio))  # ,dpi=100   fig2,ax2 = plt.subplots(nrows=2,ncols=1,figsize=(8,8*yratio))
 plt.subplots_adjust(left=0.14, bottom=0.15, right=0.90, top=0.94, wspace=0.20, hspace=0.20)
 
-condition = 2    #1 if isobaric, 2 if isochoric
-Nparams = 9
+condition = 1    #1 if isobaric, 2 if isochoric
+Nparams = 5
 
 Tflame = np.empty(Nparams)
 phiArray = np.empty(Nparams)
 
 for i in range(Nparams):
-    concentration = (i+6)*100
+    concentration = (i+8)*100
     # 'output/txt/1Dflame/'+str(concentration)+'/field/'
     if condition == 1:
         folder = '1Dflame'
@@ -166,8 +166,8 @@ for i in range(Nparams):
             data4 = np.loadtxt('output/txt/1DflameConfined/'+str(concentration)+'/field/'+str(time)+'.txt')
         data4 = data4[data4[:, 0].argsort()]
 
-        avgLength = 75
-        offset = 50
+        avgLength = 100
+        offset = 100
 
         left = int(location*1e5) - avgLength - offset 
         right = int(location*1e5) - offset 
@@ -202,8 +202,8 @@ ax.set_ylabel(r'$T_\mathrm{g}\;[\mathrm{K}]$', fontsize=20)
 # ax.set_xlim([phiPlotLo,phiPlotHi])
 ax.legend(ncol=1, loc="best", fontsize = 14)
 plt.show()
-if condition == 1:
-    fig.savefig('output/plots/flame/postFlameTemperature_isobaric.pdf')
-else:
-    fig.savefig('output/plots/flame/postFlameTemperature_isochoric.pdf')
+# if condition == 1:
+#     fig.savefig('output/plots/flame/postFlameTemperature_isobaric.pdf')
+# else:
+#     fig.savefig('output/plots/flame/postFlameTemperature_isochoric.pdf')
     
