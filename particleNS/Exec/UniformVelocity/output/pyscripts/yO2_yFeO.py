@@ -81,7 +81,7 @@ fig1, ax1 = plt.subplots(nrows=4,ncols=1,figsize=(8,16*yratio))  # ,dpi=100   fi
 plt.subplots_adjust(left=0.14, bottom=0.08, right=0.90, top=0.97, wspace=0.20, hspace=0.20)
 
 condition = 1
-setConcentrations = 1
+setConcentrations = 2
 
 for i in range(4):
     if setConcentrations == 1:
@@ -146,9 +146,9 @@ for i in range(4):
 
     
     if condition == 1:
-        start = 256
+        start = 0 #256
         end = 767
-        offset = 0.00256
+        offset = 0 #0.00256
     else:
         start = 0
         end = 511
@@ -162,7 +162,7 @@ for i in range(4):
 
     interDist = (mTot0/865)**(1/3)
     mO2_all   = 512*dp0*interDist*interDist*Y_O2*(0.1*rhoHi+0.9*rhoLo)
-    phival    = (Np*mFe0/mO2_all)/(2*M_Fe/M_O2)
+    phival    = (TotalNp*mFe0/mO2_all)/(2*M_Fe/M_O2)
     phival    = round(phival,2)
 
 
@@ -179,7 +179,7 @@ for i in range(4):
     # ax[i].set_ylabel(r'$Y_\mathrm{O_2}\;[-]$', fontsize=20)
     ax1[i].set_xlabel(r'$x\;[\mathrm{m}]$', fontsize=20)
     ax1[i].set_ylim(-0.00235,0.235)
-    ax1[i].set_xlim([0,0.00512])
+    # ax1[i].set_xlim([0,0.00512])
     
 
     textstr = '$'+str(concentration)+'\;\mathrm{g/m^3},\;\phi \sim'+str(phival)+'$'
@@ -205,7 +205,7 @@ for i in range(4):
     else:
         axR.plot(location, YFeO, '--o', color=colors[2], linewidth = 1)
     axR.set_ylim([-0.01,1.03])
-    axR.set_xlim([0,0.00512])
+    # axR.set_xlim([0,0.00512])
     # ax2.tick_params(axis ='y', labelcolor = colors[1])
 
     if i == 1:

@@ -18,8 +18,11 @@ from moviepy.video.io.bindings import mplfig_to_npimage
 # CHOOSE PLOTTING PARAMETERS HERE
 
 condition = 1   # 1 for isobaric, 2 for isochoric
-plotVar = 1     # 1 for x-t, 2 for flame speed
-Nparam = 5
+plotVar = 2     # 1 for x-t, 2 for flame speed
+if condition == 1:
+    Nparam = 8
+elif condition == 2:
+    Nparam = 9
 
 
 yratio = 1/1.618
@@ -99,7 +102,9 @@ concArray = numpy.empty(Nparam)
 phiArray  = numpy.empty(Nparam)
 
 for i in range(Nparam):
-    concentration = (i+8)*100
+    concentration = (i+7)*100
+    if i == 0:
+        concentration = 750
     concArray[i] = concentration
     if condition == 1:
         directory = 'output/txt/1Dflame/'+str(concentration)+'/particle/'  #

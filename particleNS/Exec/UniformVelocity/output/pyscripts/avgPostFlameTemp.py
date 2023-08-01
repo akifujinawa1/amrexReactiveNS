@@ -73,8 +73,11 @@ fig, ax = plt.subplots(nrows=1,ncols=1,figsize=(8,8*yratio))  # ,dpi=100   fig2,
 plt.subplots_adjust(left=0.14, bottom=0.15, right=0.90, top=0.94, wspace=0.20, hspace=0.20)
 
 condition = 1    #1 if isobaric, 2 if isochoric
-Nparams = 5
-
+if condition == 1:
+    Nparams = 7
+elif condition == 2:
+    Nparams = 9
+    
 Tflame = np.empty(Nparams)
 phiArray = np.empty(Nparams)
 

@@ -53,7 +53,7 @@ if condition == 1:
     folder = '1Dflame'
 else:
     folder = '1DflameConfined'
-directory = '1200/field'
+directory = '800/field'
 
 # data0 = np.loadtxt('output/txt/'+folder+'/'+directory+'/00.txt')
 # data1 = np.loadtxt('output/txt/'+folder+'/'+directory+'/7600.txt')
