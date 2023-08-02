@@ -85,10 +85,10 @@ setConcentrations = 2
 
 for i in range(4):
     if setConcentrations == 1:
-        concentrations = [725,750,800,900]
+        concentrations = [700,800,900,1000]
         concentration = concentrations[i]
     else:
-        concentrations = [1000,1100,1200,1300]
+        concentrations = [1100,1200,1300,1400]
         concentration = concentrations[i]
     time = 59000
     #27600
@@ -150,13 +150,13 @@ for i in range(4):
     if condition == 1:
         start = 256
         end = 767
-        offset = 0.00256
+        offset = 0.256
     else:
         start = 0
         end = 511
         offset = 0
 
-    location = location - offset
+    location = location*1e2 - offset
     # print(location)
     # print(YFeO)
     # print(Np)
@@ -169,32 +169,32 @@ for i in range(4):
 
 
     if i == 0:
-        ax1[i].plot(data4[start:end,0]-offset,data4[start:end,2],c='black',linewidth=3,label='$Y_\mathrm{O_2}$') 
+        ax1[i].plot(data4[start:end,0]*1e2-offset,data4[start:end,2],c='black',linewidth=3,label='$Y_\mathrm{O_2}$') 
         if setConcentrations == 1:
             ax1[i].legend(ncol=1, loc=(0,0.15), fontsize = 16, frameon=False)
         else: 
-            ax1[i].legend(ncol=1, loc=(0,0.32), fontsize = 16, frameon=False)    
+            ax1[i].legend(ncol=1, loc=(0,0.34), fontsize = 16, frameon=False)    
     else:
-        ax1[i].plot(data4[start:end,0]-offset,data4[start:end,2],c='black',linewidth=3)
+        ax1[i].plot(data4[start:end,0]*1e2-offset,data4[start:end,2],c='black',linewidth=3)
         
 
     # ax[i].set_ylabel(r'$Y_\mathrm{O_2}\;[-]$', fontsize=20)
-    ax1[i].set_xlabel(r'$x\;[\mathrm{m}]$', fontsize=20)
+    ax1[i].set_xlabel(r'$x\;[\mathrm{cm}]$', fontsize=20)
     ax1[i].set_ylim(-0.00235,0.235)
-    ax1[i].set_xlim([0,0.00512])
+    ax1[i].set_xlim([0,0.512])
     
 
     textstr = '$'+str(concentration)+'\;\mathrm{g/m^3},\;\phi \sim'+str(phival)+'$'
 
     if setConcentrations == 1:
-        ax1[i].text(0.00005, 0.01, textstr, fontsize=16)
+        ax1[i].text(0.005, 0.01, textstr, fontsize=16)
     else:
         if i == 0:
-            ax1[i].text(0.00005, 0.01, textstr, fontsize=16)
+            ax1[i].text(0.005, 0.06, textstr, fontsize=16)
         elif i == 1:
-            ax1[i].text(0.00005, 0.08, textstr, fontsize=16)
+            ax1[i].text(0.005, 0.05, textstr, fontsize=16)
         else:
-            ax1[i].text(0.00005, 0.08, textstr, fontsize=16)
+            ax1[i].text(0.005, 0.05, textstr, fontsize=16)
 
     # ax2.scatter(location, YFeO, color = colors[1], s=15) #s=15  linewidth=3
     axR = ax1[i].twinx()
@@ -205,7 +205,11 @@ for i in range(4):
         else:
             axR.legend(ncol=1, loc=(0.2,0.34), fontsize = 16, frameon=False)
     else:
-        axR.plot(location, YFeO, '--o', color=colors[2], linewidth = 1)
+        if (i == 3):
+            axR.plot(location[0:len(location)-1], YFeO[0:len(location)-1], '--o', color=colors[2], linewidth = 1)
+            # axR.scatter(location[len(location)-1], YFeO[len(location)-1],marker= 'o', color=colors[2])
+        else: 
+            axR.plot(location, YFeO, '--o', color=colors[2], linewidth = 1)
     axR.set_ylim([-0.01,1.03])
     # axR.set_xlim([0,0.00512])
     # ax2.tick_params(axis ='y', labelcolor = colors[1])
@@ -224,13 +228,13 @@ ax1[2].get_xaxis().set_visible(False)
 
 plt.show()
 
-# if setConcentrations == 1:
-#     if condition == 1:
-#         fig1.savefig('output/plots/flame/yO2yFeO_lean_isobaric.pdf')
-#     else:
-#         fig1.savefig('output/plots/flame/yO2yFeO_lean_isochoric.pdf')
-# else:
-#     if condition == 1:
-#         fig1.savefig('output/plots/flame/yO2yFeO_rich_isobaric.pdf')
-#     else:
-#         fig1.savefig('output/plots/flame/yO2yFeO_rich_isochoric.pdf')
+if setConcentrations == 1:
+    if condition == 1:
+        fig1.savefig('output/plots/flame/yO2yFeO_lean_isobaric.pdf')
+    else:
+        fig1.savefig('output/plots/flame/yO2yFeO_lean_isochoric.pdf')
+else:
+    if condition == 1:
+        fig1.savefig('output/plots/flame/yO2yFeO_rich_isobaric.pdf')
+    else:
+        fig1.savefig('output/plots/flame/yO2yFeO_rich_isochoric.pdf')

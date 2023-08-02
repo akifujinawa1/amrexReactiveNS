@@ -74,11 +74,11 @@ print(mFe0)
  
 # matplot subplot
 fig, ax = plt.subplots(nrows=1,ncols=1,figsize=(8,8*yratio))  # ,dpi=100   fig2,ax2 = plt.subplots(nrows=2,ncols=1,figsize=(8,8*yratio))
-plt.subplots_adjust(left=0.1, bottom=0.15, right=0.90, top=0.94, wspace=0.20, hspace=0.20)
+plt.subplots_adjust(left=0.12, bottom=0.15, right=0.90, top=0.94, wspace=0.20, hspace=0.20)
 
-condition = 1
+condition = 2
 if condition == 1:
-    concentrations = [725,750,800,900,1000,1100,1200,1300,1400,1500,1600]
+    concentrations = [700,725,750,800,900,1000,1100,1200,1300,1400,1500,1600]
 elif condition == 2:
     concentrations = [600,700,800,900,1000,1100,1200,1300,1400]
 
@@ -94,7 +94,7 @@ if condition == 1:
 else:
     folder = '1DflameConfined'
 
-time = 20000
+time = 59000
 
 for i in range(Nparams):
     concentration = concentrations[i]
@@ -126,7 +126,7 @@ for i in range(Nparams):
             # print(len(data[:,0]))s
             for k in range(len(data[:,0])):
                 length = len(data[:,0])-1
-                if (data[length,0] < time*1e-6):
+                if (data[length,0] < time*1e-6):  # if the final time of the particle is less than set time, just get burned mass
                     mFe = data[length,2]
                     mFeO = data[length,3]
                     mFe3O4 = data[length,4]

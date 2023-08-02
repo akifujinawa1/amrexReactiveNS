@@ -74,7 +74,7 @@ mFe3O40 = rhoFe3O4*(4.0/3.0)*pi*(rp0**3 - rFeO0**3)     #  %kg Initial FeO mass
 mTot0 = 1.0e3*(mFe0+mFeO0+mFe3O40)  # total initial particle mass in grams
 mFeTot = mFe0
 
-Lx = 0.00512   # 4 cm length of channel
+Lx = 0.00768   # 4 cm length of channel
 Tgas = 300
 rhogas = p*Mavg/(R*Tgas)
 
@@ -86,7 +86,7 @@ error = 1
 tol = 1e-3
 iteration = 0
 
-conc = 600
+conc = 900
 
 while error > tol:
     avg = 0.5*(NpLo+NpHi)

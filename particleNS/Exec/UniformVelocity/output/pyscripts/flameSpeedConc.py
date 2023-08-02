@@ -20,7 +20,7 @@ from moviepy.video.io.bindings import mplfig_to_npimage
 condition = 1   # 1 for isobaric, 2 for isochoric
 plotVar = 2     # 1 for x-t, 2 for flame speed
 if condition == 1:
-    concentrations = [725,750,800,900,1000,1100,1200,1300,1400,1500,1600]
+    concentrations = [700,725,750,800,900,1000,1100,1200,1300,1400,1500,1600]
 elif condition == 2:
     concentrations = [600,700,800,900,1000,1100,1200,1300,1400]
 
@@ -80,8 +80,8 @@ if plotVar == 1:
     mpl.rcParams['axes.spines.top'] = False
 
 
-colors = ['#000000', '#9B0909', '#7E301E', '#B42E0F', '#FE3C0F', '#fe770f', '#F35D0D', '#f3d00d', '#9b9765', '#000000', '#9B0909']
-markers = ['o', 'v', '^', '<', '>', 's', 'p', '*', 'P', 'o', 'v']
+colors = ['#000000', '#9B0909', '#7E301E', '#B42E0F', '#FE3C0F', '#fe770f', '#F35D0D', '#f3d00d', '#9b9765', '#000000', '#9B0909', '#000000']
+markers = ['o', 'v', '^', '<', '>', 's', 'p', '*', 'P', 'o', 'v', 'o']
 
 # matplot subplot
 
@@ -219,7 +219,7 @@ for i in range(Nparam):
 
     if plotVar==1:
         if condition == 1:
-            ax.plot(time[:,i],100*location[:,i]-0.256,c=colors[i],lw=1,marker=markers[i],label='$'+str(concentration)+'\;\mathrm{g/cm^3}$') #s=3
+            ax.scatter(time[:,i],100*location[:,i]-0.256,c=colors[i],s=15,marker=markers[i],label='$'+str(concentration)+'\;\mathrm{g/cm^3}$') #s=3
         else:
             ax.scatter(time[:,i],100*location[:,i],c=colors[i],lw=1,marker=markers[i],label='$'+str(concentration)+'\;\mathrm{g/cm^3}$') #s=3
 
@@ -229,9 +229,8 @@ for i in range(Nparam):
 # plt.yscale("log")
 # plt.xscale("log")
 
-print(phiPlotLo)
 print(phiArray)
-print(phiPlotHi)
+print(concentrations)
 
 dataAFT = np.loadtxt('output/pyscripts/aft_phi.txt')
 N = len(dataAFT[:,0])
@@ -282,7 +281,7 @@ if plotVar == 2:   # for flame speed diagram
     ax.set_xlabel(r'$\phi\;[\mathrm{-}]$', fontsize=20)
     ax.scatter(phiArray,flameSpeed,c='black',alpha=0.0) #s=3,label='$\mathrm{Reactive\;front\;speed}$')
     # ax.errorbar(phiArray,flameSpeed,yerr=error,fmt='o',c='black',linewidth=2,label='$\sigma$')
-    ax.set_xlim([phiPlotLo,phiPlotHi])
+    # ax.set_xlim([phiPlotLo,phiPlotHi])
     # ax.set_xlim([0.5,1.6])
 
     # to add concentration on top
@@ -291,7 +290,7 @@ if plotVar == 2:   # for flame speed diagram
     axTop.errorbar(concArray,flameSpeed,yerr=error,fmt='o',c='black',linewidth=2,label='$\sigma$')
     axTop.set_xlabel(r'$\mathrm{Concentration}\;[\mathrm{g/m^3}]$', fontsize=16)
     axTop.tick_params(axis='x', which='major', labelsize=12)
-    axTop.set_xlim([550,1450])
+    # axTop.set_xlim([725,1600])
     axTop.legend(ncol=1, loc="best", fontsize = 16, frameon = False )
 
     # add plot for theoretical flame speed
@@ -371,20 +370,20 @@ if plotVar == 2:   # for flame speed diagram
 if plotVar == 1:
     ax.legend(ncol=2, loc="best", fontsize = 16, frameon = False )
     plt.show()
-    # if condition == 1:
-    #     fig.savefig('output/plots/flame/ignition_isobaric_X-T.pdf')
-    # elif condition == 2:
-    #     fig.savefig('output/plots/flame/ignition_isochoric_X-T.pdf')
-    # else:
-    #     fig.savefig('output/plots/flame/ignition_closeOpen_X-T.pdf')
+    if condition == 1:
+        fig.savefig('output/plots/flame/ignition_isobaric_X-T.pdf')
+    elif condition == 2:
+        fig.savefig('output/plots/flame/ignition_isochoric_X-T.pdf')
+    else:
+        fig.savefig('output/plots/flame/ignition_closeOpen_X-T.pdf')
 else:
     plt.show()
-    # if condition == 1:
-    #     fig.savefig('output/plots/flame/flameSpeed_isobaric.pdf')
-    # elif condition == 2:
-    #     fig.savefig('output/plots/flame/flameSpeed_isochoric.pdf')
-    # else:
-    #     fig.savefig('output/plots/flame/flameSpeed_openClose.pdf')
+    if condition == 1:
+        fig.savefig('output/plots/flame/flameSpeed_isobaric.pdf')
+    elif condition == 2:
+        fig.savefig('output/plots/flame/flameSpeed_isochoric.pdf')
+    else:
+        fig.savefig('output/plots/flame/flameSpeed_openClose.pdf')
 # with open('output/txt/1Dflame/phi1/x-t.txt', 'w') as text_file:
 #     for i in range(len(time)):
 #         timeval = time[i]

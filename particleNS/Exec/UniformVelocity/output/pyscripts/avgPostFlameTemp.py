@@ -74,7 +74,7 @@ plt.subplots_adjust(left=0.14, bottom=0.15, right=0.90, top=0.94, wspace=0.20, h
 
 condition = 1    #1 if isobaric, 2 if isochoric
 if condition == 1:
-    concentrations = [725,750,800,900,1000,1100,1200,1300,1400]
+    concentrations = [700,725,750,800,900,1000,1100,1200,1300,1400,1500,1600]
 elif condition == 2:
     concentrations = [600,700,800,900,1000,1100,1200,1300,1400]
 
@@ -172,8 +172,8 @@ for i in range(Nparams):
             data4 = np.loadtxt('output/txt/1DflameConfined/'+str(concentration)+'/field/'+str(time)+'.txt')
         data4 = data4[data4[:, 0].argsort()]
 
-        avgLength = 100
-        offset = 100
+        avgLength = 120
+        offset = 75
 
         left = int(location*1e5) - avgLength - offset 
         right = int(location*1e5) - offset 
@@ -208,8 +208,8 @@ ax.set_ylabel(r'$T_\mathrm{g}\;[\mathrm{K}]$', fontsize=20)
 # ax.set_xlim([phiPlotLo,phiPlotHi])
 ax.legend(ncol=1, loc="best", fontsize = 14)
 plt.show()
-# if condition == 1:
-#     fig.savefig('output/plots/flame/postFlameTemperature_isobaric.pdf')
-# else:
-#     fig.savefig('output/plots/flame/postFlameTemperature_isochoric.pdf')
+if condition == 1:
+    fig.savefig('output/plots/flame/postFlameTemperature_isobaric.pdf')
+else:
+    fig.savefig('output/plots/flame/postFlameTemperature_isochoric.pdf')
     

@@ -53,7 +53,7 @@ if condition == 1:
     folder = '1Dflame'
 else:
     folder = '1DflameConfined'
-directory = '750/field'
+directory = '900/field'
 
 # data0 = np.loadtxt('output/txt/'+folder+'/'+directory+'/00.txt')
 # data1 = np.loadtxt('output/txt/'+folder+'/'+directory+'/7600.txt')
@@ -61,11 +61,11 @@ directory = '750/field'
 # data3 = np.loadtxt('output/txt/'+folder+'/'+directory+'/22600.txt')
 # data4 = np.loadtxt('output/txt/'+folder+'/'+directory+'/30000.txt')
 
-data0 = np.loadtxt('output/txt/'+folder+'/'+directory+'/15000.txt')
-data1 = np.loadtxt('output/txt/'+folder+'/'+directory+'/29500.txt')
-data2 = np.loadtxt('output/txt/'+folder+'/'+directory+'/35000.txt')
+data0 = np.loadtxt('output/txt/'+folder+'/'+directory+'/00.txt')
+data1 = np.loadtxt('output/txt/'+folder+'/'+directory+'/15000.txt')
+data2 = np.loadtxt('output/txt/'+folder+'/'+directory+'/30000.txt')
 data3 = np.loadtxt('output/txt/'+folder+'/'+directory+'/45000.txt')
-data4 = np.loadtxt('output/txt/'+folder+'/'+directory+'/51300.txt')
+data4 = np.loadtxt('output/txt/'+folder+'/'+directory+'/59900.txt')
 
 # data5 = np.loadtxt('output/txt/'+folder+'/'+directory+'/37600.txt')
 # data5 = np.loadtxt('output/txt/1Dflame/'+directory+'/45000.txt')
@@ -94,19 +94,19 @@ if yIndex == 1:
     ax[0].plot(data0[256:767,0]-0.00256,data0[256:767,yIndex]*0+2331,c='red',linestyle='dashed',linewidth=2,label='$\mathrm{AFT,Fe}$-$\mathrm{to}$-$\mathrm{FeO}$') 
     ax[0].plot(data0[256:767,0]-0.00256,data0[256:767,yIndex]*0+2230,c=colors[0],linestyle='dotted',linewidth=2,label='$\mathrm{AFT,equilibrium}$') 
 
-    ax[1].plot(data1[256:767,0]-0.00256,data1[256:767,yIndex],c='black',linewidth=2,label='$t=7.5\;\mathrm{ms}$') 
+    ax[1].plot(data1[256:767,0]-0.00256,data1[256:767,yIndex],c='black',linewidth=2,label='$t=15.0\;\mathrm{ms}$') 
     ax[1].plot(data0[256:767,0]-0.00256,data0[256:767,yIndex]*0+2331,c='red',linestyle='dashed',linewidth=2) 
     ax[1].plot(data0[256:767,0]-0.00256,data0[256:767,yIndex]*0+2230,c=colors[0],linestyle='dotted',linewidth=2)
 
-    ax[2].plot(data2[256:767,0]-0.00256,data2[256:767,yIndex],c='black',linewidth=2,label='$t=15.0\mathrm{ms}$') 
+    ax[2].plot(data2[256:767,0]-0.00256,data2[256:767,yIndex],c='black',linewidth=2,label='$t=30.0\mathrm{ms}$') 
     ax[2].plot(data0[256:767,0]-0.00256,data0[256:767,yIndex]*0+2331,c='red',linestyle='dashed',linewidth=2) 
     ax[2].plot(data0[256:767,0]-0.00256,data0[256:767,yIndex]*0+2230,c=colors[0],linestyle='dotted',linewidth=2) 
     
-    ax[3].plot(data3[256:767,0]-0.00256,data3[256:767,yIndex],c='black',linewidth=2,label='$t=22.5\;\mathrm{ms}$') 
+    ax[3].plot(data3[256:767,0]-0.00256,data3[256:767,yIndex],c='black',linewidth=2,label='$t=45.0\;\mathrm{ms}$') 
     ax[3].plot(data0[256:767,0]-0.00256,data0[256:767,yIndex]*0+2331,c='red',linestyle='dashed',linewidth=2) 
     ax[3].plot(data0[256:767,0]-0.00256,data0[256:767,yIndex]*0+2230,c=colors[0],linestyle='dotted',linewidth=2) 
     
-    ax[4].plot(data4[256:767,0]-0.00256,data4[256:767,yIndex],c='black',linewidth=2,label='$t=30.0\;\mathrm{ms}$') 
+    ax[4].plot(data4[256:767,0]-0.00256,data4[256:767,yIndex],c='black',linewidth=2,label='$t=60.0\;\mathrm{ms}$') 
     ax[4].plot(data0[256:767,0]-0.00256,data0[256:767,yIndex]*0+2331,c='red',linestyle='dashed',linewidth=2) 
     ax[4].plot(data0[256:767,0]-0.00256,data0[256:767,yIndex]*0+2230,c=colors[0],linestyle='dotted',linewidth=2) 
     
@@ -140,23 +140,23 @@ if yIndex == 1:
 
     plt.show()
 
-    # fig.savefig('output/plots/flame/thermalStructurePhi1.pdf')
+    fig.savefig('output/plots/flame/thermalStructurePhi1.pdf')
 
 elif yIndex == 2:
     ax[0].plot(data0[256:307,0]-0.00256,data0[256:307,yIndex],c='black',linewidth=3,label='$t=t_0$') 
     ax[0].plot(data0[308:767,0]-0.00256,data0[308:767,yIndex],c='black',linewidth=3) 
     ax[0].plot(data0[256:767,0]-0.00256,data0[256:767,yIndex]*0+0.232917511457580,c='red',linestyle='dashed',linewidth=3,label='$Y_\mathrm{O_2,0}$') 
 
-    ax[1].plot(data1[256:767,0]-0.00256,data1[256:767,yIndex],c='black',linewidth=3,label='$t=7.5\;\mathrm{ms}$') 
+    ax[1].plot(data1[256:767,0]-0.00256,data1[256:767,yIndex],c='black',linewidth=3,label='$t=15.0\;\mathrm{ms}$') 
     ax[1].plot(data1[256:767,0]-0.00256,data1[256:767,yIndex]*0+0.232917511457580,c='red',linestyle='dashed',linewidth=3) 
 
-    ax[2].plot(data2[256:767,0]-0.00256,data2[256:767,yIndex],c='black',linewidth=3,label='$t=15.0\mathrm{ms}$') 
+    ax[2].plot(data2[256:767,0]-0.00256,data2[256:767,yIndex],c='black',linewidth=3,label='$t=30.0\mathrm{ms}$') 
     ax[2].plot(data2[256:767,0]-0.00256,data2[256:767,yIndex]*0+0.232917511457580,c='red',linestyle='dashed',linewidth=3) 
 
-    ax[3].plot(data3[256:767,0]-0.00256,data3[256:767,yIndex],c='black',linewidth=3,label='$t=22.5\;\mathrm{ms}$') 
+    ax[3].plot(data3[256:767,0]-0.00256,data3[256:767,yIndex],c='black',linewidth=3,label='$t=45.0\;\mathrm{ms}$') 
     ax[3].plot(data3[256:767,0]-0.00256,data3[256:767,yIndex]*0+0.232917511457580,c='red',linestyle='dashed',linewidth=3) 
 
-    ax[4].plot(data4[256:767,0]-0.00256,data4[256:767,yIndex],c='black',linewidth=3,label='$t=30.0\;\mathrm{ms}$') 
+    ax[4].plot(data4[256:767,0]-0.00256,data4[256:767,yIndex],c='black',linewidth=3,label='$t=60.0\;\mathrm{ms}$') 
     ax[4].plot(data4[256:767,0]-0.00256,data4[256:767,yIndex]*0+0.232917511457580,c='red',linestyle='dashed',linewidth=3) 
 
     ax[0].set_ylim(0,0.232917511457580)
@@ -177,7 +177,7 @@ elif yIndex == 2:
     ax[4].set_xlabel(r'$x\;[\mathrm{m}]$', fontsize=20)
     # fig.suptitle('Figure')
     ax[0].legend(ncol=1, loc="best", fontsize = 14, frameon=False)
-    ax[1].legend(ncol=1, loc="upper left", fontsize = 14, frameon=False)
+    ax[1].legend(ncol=1, loc="best", fontsize = 14, frameon=False)
     ax[2].legend(ncol=1, loc="upper left", fontsize = 14, frameon=False)
     ax[3].legend(ncol=1, loc="upper left", fontsize = 14, frameon=False)
     ax[4].legend(ncol=1, loc="upper left", fontsize = 14, frameon=False)
@@ -189,7 +189,7 @@ elif yIndex == 2:
 
     plt.show()
 
-    # fig.savefig('output/plots/flame/O2massFracPhi1.pdf')
+    fig.savefig('output/plots/flame/O2massFracPhi1.pdf')
 
 
 add = sum(data4[456:656,1])
