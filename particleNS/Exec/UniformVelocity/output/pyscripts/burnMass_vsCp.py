@@ -78,9 +78,11 @@ plt.subplots_adjust(left=0.1, bottom=0.15, right=0.90, top=0.94, wspace=0.20, hs
 
 condition = 1
 if condition == 1:
-    Nparams = 9
+    concentrations = [725,750,800,900,1000,1100,1200,1300,1400,1500,1600]
 elif condition == 2:
-    Nparams = 9
+    concentrations = [600,700,800,900,1000,1100,1200,1300,1400]
+
+Nparams = len(concentrations)
 
 mFeBurned = np.empty(Nparams)
 totalCp = np.empty(Nparams)
@@ -92,10 +94,10 @@ if condition == 1:
 else:
     folder = '1DflameConfined'
 
-time = 59900
+time = 20000
 
 for i in range(Nparams):
-    concentration = (i+6)*100
+    concentration = concentrations[i]
     concArray[i]=concentration
     Np=0
     totalmFe = 0
@@ -123,7 +125,14 @@ for i in range(Nparams):
             # 0=time, 1=x, 2=mFe, 3=mFeO, 4=mFe3O4, 5=Tp, 6=regime
             # print(len(data[:,0]))s
             for k in range(len(data[:,0])):
-                length = len(data[:,0])
+                length = len(data[:,0])-1
+                if (data[length,0] < time*1e-6):
+                    mFe = data[length,2]
+                    mFeO = data[length,3]
+                    mFe3O4 = data[length,4]
+                    totalmFe = totalmFe + mFe0-mFe
+                    Np += 1
+                    break
                 if (data[k,0]>time*1e-6):
                     mFe = data[k,2]
                     mFeO = data[k,3]
@@ -134,6 +143,7 @@ for i in range(Nparams):
                     # print('position is:',location[Np])
                     # print('FeO mass fraction is,',YFeO[Np])
                     break
+                
     mFeBurned[i] = totalmFe
     print('conc=',concentration,', mFe burned=',mFeBurned[i])
 

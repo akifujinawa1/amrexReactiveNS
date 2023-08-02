@@ -74,15 +74,17 @@ plt.subplots_adjust(left=0.14, bottom=0.15, right=0.90, top=0.94, wspace=0.20, h
 
 condition = 1    #1 if isobaric, 2 if isochoric
 if condition == 1:
-    Nparams = 7
+    concentrations = [725,750,800,900,1000,1100,1200,1300,1400]
 elif condition == 2:
-    Nparams = 9
-    
+    concentrations = [600,700,800,900,1000,1100,1200,1300,1400]
+
+Nparams = len(concentrations)
 Tflame = np.empty(Nparams)
 phiArray = np.empty(Nparams)
 
 for i in range(Nparams):
-    concentration = (i+8)*100
+    concentration = concentrations[i]
+    # concentration = (i+8)*100
     # 'output/txt/1Dflame/'+str(concentration)+'/field/'
     if condition == 1:
         folder = '1Dflame'
@@ -137,7 +139,7 @@ for i in range(Nparams):
                     timeVal    = data[length-k,0]
 
                     # if (location-0.00256 > 0.00415):
-                    if (timeVal > 0.03):
+                    if (timeVal > 0.049):
                         # print(time)
                         locations[iter] = locationVal
                         times[iter] = timeVal
@@ -153,7 +155,7 @@ for i in range(Nparams):
 
         for k in range(iter):
             if times[k] < time:
-                print(times[k])
+                # print(times[k])
                 time = times[k]
                 location = locations[k]
 
@@ -162,6 +164,7 @@ for i in range(Nparams):
         time = int(math.ceil(time / 100.0)) * 100
         print(time)
         print(int(location*1e5))
+        time = 59900
 
         if condition == 1:
             data4 = np.loadtxt('output/txt/1Dflame/'+str(concentration)+'/field/'+str(time)+'.txt')

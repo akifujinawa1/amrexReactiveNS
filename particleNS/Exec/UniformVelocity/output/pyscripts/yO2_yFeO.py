@@ -85,10 +85,12 @@ setConcentrations = 2
 
 for i in range(4):
     if setConcentrations == 1:
-        concentration = 700+i*100
+        concentrations = [725,750,800,900]
+        concentration = concentrations[i]
     else:
-        concentration = 700+(i+4)*100
-    time = 50000
+        concentrations = [1000,1100,1200,1300]
+        concentration = concentrations[i]
+    time = 59000
     #27600
 
     if condition == 1:
@@ -146,9 +148,9 @@ for i in range(4):
 
     
     if condition == 1:
-        start = 0 #256
+        start = 256
         end = 767
-        offset = 0 #0.00256
+        offset = 0.00256
     else:
         start = 0
         end = 511
@@ -179,7 +181,7 @@ for i in range(4):
     # ax[i].set_ylabel(r'$Y_\mathrm{O_2}\;[-]$', fontsize=20)
     ax1[i].set_xlabel(r'$x\;[\mathrm{m}]$', fontsize=20)
     ax1[i].set_ylim(-0.00235,0.235)
-    # ax1[i].set_xlim([0,0.00512])
+    ax1[i].set_xlim([0,0.00512])
     
 
     textstr = '$'+str(concentration)+'\;\mathrm{g/m^3},\;\phi \sim'+str(phival)+'$'

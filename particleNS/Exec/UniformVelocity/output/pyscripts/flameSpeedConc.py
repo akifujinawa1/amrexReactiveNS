@@ -20,9 +20,11 @@ from moviepy.video.io.bindings import mplfig_to_npimage
 condition = 1   # 1 for isobaric, 2 for isochoric
 plotVar = 2     # 1 for x-t, 2 for flame speed
 if condition == 1:
-    Nparam = 8
+    concentrations = [725,750,800,900,1000,1100,1200,1300,1400,1500,1600]
 elif condition == 2:
-    Nparam = 9
+    concentrations = [600,700,800,900,1000,1100,1200,1300,1400]
+
+Nparam = len(concentrations)
 
 
 yratio = 1/1.618
@@ -78,8 +80,8 @@ if plotVar == 1:
     mpl.rcParams['axes.spines.top'] = False
 
 
-colors = ['#000000', '#9B0909', '#7E301E', '#B42E0F', '#FE3C0F', '#fe770f', '#F35D0D', '#f3d00d', '#9b9765']
-markers = ['o', 'v', '^', '<', '>', 's', 'p', '*', 'P']
+colors = ['#000000', '#9B0909', '#7E301E', '#B42E0F', '#FE3C0F', '#fe770f', '#F35D0D', '#f3d00d', '#9b9765', '#000000', '#9B0909']
+markers = ['o', 'v', '^', '<', '>', 's', 'p', '*', 'P', 'o', 'v']
 
 # matplot subplot
 
@@ -92,8 +94,8 @@ fig, ax = plt.subplots(figsize=(8,8*yratio))  #fig2,ax2 = plt.subplots(nrows=2,n
 plt.subplots_adjust(left=0.125, bottom=0.137, right=0.91, top=topval, wspace=0.20, hspace=0.20)
 
 
-time = numpy.empty((50, Nparam))
-location = numpy.empty((50, Nparam))
+time = numpy.empty((100, Nparam))
+location = numpy.empty((100, Nparam))
 flameSpeed = numpy.empty(Nparam)
 stDev      = numpy.empty(Nparam)
 error        = numpy.empty((2,Nparam))
@@ -102,9 +104,7 @@ concArray = numpy.empty(Nparam)
 phiArray  = numpy.empty(Nparam)
 
 for i in range(Nparam):
-    concentration = (i+7)*100
-    if i == 0:
-        concentration = 750
+    concentration = concentrations[i]
     concArray[i] = concentration
     if condition == 1:
         directory = 'output/txt/1Dflame/'+str(concentration)+'/particle/'  #
@@ -176,7 +176,7 @@ for i in range(Nparam):
 
 
     Nranges = 3
-    Ndistance = 5
+    Ndistance = 8
     offEnd = 0 #int(0.1*Np) # 8
     fsVals = np.empty(Nranges)
     for offset in range(Nranges):
@@ -219,9 +219,9 @@ for i in range(Nparam):
 
     if plotVar==1:
         if condition == 1:
-            ax.scatter(time[:,i],100*location[:,i]-0.256,c=colors[i],s=15,marker=markers[i],label='$'+str(concentration)+'\;\mathrm{g/cm^3}$') #s=3
+            ax.plot(time[:,i],100*location[:,i]-0.256,c=colors[i],lw=1,marker=markers[i],label='$'+str(concentration)+'\;\mathrm{g/cm^3}$') #s=3
         else:
-            ax.plot(time[:,i],100*location[:,i],c=colors[i],lw=1,marker=markers[i],label='$'+str(concentration)+'\;\mathrm{g/cm^3}$') #s=3
+            ax.scatter(time[:,i],100*location[:,i],c=colors[i],lw=1,marker=markers[i],label='$'+str(concentration)+'\;\mathrm{g/cm^3}$') #s=3
 
     # ax.plot(time[:,i],m*time[:,i]+c,c=colors[3],linewidth=4,label=str(concentration)) #s=3
 

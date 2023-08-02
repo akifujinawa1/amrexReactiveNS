@@ -114,7 +114,7 @@ for i in range(N):
     XO2term = 1/(YO2+(1-YO2)*M_O2/M_N2)
 
     # eta[i] = 1e2*YO2*np.sqrt(const*XO2term*DToverCp[i])   # predicted flame speed in cm/s
-    eta[i] = 1e2*YO2*np.sqrt(DToverCp[i])   # predicted flame speed in cm/s
+    eta[i] = 1e2*np.sqrt(const)*np.sqrt(XO2term)*YO2*np.sqrt(DToverCp[i])   # predicted flame speed in cm/s
 
     # assuming thermal diffusion timescale >> particle combustion timescale
 

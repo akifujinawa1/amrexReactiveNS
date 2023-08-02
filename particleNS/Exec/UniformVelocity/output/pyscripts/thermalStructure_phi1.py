@@ -53,7 +53,7 @@ if condition == 1:
     folder = '1Dflame'
 else:
     folder = '1DflameConfined'
-directory = '800/field'
+directory = '750/field'
 
 # data0 = np.loadtxt('output/txt/'+folder+'/'+directory+'/00.txt')
 # data1 = np.loadtxt('output/txt/'+folder+'/'+directory+'/7600.txt')
@@ -61,11 +61,11 @@ directory = '800/field'
 # data3 = np.loadtxt('output/txt/'+folder+'/'+directory+'/22600.txt')
 # data4 = np.loadtxt('output/txt/'+folder+'/'+directory+'/30000.txt')
 
-data0 = np.loadtxt('output/txt/'+folder+'/'+directory+'/10000.txt')
-data1 = np.loadtxt('output/txt/'+folder+'/'+directory+'/20000.txt')
-data2 = np.loadtxt('output/txt/'+folder+'/'+directory+'/30000.txt')
-data3 = np.loadtxt('output/txt/'+folder+'/'+directory+'/40000.txt')
-data4 = np.loadtxt('output/txt/'+folder+'/'+directory+'/50000.txt')
+data0 = np.loadtxt('output/txt/'+folder+'/'+directory+'/15000.txt')
+data1 = np.loadtxt('output/txt/'+folder+'/'+directory+'/29500.txt')
+data2 = np.loadtxt('output/txt/'+folder+'/'+directory+'/35000.txt')
+data3 = np.loadtxt('output/txt/'+folder+'/'+directory+'/45000.txt')
+data4 = np.loadtxt('output/txt/'+folder+'/'+directory+'/51300.txt')
 
 # data5 = np.loadtxt('output/txt/'+folder+'/'+directory+'/37600.txt')
 # data5 = np.loadtxt('output/txt/1Dflame/'+directory+'/45000.txt')
@@ -195,3 +195,5 @@ elif yIndex == 2:
 add = sum(data4[456:656,1])
 avg = add/200
 print(avg)
+
+print(max(data1[:,1]))
