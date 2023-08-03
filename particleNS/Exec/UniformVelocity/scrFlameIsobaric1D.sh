@@ -23,8 +23,8 @@ do
 done
 
 
-cp -r output/txt/1Dflame/isobaric/field/ output/txt/1Dflame/750/
-cp -r output/txt/1Dflame/isobaric/particle/ output/txt/1Dflame/750/
+cp -r output/txt/1Dflame/isobaric/field/ output/txt/1Dflame/newBC600/
+cp -r output/txt/1Dflame/isobaric/particle/ output/txt/1Dflame/newBC600/
 
 
 

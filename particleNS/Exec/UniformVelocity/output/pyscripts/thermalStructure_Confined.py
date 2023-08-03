@@ -46,14 +46,22 @@ plt.subplots_adjust(left=0.14, bottom=0.15, right=0.90, top=0.94, wspace=0.20, h
 # ax1 = fig.add_subplot(121)
 # ax2 = fig.add_subplot(122)
 
-directory = '900/field'
+length = 2
 
-data0 = np.loadtxt('output/txt/1DflameConfined/'+directory+'/00.txt')
-data1 = np.loadtxt('output/txt/1DflameConfined/'+directory+'/15000.txt')
-data2 = np.loadtxt('output/txt/1DflameConfined/'+directory+'/30000.txt')
-data3 = np.loadtxt('output/txt/1DflameConfined/'+directory+'/45000.txt')
-data4 = np.loadtxt('output/txt/1DflameConfined/'+directory+'/59000.txt')
-data5 = np.loadtxt('output/txt/1DflameConfined/'+directory+'/25000.txt')
+if length == 1:
+    directory =  '900/field'
+elif length == 2:
+    directory = 'domain768/field'
+elif length == 3:
+    directory = 'domain1024/field'
+
+
+data0 = np.loadtxt('output/txt/1DflameConfined/'+directory+'/41000.txt')
+data1 = np.loadtxt('output/txt/1DflameConfined/'+directory+'/50000.txt')
+data2 = np.loadtxt('output/txt/1DflameConfined/'+directory+'/60000.txt')
+data3 = np.loadtxt('output/txt/1DflameConfined/'+directory+'/70000.txt')
+data4 = np.loadtxt('output/txt/1DflameConfined/'+directory+'/80000.txt')
+data5 = np.loadtxt('output/txt/1DflameConfined/'+directory+'/89900.txt')
 
 
 data0 = data0[data0[:, 0].argsort()]
@@ -103,12 +111,7 @@ if yIndex == 1:
     ax[2].set_ylim(0,2600)
     ax[3].set_ylim(0,2600)
     ax[4].set_ylim(0,2600)
-
-    ax[0].set_xlim(0,0.00512)
-    ax[1].set_xlim(0,0.00512)
-    ax[2].set_xlim(0,0.00512)
-    ax[3].set_xlim(0,0.00512)
-    ax[4].set_xlim(0,0.00512)
+    
 
     # ax.set_ylabel(r'$T_\mathrm{g}\;[\mathrm{K}]$', fontsize=20)
     # ax[4].set_xlabel(r'$\mathrm{x}\;[\mathrm{m}]$', fontsize=20)
@@ -126,7 +129,6 @@ if yIndex == 1:
     ax[2].get_xaxis().set_visible(False)
     ax[3].get_xaxis().set_visible(False)
 
-    plt.show()
 
     # fig.savefig('output/plots/flame/thermalStructurePhi1.pdf')
 
@@ -153,11 +155,7 @@ elif yIndex == 2:
     ax[3].set_ylim(0,0.232917511457580)
     ax[4].set_ylim(0,0.232917511457580)
 
-    ax[0].set_xlim(0,0.00512)
-    ax[1].set_xlim(0,0.00512)
-    ax[2].set_xlim(0,0.00512)
-    ax[3].set_xlim(0,0.00512)
-    ax[4].set_xlim(0,0.00512)
+
 
     # ax.set_ylabel(r'$T_\mathrm{g}\;[\mathrm{K}]$', fontsize=20)
     # ax[4].set_xlabel(r'$\mathrm{x}\;[\mathrm{m}]$', fontsize=20)
@@ -175,7 +173,6 @@ elif yIndex == 2:
     ax[2].get_xaxis().set_visible(False)
     ax[3].get_xaxis().set_visible(False)
 
-    plt.show()
 
     # fig.savefig('output/plots/flame/O2massFracPhi1.pdf')
 elif yIndex == 3:
@@ -201,11 +198,7 @@ elif yIndex == 3:
     # ax[3].set_ylim(0,6e5)
     # ax[4].set_ylim(0,6e5)
 
-    ax[0].set_xlim(0,0.00512)
-    ax[1].set_xlim(0,0.00512)
-    ax[2].set_xlim(0,0.00512)
-    ax[3].set_xlim(0,0.00512)
-    ax[4].set_xlim(0,0.00512)
+    
 
     # ax.set_ylabel(r'$T_\mathrm{g}\;[\mathrm{K}]$', fontsize=20)
     # ax[4].set_xlabel(r'$\mathrm{x}\;[\mathrm{m}]$', fontsize=20)
@@ -223,7 +216,6 @@ elif yIndex == 3:
     ax[2].get_xaxis().set_visible(False)
     ax[3].get_xaxis().set_visible(False)
 
-    plt.show()
 
 elif yIndex == 4:
     ax[0].plot(data0[0:51,0],data0[0:51,yIndex],c='black',linewidth=3,label='$t=t_0$') 
@@ -248,11 +240,6 @@ elif yIndex == 4:
     # ax[3].set_ylim(0,6e5)
     # ax[4].set_ylim(0,6e5)
 
-    ax[0].set_xlim(0,0.00512)
-    ax[1].set_xlim(0,0.00512)
-    ax[2].set_xlim(0,0.00512)
-    ax[3].set_xlim(0,0.00512)
-    ax[4].set_xlim(0,0.00512)
 
     # ax.set_ylabel(r'$T_\mathrm{g}\;[\mathrm{K}]$', fontsize=20)
     # ax[4].set_xlabel(r'$\mathrm{x}\;[\mathrm{m}]$', fontsize=20)
@@ -270,9 +257,26 @@ elif yIndex == 4:
     ax[2].get_xaxis().set_visible(False)
     ax[3].get_xaxis().set_visible(False)
 
-    plt.show()
+if length == 1:
+    ax[0].set_xlim(0,0.00512)
+    ax[1].set_xlim(0,0.00512)
+    ax[2].set_xlim(0,0.00512)
+    ax[3].set_xlim(0,0.00512)
+    ax[4].set_xlim(0,0.00512)
+elif length == 2:
+    ax[0].set_xlim(0,0.00768)
+    ax[1].set_xlim(0,0.00768)
+    ax[2].set_xlim(0,0.00768)
+    ax[3].set_xlim(0,0.00768)
+    ax[4].set_xlim(0,0.00768)
+elif length == 3:
+    ax[0].set_xlim(0,0.01024)
+    ax[1].set_xlim(0,0.01024)
+    ax[2].set_xlim(0,0.01024)
+    ax[3].set_xlim(0,0.01024)
+    ax[4].set_xlim(0,0.01024)
 
-
+plt.show()
 
 # add = sum(data4[456:656,1])
 # avg = add/200
