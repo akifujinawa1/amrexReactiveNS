@@ -113,6 +113,9 @@ for i in range(Nparam):
     else: 
         directory = 'output/txt/1DflamecloseOpen/'+str(concentration)+'/particle/'  #
     Np = 0
+
+    if i == 0:
+        directory = 'output/txt/1Dflame/newBC600/particle/'  #
         
     for filename in os.listdir(directory):
         f = os.path.join(directory, filename)

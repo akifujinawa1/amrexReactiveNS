@@ -42,54 +42,117 @@ color = colors
  
 # matplot subplot
 fig, ax = plt.subplots(nrows=2,ncols=1,figsize=(8,11*yratio))  # ,dpi=100   fig2,ax2 = plt.subplots(nrows=2,ncols=1,figsize=(8,8*yratio))
-plt.subplots_adjust(left=0.14, bottom=0.15, right=0.90, top=0.94, wspace=0.20, hspace=0.20)
+fig2, ax2 = plt.subplots(nrows=4,ncols=1,figsize=(8,14*yratio))  # ,dpi=100   fig2,ax2 = plt.subplots(nrows=2,ncols=1,figsize=(8,8*yratio))
+plt.subplots_adjust(left=0.14, bottom=0.1, right=0.90, top=0.94, wspace=0.20, hspace=0.20)
 # fig = 
 # ax1 = fig.add_subplot(121)
 # ax2 = fig.add_subplot(122)
 
-length = 2
+length = 1
 condition = 2;
 yIndex = 4
+plot = 2    # 1 for only one plot, 2 for plot with all cases
 
 folder = '1DflameConfined'
 if length == 1:
     directory =  '900/field'
+    time = 45000
+    # time = 30000
 elif length == 2:
     directory = 'domain768/field'
+    time = 65000
+    # time = 50000
 elif length == 3:
     directory = 'domain1024/field'
+    time = 85000
+    # time = 70000
+
+# time = 20000
+if plot == 1:
+
+    data1 = np.loadtxt('output/txt/'+folder+'/'+directory+'/'+str(time)+'.txt')
+    data1 = data1[data1[:, 0].argsort()]
+
+    position = data1[:,0]
+    velocity = data1[:,4] - np.mean(data1[:,4])    # velocity signal centered at 0
+    velocity = velocity/np.max(velocity)           # normalized velocity signal
+
+    ax[0].plot(position,velocity)
+    ax[0].set_ylabel('$u_\mathrm{g}\;[\mathrm{m/s}]$', fontsize=16)
+    ax[0].set_xlabel('$x\;[\mathrm{m}]$', fontsize=16)
+
+    if length == 1:
+        x = np.linspace(0,0.00512,512)
+    elif length == 2:
+        x = np.linspace(0,0.00768,768)
+    elif length == 3:
+        x = np.linspace(0,0.01024,1024)
 
 
-time = 60000
-
-data1 = np.loadtxt('output/txt/'+folder+'/'+directory+'/'+str(time)+'.txt')
-data1 = data1[data1[:, 0].argsort()]
-
-ax[0].plot(data1[:,0], data1[:,4])
-ax[0].set_xlabel('$u_\mathrm{g}\;[\mathrm{m/s}]$', fontsize=16)
-ax[0].set_ylabel('$x\;[\mathrm{m}]$', fontsize=16)
-
-if length == 1:
-    x = np.linspace(0,0.00512,512)
-elif length == 2:
-    x = np.linspace(0,0.00768,768)
-elif length == 3:
-    x = np.linspace(0,0.01024,1024)
+    velocityFFT = np.fft.rfft(velocity)
+    print(type(velocityFFT))
+    spfreq = np.fft.rfftfreq(len(velocity),x[2]-x[1])
+    print(x)
+    print(spfreq)
+    ax[1].plot(spfreq, velocityFFT.real)
+    ax[1].set_xlabel('$\mathrm{Spatial\;frequency}\;[\mathrm{1/m}]$', fontsize=16)
+    ax[1].set_ylabel('$\mathrm{Amplitude}\;[\mathrm{-}]$', fontsize=16)
+    plt.ticklabel_format(style='sci', axis='x', scilimits=(-1,1))
 
 
-velo = data1[:,4]
-velocityFFT = np.fft.rfft(velo)
-print(type(velocityFFT))
-spfreq = np.fft.rfftfreq(len(x),x[2]-x[1])
-print(x)
-print(spfreq)
-ax[1].plot(spfreq, velocityFFT.real)
-ax[1].set_xlabel('$\mathrm{Spatial\;frequency}\;[\mathrm{1/m}]$', fontsize=16)
-ax[1].set_ylabel('$\mathrm{Amplitude}\;[\mathrm{-}]$', fontsize=16)
-plt.ticklabel_format(style='sci', axis='x', scilimits=(0,0))
+    plt.show()
 
+else:
+    for i in range(3):
+        if i == 0:
+            directory =  '900/field'
+            text = '0.00512'
+            time = 45000
+        elif i == 1:
+            directory = 'domain768/field'
+            text = '0.00768'
+            time = 65000
+        elif i == 2:
+            directory = 'domain1024/field'
+            text = '0.1024'
+            time = 85000
 
-plt.show()
+        data1 = np.loadtxt('output/txt/'+folder+'/'+directory+'/'+str(time)+'.txt')
+        data1 = data1[data1[:, 0].argsort()]
+
+        position = data1[:,0]
+        velocity = data1[:,4] - np.mean(data1[:,4])    # velocity signal centered at 0
+        velocity = velocity/np.max(velocity)           # normalized velocity signal
+
+        ax2[i].plot(position,velocity,color=colors[i], label='$L_x='+text+'\;\mathrm{m}$')
+        ax2[i].set_ylabel('$u_\mathrm{g}\;[\mathrm{m/s}]$', fontsize=16)
+        ax2[i].set_xlabel('$x\;[\mathrm{m}]$', fontsize=16)
+
+        if i == 0:
+            x = np.linspace(0,0.00512,512)
+        elif i == 1:
+            x = np.linspace(0,0.00768,768)
+        elif i == 2:
+            x = np.linspace(0,0.01024,1024)
+
+        ax2[i].set_xlim([0,0.01024])
+
+        velocityFFT = np.fft.rfft(velocity)
+        print(type(velocityFFT))
+        spfreq = np.fft.rfftfreq(len(velocity),x[2]-x[1])
+        print(x)
+        print(spfreq)
+        ax2[3].plot(spfreq, velocityFFT.real,color=colors[i*2])
+        ax2[3].set_xlabel('$\mathrm{Spatial\;frequency}\;[\mathrm{1/m}]$', fontsize=16)
+        ax2[3].set_ylabel('$\mathrm{Amplitude}\;[\mathrm{-}]$', fontsize=16)
+        ax2[3].set_xlim([0,2e4])
+        plt.ticklabel_format(style='sci', axis='x', scilimits=(-1,1))
+
+    ax2[0].get_xaxis().set_visible(False)
+    ax2[1].get_xaxis().set_visible(False)
+    ax2[2].set_xlabel('$x\;[\mathrm{m}]$', fontsize=16)
+    plt.show()
+
 
 
 

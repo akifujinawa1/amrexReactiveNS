@@ -24,7 +24,7 @@ if condition == 1:
 elif condition == 2:
     concentrations = [900,900,900]
 
-Nparam = 2
+Nparam = 3
 
 
 yratio = 1/1.618
@@ -228,7 +228,7 @@ for i in range(Nparam):
 
     if plotVar==1:
         if condition == 1:
-            ax.scatter(time,100*location-0.256,c=colors[i],s=15,marker=markers[i],label='$'+str(concentration)+'\;\mathrm{g/cm^3}$') #s=3
+            ax.scatter(time,100*location-0.256,c=colors[i*2],s=15,marker=markers[i],label='$'+str(concentration)+'\;\mathrm{g/cm^3}$') #s=3
         else:
             ax.scatter(time,100*location,c=colors[i],lw=1,marker=markers[i],label='$'+str(concentration)+'\;\mathrm{g/cm^3}$') #s=3
 
@@ -268,8 +268,8 @@ for i in range(Nparam):
 # ax.ticklabel_format(useOffset=False)
 if plotVar == 1:   # for x-t diagram
     # if condition == 1 or condition == 2:
-    ax.set_ylim([0,0.768])
-    ax.set_xlim([0,90e-3])
+    # ax.set_ylim([0,0.1024])
+    # ax.set_xlim([0,120e-3])
     ax.set_ylabel(r'$x\;[\mathrm{cm}]$', fontsize=20)
     ax.set_xlabel(r'$\mathrm{time}\;[\mathrm{s}]$', fontsize=20)
 if plotVar == 2:   # for flame speed diagram
