@@ -40,6 +40,7 @@ extern   int       iter;
 extern   int       printlevel;
 extern   int       n_cell;
 extern   int       counter;
+extern   int       printRate;
 
 extern   double       Gamma;           // ratio of specific heats -
 extern   double       R;               // univeral gas constant   J/K/mol
@@ -81,8 +82,83 @@ void AmrLevelAdv::writePlotFile()
 
     int rank, size;
     MPI_Comm_rank(MPI_COMM_WORLD, &rank);
+
+    if ((enIC == 15)&&(cur_time > 1e-6*counter)&&(printRate == 1)) { // 1D isochoric FFT analysis
+        counter += 1;
+        const MultiFab &S_plot = get_new_data(Phi_Type);
+
+        int rank, size;
+        MPI_Comm_rank(MPI_COMM_WORLD, &rank);
+        Vector<double> Tg_x(NxCell);
+        Vector<double> YO2_x(NxCell);
+
+        // std::cout << "Printing data on AMR level: " << level << " with CPU rank: " << rank << std::endl;
+
+        const Real dX = dx[0];
+        const Real dY = (amrex::SpaceDim > 1 ? dx[1] : 0.0);
+
+        const Real probLoX = prob_lo[0];
+        const Real probLoY = (amrex::SpaceDim > 1 ? prob_lo[1] : 0.0);
+
+        std::ofstream approx;
+        std::string iteration = std::to_string(iter);
+        int microTime         = std::floor(cur_time * 1.0e7);
+        std::string curtime   = std::to_string(microTime);
+
+        if (enIC == 14){
+            approx.open("output/txt/1Dflame/isobaric/field/" + curtime + "0.txt", std::ofstream::app);
+        }
+        else if (enIC == 15){
+            approx.open("output/txt/1DflameConfined/isochoric/field/" + curtime + "0.txt", std::ofstream::app);
+        }
+        else if (enIC == 16){
+            approx.open("output/txt/1DflamecloseOpen/isobaric/field/" + curtime + "0.txt", std::ofstream::app);
+        }
+        
+
+        for (MFIter mfi(S_plot); mfi.isValid(); ++mfi)
+        {
+            Box bx = mfi.tilebox();
+            const Dim3 lo = lbound(bx);
+            const Dim3 hi = ubound(bx);
+            const auto &arr = S_plot.array(mfi);
+            
+            int j = 0;
+            int k = 0;
+
+            for (int i = lo.x; i <= hi.x; i++){
+                const Real x = probLoX + (double(i) + 0.5) * dX;
+            
+                double rho = arr(i, j, k, gasVar::rho);
+                double xmomentum = arr(i, j, k, gasVar::rhou);
+                double ymomentum = arr(i, j, k, gasVar::rhov);
+                double ener = arr(i, j, k, gasVar::E);
+                double rhoYO2 = arr(i, j, k, gasVar::rhoYO2);
+                double rhoYN2 = arr(i, j, k, gasVar::rhoYN2);
+
+                double vx = xmomentum / rho;
+                double vy = ymomentum / rho;
+                double YO2 = rhoYO2 / rho;
+                double YN2 = rhoYN2 / rho;
+                double Tgas = Tg(rho, vx, vy, YO2, YN2, ener);
+                double p = pressure(rho, YO2, YN2, Tgas);
+                double eps = specIntEner(rho, vx, vy, ener, p);
+                double a = soundSpeed(p, rho, Tgas, YO2, YN2);
+                double gammaval = a * a * rho / p;
+
+                // std::cout << "rho rhou rhov e o2c n2c: " << rho << " " << xmomentum << " " << ymomentum << " " \
+                // << ener << " " << rhoYO2 << " " << rhoYN2 << std::endl;
+
+                // std::cout << "Tg, p: " << Tgas << " " << p << std::endl;
+
+                AllPrint(approx) << x << " " << Tgas << " " << YO2 << " " << p << " " << vx << " " << rho << std::endl;
+            }
+        }
+        approx.close();
+    }
+
     
-    if (((enIC == 14)||(enIC == 15)||(enIC==16))&&(cur_time > 1e-4*counter)) { // 1D isobaric flame case
+    if (((enIC == 14)||(enIC == 15)||(enIC==16))&&(cur_time > 1e-4*counter)&&(printRate == 0)) { // 1D isobaric flame case
         counter += 1;
         const MultiFab &S_plot = get_new_data(Phi_Type);
 

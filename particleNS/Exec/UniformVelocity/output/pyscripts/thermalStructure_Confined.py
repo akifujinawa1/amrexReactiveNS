@@ -57,6 +57,7 @@ elif length == 3:
 
 # times = [15000,30000,45000,60000,75000]
 times = [10000,20000,30000,40000,50000]
+# times = [1000,3000,5000,7000,9000]
 
 data0 = np.loadtxt('output/txt/1DflameConfined/'+directory+'/'+str(times[0])+'.txt')
 data1 = np.loadtxt('output/txt/1DflameConfined/'+directory+'/'+str(times[1])+'.txt')
@@ -83,7 +84,7 @@ data4 = data4[data4[:, 0].argsort()]
 #         data0[i,1] = 300
 
 # plotting either temperature or mass fraction or pressure 
-yIndex = 1
+yIndex = 5
 
 if yIndex == 1:
     ax[0].plot(data0[0:51,0],data0[0:51,yIndex],c='black',linewidth=2,label='$t='+str(times[0]/1e3)+'\;\mathrm{ms}$') 
@@ -220,8 +221,8 @@ elif yIndex == 3:
 
 
 elif yIndex == 4:
-    ax[0].plot(data0[0:51,0],data0[0:51,yIndex],c='black',linewidth=3,label='$t='+str(times[0]/1e3)+'\;\mathrm{ms}$') 
-    ax[0].plot(data0[52:511,0],data0[52:511,yIndex],c='black',linewidth=2) 
+    ax[0].plot(data0[:,0],data0[:,yIndex],c='black',linewidth=2,label='$t='+str(times[0]/1e3)+'\;\mathrm{ms}$') 
+    # ax[0].plot(data0[52:511,0],data0[52:511,yIndex],c='black',linewidth=2) 
     # ax[0].plot(data0[:,0],data0[:,yIndex]*0+0.232917511457580,c='red',linestyle='dashed',linewidth=3,label='$Y_\mathrm{O_2,0}$') 
 
     ax[1].plot(data1[:,0],data1[:,yIndex],c='black',linewidth=2,label='$t='+str(times[1]/1e3)+'\;\mathrm{ms}$') 
@@ -245,7 +246,47 @@ elif yIndex == 4:
 
     # ax.set_ylabel(r'$T_\mathrm{g}\;[\mathrm{K}]$', fontsize=20)
     # ax[4].set_xlabel(r'$\mathrm{x}\;[\mathrm{m}]$', fontsize=20)
-    fig.supylabel(r'$v\;[\mathrm{m/s}]$', fontsize=20)
+    fig.supylabel(r'$u_\mathrm{g}\;[\mathrm{m/s}]$', fontsize=20)
+    ax[4].set_xlabel(r'$x\;[\mathrm{m}]$', fontsize=20)
+    # fig.suptitle('Figure')
+    ax[0].legend(ncol=1, loc="best", fontsize = 14, frameon=False)
+    ax[1].legend(ncol=1, loc="best", fontsize = 14, frameon=False)
+    ax[2].legend(ncol=1, loc="best", fontsize = 14, frameon=False)
+    ax[3].legend(ncol=1, loc="best", fontsize = 14, frameon=False)
+    ax[4].legend(ncol=1, loc="best", fontsize = 14, frameon=False)
+
+    ax[0].get_xaxis().set_visible(False)
+    ax[1].get_xaxis().set_visible(False)
+    ax[2].get_xaxis().set_visible(False)
+    ax[3].get_xaxis().set_visible(False)
+
+elif yIndex == 5:
+    ax[0].plot(data1[:,0],data1[:,yIndex],c='black',linewidth=2,label='$t='+str(times[0]/1e3)+'\;\mathrm{ms}$') 
+    # ax[0].plot(data0[52:511,0],data0[52:511,yIndex],c='black',linewidth=2) 
+    # ax[0].plot(data0[:,0],data0[:,yIndex]*0+0.232917511457580,c='red',linestyle='dashed',linewidth=3,label='$Y_\mathrm{O_2,0}$') 
+
+    ax[1].plot(data1[:,0],data1[:,yIndex],c='black',linewidth=2,label='$t='+str(times[1]/1e3)+'\;\mathrm{ms}$') 
+    # ax[1].plot(data1[:,0],data1[:,yIndex]*0+0.232917511457580,c='red',linestyle='dashed',linewidth=3) 
+
+    ax[2].plot(data2[:,0],data2[:,yIndex],c='black',linewidth=2,label='$t='+str(times[2]/1e3)+'\;\mathrm{ms}$') 
+    # ax[2].plot(data2[:,0],data2[:,yIndex]*0+0.232917511457580,c='red',linestyle='dashed',linewidth=3) 
+
+    ax[3].plot(data3[:,0],data3[:,yIndex],c='black',linewidth=2,label='$t='+str(times[3]/1e3)+'\;\mathrm{ms}$') 
+    # ax[3].plot(data3[:,0],data3[:,yIndex]*0+0.232917511457580,c='red',linestyle='dashed',linewidth=3) 
+
+    ax[4].plot(data4[:,0],data4[:,yIndex],c='black',linewidth=2,label='$t='+str(times[4]/1e3)+'\;\mathrm{ms}$') 
+    # ax[4].plot(data4[:,0],data4[:,yIndex]*0+0.232917511457580,c='red',linestyle='dashed',linewidth=3) 
+
+    # ax[0].set_ylim(0,6e5)
+    # ax[1].set_ylim(0,6e5)
+    # ax[2].set_ylim(0,6e5)
+    # ax[3].set_ylim(0,6e5)
+    # ax[4].set_ylim(0,6e5)
+
+
+    # ax.set_ylabel(r'$T_\mathrm{g}\;[\mathrm{K}]$', fontsize=20)
+    # ax[4].set_xlabel(r'$\mathrm{x}\;[\mathrm{m}]$', fontsize=20)
+    fig.supylabel(r'$\rho\;[\mathrm{kg/m^3}]$', fontsize=20)
     ax[4].set_xlabel(r'$x\;[\mathrm{m}]$', fontsize=20)
     # fig.suptitle('Figure')
     ax[0].legend(ncol=1, loc="best", fontsize = 14, frameon=False)

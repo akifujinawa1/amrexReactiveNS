@@ -36,6 +36,7 @@ adv.v              = 1       # verbosity in Adv
 amr.v              = 1       # verbosity in Amr (recommended, else progress of code is not output)
 timing             = 0       # whether to print computational time or not (1 prints, 0 doesn't)
 conv               = 0       # printing files for convergence or not
+printRate          = 0       # only set to 1 if FFT analysis is required
 
 # REFINEMENT / REGRIDDING
 amr.max_level       = 0       # maximum level number allowed

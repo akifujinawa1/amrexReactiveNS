@@ -81,14 +81,14 @@ fig1, ax1 = plt.subplots(nrows=4,ncols=1,figsize=(8,16*yratio))  # ,dpi=100   fi
 plt.subplots_adjust(left=0.14, bottom=0.08, right=0.90, top=0.97, wspace=0.20, hspace=0.20)
 
 condition = 1
-setConcentrations = 2
+setConcentrations = 1
 
 for i in range(4):
     if setConcentrations == 1:
-        concentrations = [700,800,900,1000]
+        concentrations = [600,700,800,900]
         concentration = concentrations[i]
     else:
-        concentrations = [1100,1200,1300,1400]
+        concentrations = [1000,1100,1200,1300]
         concentration = concentrations[i]
     time = 59000
     #27600
@@ -142,11 +142,19 @@ for i in range(4):
             
 
     matrix = matrix[matrix[:,0].argsort()]
-
+    # YFeO = [x for _,x in sorted(zip(YFeO,location))]
     location = matrix[:,0]
     YFeO     = matrix[:,1]
+    # for olp in range(len(matrix[:,1])-1):
+    #     if (YFeO[olp] < 1e-4):
+    #         YFeO[olp] == 0
+    #     elif YFeO[olp] > 2:
+    #         YFeO[olp] == 1
+    # location.sort()
+    # sorted(YFeO, reverse = True)
+    if condition == 1 and i == 0:
+        YFeO[15] = 0
 
-    
     if condition == 1:
         start = 256
         end = 767
@@ -158,7 +166,7 @@ for i in range(4):
 
     location = location*1e2 - offset
     # print(location)
-    # print(YFeO)
+    print(YFeO)
     # print(Np)
     # print(data4[:,2])
 
@@ -168,12 +176,13 @@ for i in range(4):
     phival    = round(phival,2)
 
 
+
     if i == 0:
         ax1[i].plot(data4[start:end,0]*1e2-offset,data4[start:end,2],c='black',linewidth=3,label='$Y_\mathrm{O_2}$') 
         if setConcentrations == 1:
             ax1[i].legend(ncol=1, loc=(0,0.15), fontsize = 16, frameon=False)
         else: 
-            ax1[i].legend(ncol=1, loc=(0,0.34), fontsize = 16, frameon=False)    
+            ax1[i].legend(ncol=1, loc=(0,0.23), fontsize = 16, frameon=False)    
     else:
         ax1[i].plot(data4[start:end,0]*1e2-offset,data4[start:end,2],c='black',linewidth=3)
         
@@ -187,14 +196,17 @@ for i in range(4):
     textstr = '$'+str(concentration)+'\;\mathrm{g/m^3},\;\phi \sim'+str(phival)+'$'
 
     if setConcentrations == 1:
-        ax1[i].text(0.005, 0.01, textstr, fontsize=16)
+        if i == 3:
+            ax1[i].text(0.005, 0.04, textstr, fontsize=16)
+        else:
+            ax1[i].text(0.005, 0.01, textstr, fontsize=16)
     else:
         if i == 0:
-            ax1[i].text(0.005, 0.06, textstr, fontsize=16)
+            ax1[i].text(0.005, 0.03, textstr, fontsize=16)
         elif i == 1:
-            ax1[i].text(0.005, 0.05, textstr, fontsize=16)
+            ax1[i].text(0.005, 0.03, textstr, fontsize=16)
         else:
-            ax1[i].text(0.005, 0.05, textstr, fontsize=16)
+            ax1[i].text(0.005, 0.03, textstr, fontsize=16)
 
     # ax2.scatter(location, YFeO, color = colors[1], s=15) #s=15  linewidth=3
     axR = ax1[i].twinx()
@@ -203,10 +215,10 @@ for i in range(4):
         if setConcentrations == 1:
             axR.legend(ncol=1, loc=(0.2,0.17), fontsize = 16, frameon=False)
         else:
-            axR.legend(ncol=1, loc=(0.2,0.34), fontsize = 16, frameon=False)
+            axR.legend(ncol=1, loc=(0.2,0.24), fontsize = 16, frameon=False)
     else:
         if (i == 3):
-            axR.plot(location[0:len(location)-1], YFeO[0:len(location)-1], '--o', color=colors[2], linewidth = 1)
+            axR.plot(location, YFeO, '--o', color=colors[2], linewidth = 1)
             # axR.scatter(location[len(location)-1], YFeO[len(location)-1],marker= 'o', color=colors[2])
         else: 
             axR.plot(location, YFeO, '--o', color=colors[2], linewidth = 1)

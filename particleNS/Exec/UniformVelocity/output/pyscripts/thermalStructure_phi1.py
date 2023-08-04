@@ -47,7 +47,7 @@ plt.subplots_adjust(left=0.14, bottom=0.15, right=0.90, top=0.94, wspace=0.20, h
 # ax2 = fig.add_subplot(122)
 
 condition = 1;
-yIndex = 1
+yIndex = 2
 
 if condition == 1:
     folder = '1Dflame'

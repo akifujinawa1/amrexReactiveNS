@@ -37,6 +37,7 @@ extern   int       conv;
 extern   int       Da;
 extern   int       particle;
 extern   int       Nsub;
+extern   int       printRate;
 extern   double       conc;   //from main.cpp
 
 // extern   double       dp0;             // from main.cpp

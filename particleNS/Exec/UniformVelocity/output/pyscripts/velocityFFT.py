@@ -42,8 +42,10 @@ color = colors
  
 # matplot subplot
 fig, ax = plt.subplots(nrows=2,ncols=1,figsize=(8,11*yratio))  # ,dpi=100   fig2,ax2 = plt.subplots(nrows=2,ncols=1,figsize=(8,8*yratio))
-fig2, ax2 = plt.subplots(nrows=4,ncols=1,figsize=(8,14*yratio))  # ,dpi=100   fig2,ax2 = plt.subplots(nrows=2,ncols=1,figsize=(8,8*yratio))
-plt.subplots_adjust(left=0.14, bottom=0.1, right=0.90, top=0.94, wspace=0.20, hspace=0.20)
+fig2, ax2 = plt.subplots(nrows=3,ncols=1,figsize=(8,12*yratio))  # ,dpi=100   fig2,ax2 = plt.subplots(nrows=2,ncols=1,figsize=(8,8*yratio))
+fig3, ax3 = plt.subplots(nrows=1,ncols=1,figsize=(8,8*yratio))  # ,dpi=100   fig2,ax2 = plt.subplots(nrows=2,ncols=1,figsize=(8,8*yratio))
+plt.subplots_adjust(left=0.14, bottom=0.14  , right=0.90, top=0.94, wspace=0.20, hspace=0.20)
+# plt.tight_layout()
 # fig = 
 # ax1 = fig.add_subplot(121)
 # ax2 = fig.add_subplot(122)
@@ -124,9 +126,9 @@ else:
         velocity = data1[:,4] - np.mean(data1[:,4])    # velocity signal centered at 0
         velocity = velocity/np.max(velocity)           # normalized velocity signal
 
-        ax2[i].plot(position,velocity,color=colors[i], label='$L_x='+text+'\;\mathrm{m}$')
-        ax2[i].set_ylabel('$u_\mathrm{g}\;[\mathrm{m/s}]$', fontsize=16)
-        ax2[i].set_xlabel('$x\;[\mathrm{m}]$', fontsize=16)
+        ax2[i].plot(position,velocity,color=colors[i*2], label='$L_x='+text+'\;\mathrm{m}$')
+        ax2[1].set_ylabel('$u_\mathrm{g}\;[\mathrm{m/s}]$', fontsize=18)
+        ax2[2].set_xlabel('$x\;[\mathrm{m}]$', fontsize=18)
 
         if i == 0:
             x = np.linspace(0,0.00512,512)
@@ -142,16 +144,26 @@ else:
         spfreq = np.fft.rfftfreq(len(velocity),x[2]-x[1])
         print(x)
         print(spfreq)
-        ax2[3].plot(spfreq, velocityFFT.real,color=colors[i*2])
-        ax2[3].set_xlabel('$\mathrm{Spatial\;frequency}\;[\mathrm{1/m}]$', fontsize=16)
-        ax2[3].set_ylabel('$\mathrm{Amplitude}\;[\mathrm{-}]$', fontsize=16)
-        ax2[3].set_xlim([0,2e4])
+        ax3.plot(spfreq, velocityFFT.real,color=colors[i*2], label='$L_x='+text+'\;\mathrm{m}$')
+        ax3.set_xlabel('$\mathrm{Spatial\;frequency}\;[\mathrm{1/m}]$', fontsize=18)
+        ax3.set_ylabel('$\mathrm{Amplitude}\;[\mathrm{-}]$', fontsize=18)
+        ax3.set_xlim([0,2e4])
         plt.ticklabel_format(style='sci', axis='x', scilimits=(-1,1))
+
+    ax2[0].legend(ncol=1, loc='best', fontsize = 14, frameon=False)
+    ax2[1].legend(ncol=1, loc='best', fontsize = 14, frameon=False)
+    ax2[2].legend(ncol=1, loc='best', fontsize = 14, frameon=False)
 
     ax2[0].get_xaxis().set_visible(False)
     ax2[1].get_xaxis().set_visible(False)
-    ax2[2].set_xlabel('$x\;[\mathrm{m}]$', fontsize=16)
+    # ax2[2].set_xlabel('$x\;[\mathrm{m}]$', fontsize=16)
+
+    ax3.legend(ncol=1, loc='best', fontsize = 14, frameon=False)
+
     plt.show()
+
+    fig2.savefig('output/plots/flame/uSpatial_confine_3domain.pdf')
+    fig3.savefig('output/plots/flame/uSpatial_frequency.pdf')
 
 
 

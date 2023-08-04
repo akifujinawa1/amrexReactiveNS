@@ -20,7 +20,7 @@ from moviepy.video.io.bindings import mplfig_to_npimage
 condition = 1   # 1 for isobaric, 2 for isochoric
 plotVar = 2     # 1 for x-t, 2 for flame speed
 if condition == 1:
-    concentrations = [700,725,750,800,900,1000,1100,1200,1300,1400,1500,1600]
+    concentrations = [600,700,800,900,1000,1100,1200,1300,1400]
 elif condition == 2:
     concentrations = [600,700,800,900,1000,1100,1200,1300,1400]
 
@@ -114,8 +114,8 @@ for i in range(Nparam):
         directory = 'output/txt/1DflamecloseOpen/'+str(concentration)+'/particle/'  #
     Np = 0
 
-    if i == 0:
-        directory = 'output/txt/1Dflame/newBC600/particle/'  #
+    # if i == 0:
+    #     directory = 'output/txt/1Dflame/newBC600/particle/'  #
         
     for filename in os.listdir(directory):
         f = os.path.join(directory, filename)
@@ -179,7 +179,7 @@ for i in range(Nparam):
 
 
     Nranges = 3
-    Ndistance = 8
+    Ndistance = 5
     offEnd = 0 #int(0.1*Np) # 8
     fsVals = np.empty(Nranges)
     for offset in range(Nranges):

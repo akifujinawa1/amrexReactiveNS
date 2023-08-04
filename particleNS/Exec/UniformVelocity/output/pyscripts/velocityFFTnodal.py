@@ -79,8 +79,8 @@ lss = ['-','--','-.']
 # scale = framestep/timestep
  
 # matplot subplot
-fig, ax = plt.subplots(nrows=2,ncols=1,figsize=(8,12*yratio))  # ,dpi=100   fig2,ax2 = plt.subplots(nrows=2,ncols=1,figsize=(8,8*yratio))
-# fig2, ax2 = plt.subplots(nrows=2,ncols=1,figsize=(8,12*yratio))  # ,dpi=100   fig2,ax2 = plt.subplots(nrows=2,ncols=1,figsize=(8,8*yratio))
+fig, ax = plt.subplots(nrows=3,ncols=1,figsize=(8,12*yratio))  # ,dpi=100   fig2,ax2 = plt.subplots(nrows=2,ncols=1,figsize=(8,8*yratio))
+fig2, ax2 = plt.subplots(nrows=3,ncols=1,figsize=(8,12*yratio))  # ,dpi=100   fig2,ax2 = plt.subplots(nrows=2,ncols=1,figsize=(8,8*yratio))
 # fig3, ax3 = plt.subplots(nrows=2,ncols=1,figsize=(8,12*yratio))  # ,dpi=100   fig2,ax2 = plt.subplots(nrows=2,ncols=1,figsize=(8,8*yratio))
 
 plt.subplots_adjust(left=0.14, bottom=0.12, right=0.90, top=0.94, wspace=0.20, hspace=0.20)
@@ -93,8 +93,7 @@ condition = 2
 yIndex = 4
 
 dpdt = np.empty(1300)
-
-pressure = np.empty((Nlengths,1300))
+velo = np.empty((Nlengths,1300))
 
 
 
@@ -103,107 +102,61 @@ for i in range(Nlengths):
         directory =  '900/field'
         time = np.linspace(0.1,59,590)
         domain = '0.00512'
+        Lx = 512
     elif i == 1:
         directory = 'domain768/field'
         time = np.linspace(0.1,89,890)
         domain = '0.00758'
+        Lx = 768
     elif i == 2:
         directory = 'domain1024/field'
         time = np.linspace(0.1,119,1190)
         domain = '0.01024'
+        Lx = 1024
 
     NT = len(time)
 
     for j in range(NT):
         timeval = str((j+1)*100)
         data = np.loadtxt('output/txt/1DflameConfined/'+directory+'/'+timeval+'.txt')
-        pressure[i,j] = np.mean(data[:,3])
-    pPlot = pressure[i,0:len(time)]
-    ax[0].plot(time, pPlot*1e-6,color=colors[i],ls = lss[i], lw = 3, label='$L_x='+domain+'\;\mathrm{m}$')
+        velo[i,j] = data[int(Lx/2),4]
+    vPlot = velo[i,0:len(time)]
+    ax[i].plot(time, vPlot,color=colors[i],ls = '-', lw = 1, label='$L_x='+domain+'\;\mathrm{m}$')
+    ax[i].legend(ncol=2, loc='best', fontsize = 14, frameon=False)
+
+
+ax[2].set_xlabel('$\mathrm{time}\;[\mathrm{ms}]$', fontsize=20)
+ax[1].set_ylabel('$u_\mathrm{g,x=L_x/2}\;[\mathrm{m/s}]$', fontsize=20)
+ax[0].get_xaxis().set_visible(False)
+ax[1].get_xaxis().set_visible(False)
 
 for i in range(Nlengths):
     if i == 0:
-        directory =  '900/field'
         time = np.linspace(0.1,59,590)
-        time2 = time[0:589] + (time[2]-time[1])/2
         domain = '0.00512'
+        Lx = 512
     elif i == 1:
-        directory = 'domain768/field'
         time = np.linspace(0.1,89,890)
-        time2 = time[0:889] + (time[2]-time[1])/2
         domain = '0.00758'
+        Lx = 768
     elif i == 2:
-        directory = 'domain1024/field'
         time = np.linspace(0.1,119,1190)
-        time2 = time[0:1189] + (time[2]-time[1])/2
         domain = '0.01024'
-    for j in range(NT-1):
-        dpdt[j] = (pressure[i,j+1] - pressure[i,j])/0.1e-3
-    gradPlot = dpdt[0:len(time)-1]
-    ax[1].plot(time2, gradPlot*1e-6,color=colors[i], lw = 2)
+        Lx = 1024
 
-ax[0].set_xlabel('$\mathrm{time}\;[\mathrm{ms}]$', fontsize=20)
-ax[0].set_ylabel('$\overline{p}\;[\mathrm{MPa}]$', fontsize=20)
-ax[0].legend(ncol=2, loc='best', fontsize = 14, frameon=False)
-
-ax[1].set_xlabel('$\mathrm{time}\;[\mathrm{ms}]$', fontsize=20)
-ax[1].set_ylabel('$ \mathrm{d}\overline{p}/\mathrm{d}t \;[\mathrm{MPa/s}]$', fontsize=20)
-
-# maxPressure = np.empty(N)
-# maxdpdt = np.empty(N)
-
-# for i in range(N):
-#     conc = concentrations[i]
-#     directory = 'output/txt/'+folder+'/'+str(conc)+'/particle/'
-#     TotalNp = 0
-#     for path in os.scandir(directory):
-#         if path.is_file():
-#             TotalNp += 1
-#     interDist = (mTot0/865)**(1/3)
-#     mO2_all   = 512*dp0*interDist*interDist*Y_O2*(0.1*rhoHi+0.9*rhoLo)
-#     phiArray[i] = (TotalNp*mFe0/mO2_all)/(2*M_Fe/M_O2)
-#     directory =  str(conc)+'/field'
-#     maxPressure[i] = max(pressure[i,:])
-#     maxdpdt[i] = max(dpdt[i,200:588])
-
-# ax2[0].plot(phiArray, maxPressure*1e-6 ,color='black')
-# ax2[1].plot(phiArray, maxdpdt*1e-6 ,color='black')
-
-# ax2[0].set_xlabel('$\phi\;[\mathrm{-}]$', fontsize=20)
-# ax2[0].set_ylabel('$\overline{p}_\mathrm{max}\;[\mathrm{MPa}]$', fontsize=20)
-
-# ax2[1].set_xlabel('$\phi\;[\mathrm{-}]$', fontsize=20)
-# ax2[1].set_ylabel('$\mathrm{d}\overline{p}/\mathrm{d}t_\mathrm{max}\;[\mathrm{MPa}]$', fontsize=20)
-
-
-
-
-# # FFT on dpdt
-# conc = 1400
-# ival = int((conc - concentrations[0])/100)
-# start = 10
-# end = len(time)-200
-# dpdtPlot = dpdt[ival,start:end]
-# timePlot = time[start:end]
-
-# ax3[0].plot(timePlot, dpdtPlot*1e-6)
-# ax3[0].set_xlabel('$\mathrm{time}\;[\mathrm{s}]$', fontsize=20)
-# ax3[0].set_ylabel('$p\;[\mathrm{MPa}]$', fontsize=20)
-
-# pFFT = np.fft.rfft(dpdtPlot)
-# # print(type(velocityFFT))
-# spfreq = np.fft.rfftfreq(len(timePlot),(time[2]-time[1])*1e-3)
-# # print(x)
-# # print(spfreq)
-# ax3[1].plot(spfreq, pFFT.real)
-# ax3[1].set_xlabel('$\mathrm{Frequency}\;[\mathrm{1/s}]$', fontsize=20)
-# ax3[1].set_ylabel('$\mathrm{Amplitude}\;[\mathrm{-}]$', fontsize=20)
-# plt.ticklabel_format(style='sci', axis='x', scilimits=(0,0))
-
-
-ax[0].get_xaxis().set_visible(False)
-# ax2[0].get_xaxis().set_visible(False)
-# ax3[0].get_xaxis().set_visible(False)
+    velocity = velo[i,0:len(time)]
+    velocity = velocity - np.mean(velocity)
+    velocity = velocity/np.max(velocity)
+    velocityFFT = np.fft.rfft(velo[i,0:len(time)])
+    spfreq = np.fft.rfftfreq(len(time),time[2]-time[1])
+    ax2[i].plot(spfreq, velocityFFT.real,color=colors[i*2])
+    # ax2[i].set_xlabel('$\mathrm{Spatial\;frequency}\;[\mathrm{1/m}]$', fontsize=16)
+    # ax2[i].set_ylabel('$\mathrm{Amplitude}\;[\mathrm{-}]$', fontsize=16)
+    # ax2[i].set_xlim([0,2e4])    
+ax2[2].set_xlabel('$\mathrm{Temporal\;frequency}\;[\mathrm{1/s}]$', fontsize=16)
+ax2[1].set_ylabel('$\mathrm{Amplitude}\;[\mathrm{-}]$', fontsize=16)
+ax2[0].get_xaxis().set_visible(False)
+ax2[1].get_xaxis().set_visible(False)
 
 
 plt.show()

@@ -74,7 +74,7 @@ plt.subplots_adjust(left=0.14, bottom=0.15, right=0.90, top=0.94, wspace=0.20, h
 
 condition = 1    #1 if isobaric, 2 if isochoric
 if condition == 1:
-    concentrations = [700,725,750,800,900,1000,1100,1200,1300,1400,1500,1600]
+    concentrations = [600,700,800,900,1000,1100,1200,1300,1400]
 elif condition == 2:
     concentrations = [600,700,800,900,1000,1100,1200,1300,1400]
 

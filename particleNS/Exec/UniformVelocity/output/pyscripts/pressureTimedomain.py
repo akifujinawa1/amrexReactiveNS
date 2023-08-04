@@ -145,9 +145,11 @@ for i in range(Nlengths):
 ax[0].set_xlabel('$\mathrm{time}\;[\mathrm{ms}]$', fontsize=20)
 ax[0].set_ylabel('$\overline{p}\;[\mathrm{MPa}]$', fontsize=20)
 ax[0].legend(ncol=2, loc='best', fontsize = 14, frameon=False)
+ax[0].set_xlim([0,120])
 
 ax[1].set_xlabel('$\mathrm{time}\;[\mathrm{ms}]$', fontsize=20)
 ax[1].set_ylabel('$ \mathrm{d}\overline{p}/\mathrm{d}t \;[\mathrm{MPa/s}]$', fontsize=20)
+ax[1].set_xlim([0,120])
 
 # maxPressure = np.empty(N)
 # maxdpdt = np.empty(N)
@@ -208,6 +210,8 @@ ax[0].get_xaxis().set_visible(False)
 
 plt.show()
 
+
+fig.savefig('output/plots/flame/pressureTimedomain.pdf')
 
 
 # if yIndex == 1:
