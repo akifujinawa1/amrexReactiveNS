@@ -266,7 +266,7 @@ void AmrLevelAdv::writePlotFile()
                 }
                 else if (enIC == 15){
                     // parOut.open("output/txt/1DflameConfined/isochoric/particle/" + id + "-" + cpu + ".txt", std::ofstream::app);
-                    approx.open("/local/data/public/af793/1DflameConfined/isochoric/particle" + curtime + "0.txt", std::ofstream::app);
+                    approx.open("/local/data/public/af793/1DflameConfined/isochoric/particle" + id + "-" + cpu + ".txt", std::ofstream::app);
                 }
                 else if (enIC == 16){
                     parOut.open("output/txt/1DflamecloseOpen/isobaric/particle/" + id + "-" + cpu + ".txt", std::ofstream::app);
