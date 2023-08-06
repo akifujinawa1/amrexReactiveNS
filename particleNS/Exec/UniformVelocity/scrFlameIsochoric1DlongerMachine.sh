@@ -1,7 +1,7 @@
 #!/bin/bash
 
-rm /local/data/public/af793/1DflameConfined/isochoric/field/*.*
-rm /local/data/public/af793/1DflameConfined/isochoric/particle/*.*
+# rm /local/data/public/af793/1DflameConfined/isochoric/field/*.*
+# rm /local/data/public/af793/1DflameConfined/isochoric/particle/*.*
 
 make DIM=1 USE_MPI=TRUE -j6
 
@@ -29,19 +29,19 @@ tests=( 15 )
 # rm /local/data/public/af793/1DflameConfined/isochoric/particle/*.*
 
 # sed -i 's/Lx = 0.00512/Lx = 0.00768/g' setupScripts/setup1D_concClosed.py
-# python3 setupScripts/setup1D_concClosed.py
+python3 setupScripts/setup1D_concClosed.py
 
-# for i in "${Tp[@]}"
-# do
-#     for j in "${tests[@]}"
-#     do
-# 	    mpirun -np 24 ./main1d.gnu.MPI.ex inputs amr.n_cell = 768 0 0 euler = 2 viscous = 1 source = 0 particle = 2 Da = 1\
-#         enIC = "$j" geometry.prob_lo = 0.0 0.0 0.0 geometry.prob_hi = 0.00768 0.0 0.0 adv.cfl = 0.8 adv.fourier = 0.8\
-#         amr.max_level = 0 amr.ref_ratio = 2 2 4 4 amr.probin_file = prbn/detonation amr.plot_int = 1\
-#         amr.max_grid_size = 64 amr.plot_files_output = 0 amr.plot_file = detonation/plt stop_time = 0.070\
-#         TpInitial = "$i" TgInitial = 300 dp0 = 0.000010 Nsub = 1 conc = 865 printRate = 1
-#     done
-# done
+for i in "${Tp[@]}"
+do
+    for j in "${tests[@]}"
+    do
+	    mpirun -np 24 ./main1d.gnu.MPI.ex inputs amr.n_cell = 768 0 0 euler = 2 viscous = 1 source = 0 particle = 2 Da = 1\
+        enIC = "$j" geometry.prob_lo = 0.0 0.0 0.0 geometry.prob_hi = 0.00768 0.0 0.0 adv.cfl = 0.8 adv.fourier = 0.8\
+        amr.max_level = 0 amr.ref_ratio = 2 2 4 4 amr.probin_file = prbn/detonation amr.plot_int = 1\
+        amr.max_grid_size = 64 amr.plot_files_output = 0 amr.plot_file = detonation/plt stop_time = 0.070\
+        TpInitial = "$i" TgInitial = 300 dp0 = 0.000010 Nsub = 1 conc = 865 printRate = 1
+    done
+done
 
 # cp -r /local/data/public/af793/1DflameConfined/isochoric/field/ /local/data/public/af793/1DflameConfined/fft768/
 # cp -r /local/data/public/af793/1DflameConfined/isochoric/particle/ /local/data/public/af793/1DflameConfined/fft768/
@@ -49,7 +49,7 @@ tests=( 15 )
 # rm /local/data/public/af793/1DflameConfined/isochoric/field/*.*
 # rm /local/data/public/af793/1DflameConfined/isochoric/particle/*.*
 
-# sed -i 's/Lx = 0.00768/Lx = 0.01024/g' setupScripts/setup1D_concClosed.py
+sed -i 's/Lx = 0.00768/Lx = 0.01024/g' setupScripts/setup1D_concClosed.py
 python3 setupScripts/setup1D_concClosed.py
 
 
@@ -65,11 +65,11 @@ do
     done
 done
 
-cp -r /local/data/public/af793/1DflameConfined/isochoric/field/ /local/data/public/af793/1DflameConfined/fft1024/
-cp -r /local/data/public/af793/1DflameConfined/isochoric/particle/ /local/data/public/af793/1DflameConfined/fft1024/
+# cp -r /local/data/public/af793/1DflameConfined/isochoric/field/ /local/data/public/af793/1DflameConfined/fft1024/
+# cp -r /local/data/public/af793/1DflameConfined/isochoric/particle/ /local/data/public/af793/1DflameConfined/fft1024/
 
-rm /local/data/public/af793/1DflameConfined/isochoric/field/*.*
-rm /local/data/public/af793/1DflameConfined/isochoric/particle/*.*
+# rm /local/data/public/af793/1DflameConfined/isochoric/field/*.*
+# rm /local/data/public/af793/1DflameConfined/isochoric/particle/*.*
 
 
 
