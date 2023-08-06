@@ -18,7 +18,7 @@ from moviepy.video.io.bindings import mplfig_to_npimage
 # CHOOSE PLOTTING PARAMETERS HERE
 
 condition = 1   # 1 for isobaric, 2 for isochoric
-plotVar = 2     # 1 for x-t, 2 for flame speed
+plotVar = 1     # 1 for x-t, 2 for flame speed
 if condition == 1:
     concentrations = [600,700,800,900,1000,1100,1200,1300,1400]
 elif condition == 2:

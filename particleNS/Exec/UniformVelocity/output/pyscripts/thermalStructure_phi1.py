@@ -47,7 +47,7 @@ plt.subplots_adjust(left=0.14, bottom=0.15, right=0.90, top=0.94, wspace=0.20, h
 # ax2 = fig.add_subplot(122)
 
 condition = 1;
-yIndex = 2
+yIndex = 4
 
 if condition == 1:
     folder = '1Dflame'
@@ -191,6 +191,100 @@ elif yIndex == 2:
 
     fig.savefig('output/plots/flame/O2massFracPhi1.pdf')
 
+elif yIndex == 4:
+    ax[0].plot(data0[256:767,0]-0.00256,data0[256:767,yIndex],c='black',linewidth=3,label='$t=t_0$') 
+    # ax[0].plot(data0[256:767,0]-0.00256,data0[256:767,yIndex]*0+0.232917511457580,c='red',linestyle='dashed',linewidth=3,label='$Y_\mathrm{O_2,0}$') 
+
+    ax[1].plot(data1[256:767,0]-0.00256,data1[256:767,yIndex],c='black',linewidth=3,label='$t=15.0\;\mathrm{ms}$') 
+    # ax[1].plot(data1[256:767,0]-0.00256,data1[256:767,yIndex]*0+0.232917511457580,c='red',linestyle='dashed',linewidth=3) 
+
+    ax[2].plot(data2[256:767,0]-0.00256,data2[256:767,yIndex],c='black',linewidth=3,label='$t=30.0\mathrm{ms}$') 
+    # ax[2].plot(data2[256:767,0]-0.00256,data2[256:767,yIndex]*0+0.232917511457580,c='red',linestyle='dashed',linewidth=3) 
+
+    ax[3].plot(data3[256:767,0]-0.00256,data3[256:767,yIndex],c='black',linewidth=3,label='$t=45.0\;\mathrm{ms}$') 
+    # ax[3].plot(data3[256:767,0]-0.00256,data3[256:767,yIndex]*0+0.232917511457580,c='red',linestyle='dashed',linewidth=3) 
+
+    ax[4].plot(data4[256:767,0]-0.00256,data4[256:767,yIndex],c='black',linewidth=3,label='$t=60.0\;\mathrm{ms}$') 
+    # ax[4].plot(data4[256:767,0]-0.00256,data4[256:767,yIndex]*0+0.232917511457580,c='red',linestyle='dashed',linewidth=3) 
+
+    # ax[0].set_ylim(0,0.232917511457580)
+    # ax[1].set_ylim(0,0.232917511457580)
+    # ax[2].set_ylim(0,0.232917511457580)
+    # ax[3].set_ylim(0,0.232917511457580)
+    # ax[4].set_ylim(0,0.232917511457580)
+
+    ax[0].set_xlim(0,0.00512)
+    ax[1].set_xlim(0,0.00512)
+    ax[2].set_xlim(0,0.00512)
+    ax[3].set_xlim(0,0.00512)
+    ax[4].set_xlim(0,0.00512)
+
+    # ax.set_ylabel(r'$T_\mathrm{g}\;[\mathrm{K}]$', fontsize=20)
+    # ax[4].set_xlabel(r'$\mathrm{x}\;[\mathrm{m}]$', fontsize=20)
+    fig.supylabel(r'$u_\mathrm{g}\;[\mathrm{m/s}]$', fontsize=20)
+    ax[4].set_xlabel(r'$x\;[\mathrm{m}]$', fontsize=20)
+    # fig.suptitle('Figure')
+    ax[0].legend(ncol=1, loc="best", fontsize = 14, frameon=False)
+    ax[1].legend(ncol=1, loc="best", fontsize = 14, frameon=False)
+    ax[2].legend(ncol=1, loc="upper left", fontsize = 14, frameon=False)
+    ax[3].legend(ncol=1, loc="upper left", fontsize = 14, frameon=False)
+    ax[4].legend(ncol=1, loc="upper left", fontsize = 14, frameon=False)
+
+    ax[0].get_xaxis().set_visible(False)
+    ax[1].get_xaxis().set_visible(False)
+    ax[2].get_xaxis().set_visible(False)
+    ax[3].get_xaxis().set_visible(False)
+
+    plt.show()
+
+    fig.savefig('output/plots/flame/uGas_phi1.pdf')
+elif yIndex == 5:
+    ax[0].plot(data0[256:767,0]-0.00256,data0[256:767,yIndex],c='black',linewidth=3,label='$t=t_0$') 
+    # ax[0].plot(data0[256:767,0]-0.00256,data0[256:767,yIndex]*0+0.232917511457580,c='red',linestyle='dashed',linewidth=3,label='$Y_\mathrm{O_2,0}$') 
+
+    ax[1].plot(data1[256:767,0]-0.00256,data1[256:767,yIndex],c='black',linewidth=3,label='$t=15.0\;\mathrm{ms}$') 
+    # ax[1].plot(data1[256:767,0]-0.00256,data1[256:767,yIndex]*0+0.232917511457580,c='red',linestyle='dashed',linewidth=3) 
+
+    ax[2].plot(data2[256:767,0]-0.00256,data2[256:767,yIndex],c='black',linewidth=3,label='$t=30.0\mathrm{ms}$') 
+    # ax[2].plot(data2[256:767,0]-0.00256,data2[256:767,yIndex]*0+0.232917511457580,c='red',linestyle='dashed',linewidth=3) 
+
+    ax[3].plot(data3[256:767,0]-0.00256,data3[256:767,yIndex],c='black',linewidth=3,label='$t=45.0\;\mathrm{ms}$') 
+    # ax[3].plot(data3[256:767,0]-0.00256,data3[256:767,yIndex]*0+0.232917511457580,c='red',linestyle='dashed',linewidth=3) 
+
+    ax[4].plot(data4[256:767,0]-0.00256,data4[256:767,yIndex],c='black',linewidth=3,label='$t=60.0\;\mathrm{ms}$') 
+    # ax[4].plot(data4[256:767,0]-0.00256,data4[256:767,yIndex]*0+0.232917511457580,c='red',linestyle='dashed',linewidth=3) 
+
+    # ax[0].set_ylim(0,0.232917511457580)
+    # ax[1].set_ylim(0,0.232917511457580)
+    # ax[2].set_ylim(0,0.232917511457580)
+    # ax[3].set_ylim(0,0.232917511457580)
+    # ax[4].set_ylim(0,0.232917511457580)
+
+    ax[0].set_xlim(0,0.00512)
+    ax[1].set_xlim(0,0.00512)
+    ax[2].set_xlim(0,0.00512)
+    ax[3].set_xlim(0,0.00512)
+    ax[4].set_xlim(0,0.00512)
+
+    # ax.set_ylabel(r'$T_\mathrm{g}\;[\mathrm{K}]$', fontsize=20)
+    # ax[4].set_xlabel(r'$\mathrm{x}\;[\mathrm{m}]$', fontsize=20)
+    fig.supylabel(r'$\rho\;[\mathrm{kg/m^3}]$', fontsize=20)
+    ax[4].set_xlabel(r'$x\;[\mathrm{m}]$', fontsize=20)
+    # fig.suptitle('Figure')
+    ax[0].legend(ncol=1, loc="best", fontsize = 14, frameon=False)
+    ax[1].legend(ncol=1, loc="best", fontsize = 14, frameon=False)
+    ax[2].legend(ncol=1, loc="upper left", fontsize = 14, frameon=False)
+    ax[3].legend(ncol=1, loc="upper left", fontsize = 14, frameon=False)
+    ax[4].legend(ncol=1, loc="upper left", fontsize = 14, frameon=False)
+
+    ax[0].get_xaxis().set_visible(False)
+    ax[1].get_xaxis().set_visible(False)
+    ax[2].get_xaxis().set_visible(False)
+    ax[3].get_xaxis().set_visible(False)
+
+    plt.show()
+
+    fig.savefig('output/plots/flame/rho_phi1.pdf')
 
 add = sum(data4[456:656,1])
 avg = add/200

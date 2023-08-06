@@ -110,7 +110,7 @@ void AmrLevelAdv::writePlotFile()
         }
         else if (enIC == 15){
             // approx.open("output/txt/1DflameConfined/isochoric/field/" + curtime + "0.txt", std::ofstream::app);
-            approx.open("/local/data/public/af793/1DflameConfined/isochoric/field/" + curtime + "0.txt", std::ofstream::app);
+            approx.open("/local/data/public/af793/1DflameConfined/isochoric/field/" + counter + ".txt", std::ofstream::app);
         }
         else if (enIC == 16){
             approx.open("output/txt/1DflamecloseOpen/isobaric/field/" + curtime + "0.txt", std::ofstream::app);
@@ -152,7 +152,7 @@ void AmrLevelAdv::writePlotFile()
 
                 // std::cout << "Tg, p: " << Tgas << " " << p << std::endl;
 
-                AllPrint(approx) << x << " " << Tgas << " " << YO2 << " " << p << " " << vx << " " << rho << std::endl;
+                AllPrint(approx) << x << " " << Tgas << " " << YO2 << " " << p << " " << vx << " " << rho << " " << i << std::endl;
             }
         }
         approx.close();

@@ -46,24 +46,35 @@ plt.subplots_adjust(left=0.14, bottom=0.15, right=0.90, top=0.94, wspace=0.20, h
 # ax1 = fig.add_subplot(121)
 # ax2 = fig.add_subplot(122)
 
-length = 1
+length = 2
 
 if length == 1:
-    directory =  '900/field'
+    directory =  'output/txt/1DflameConfined/900/field'
 elif length == 2:
-    directory = 'domain768/field'
+    directory = 'output/txt/1DflameConfined/domain768/field'
 elif length == 3:
-    directory = 'domain1024/field'
+    directory = 'output/txt/1DflameConfined/domain1024/field'
+
+
+# if length == 1:
+#     directory =  '/../../../../mnt/D/codeBackup/flame_txt_/isochoric_Results/domainLength/fftResults/fft512/field/'
+# elif length == 2:
+#     directory = '/../../../../mnt/D/codeBackup/flame_txt_/isochoric_Results/domainLength/fftResults/fft768/field/'
+# elif length == 3:
+#     directory = '/../../../../mnt/D/codeBackup/flame_txt_/isochoric_Results/domainLength/fftResults/fft1024/field/'
 
 # times = [15000,30000,45000,60000,75000]
 times = [10000,20000,30000,40000,50000]
 # times = [1000,3000,5000,7000,9000]
+# times = [1000000,2000000,3000000,4000000,5000000]
 
-data0 = np.loadtxt('output/txt/1DflameConfined/'+directory+'/'+str(times[0])+'.txt')
-data1 = np.loadtxt('output/txt/1DflameConfined/'+directory+'/'+str(times[1])+'.txt')
-data2 = np.loadtxt('output/txt/1DflameConfined/'+directory+'/'+str(times[2])+'.txt')
-data3 = np.loadtxt('output/txt/1DflameConfined/'+directory+'/'+str(times[3])+'.txt')
-data4 = np.loadtxt('output/txt/1DflameConfined/'+directory+'/'+str(times[4])+'.txt')
+
+
+data0 = np.loadtxt(directory+'/'+str(times[0])+'.txt')
+data1 = np.loadtxt(directory+'/'+str(times[1])+'.txt')
+data2 = np.loadtxt(directory+'/'+str(times[2])+'.txt')
+data3 = np.loadtxt(directory+'/'+str(times[3])+'.txt')
+data4 = np.loadtxt(directory+'/'+str(times[4])+'.txt')
 # data5 = np.loadtxt('output/txt/1DflameConfined/'+directory+'/89900.txt')
 
 
@@ -84,7 +95,7 @@ data4 = data4[data4[:, 0].argsort()]
 #         data0[i,1] = 300
 
 # plotting either temperature or mass fraction or pressure 
-yIndex = 5
+yIndex = 3
 
 if yIndex == 1:
     ax[0].plot(data0[0:51,0],data0[0:51,yIndex],c='black',linewidth=2,label='$t='+str(times[0]/1e3)+'\;\mathrm{ms}$') 
@@ -282,6 +293,7 @@ elif yIndex == 5:
     # ax[2].set_ylim(0,6e5)
     # ax[3].set_ylim(0,6e5)
     # ax[4].set_ylim(0,6e5)
+
 
 
     # ax.set_ylabel(r'$T_\mathrm{g}\;[\mathrm{K}]$', fontsize=20)
