@@ -111,10 +111,10 @@ void AmrLevelAdv::writePlotFile()
         }
         else if (enIC == 15){
             // approx.open("output/txt/1DflameConfined/isochoric/field/" + curtime + "0.txt", std::ofstream::app);
-            if ((NxCell - 512) < 10)){
+            if ((NxCell - 512) < 10){
                 approx.open("/local/data/public/af793/1DflameConfined/fft512/field/" + curtime + "0.txt", std::ofstream::app);
             }
-            else if ((NxCell - 768) < 10)){
+            else if ((NxCell - 768) < 10){
                 approx.open("/local/data/public/af793/1DflameConfined/fft768/field/" + curtime + "0.txt", std::ofstream::app);
             }
             else {
