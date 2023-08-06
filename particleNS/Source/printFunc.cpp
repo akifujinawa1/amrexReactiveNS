@@ -104,13 +104,14 @@ void AmrLevelAdv::writePlotFile()
         std::string iteration = std::to_string(iter);
         int microTime         = std::floor(cur_time * 1.0e7);
         std::string curtime   = std::to_string(microTime);
+        std::string counterTing = std::to_string(counter);
 
         if (enIC == 14){
             approx.open("output/txt/1Dflame/isobaric/field/" + curtime + "0.txt", std::ofstream::app);
         }
         else if (enIC == 15){
             // approx.open("output/txt/1DflameConfined/isochoric/field/" + curtime + "0.txt", std::ofstream::app);
-            approx.open("/local/data/public/af793/1DflameConfined/isochoric/field/" + str(counter) + ".txt", std::ofstream::app);
+            approx.open("/local/data/public/af793/1DflameConfined/isochoric/field/" + counterTing + ".txt", std::ofstream::app);
         }
         else if (enIC == 16){
             approx.open("output/txt/1DflamecloseOpen/isobaric/field/" + curtime + "0.txt", std::ofstream::app);
