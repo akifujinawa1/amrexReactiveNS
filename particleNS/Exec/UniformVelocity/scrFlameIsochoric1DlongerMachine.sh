@@ -29,6 +29,12 @@ tests=( 15 )
 # rm /local/data/public/af793/1DflameConfined/isochoric/particle/*.*
 
 # sed -i 's/Lx = 0.00512/Lx = 0.00768/g' setupScripts/setup1D_concClosed.py
+
+rm -r /local/data/public/af793/1DflameConfined/fft768/*
+
+mkdir /local/data/public/af793/1DflameConfined/fft768/field
+mkdir /local/data/public/af793/1DflameConfined/fft768/particle
+
 python3 setupScripts/setup1D_concClosed.py
 
 for i in "${Tp[@]}"
@@ -48,6 +54,12 @@ done
 
 # rm /local/data/public/af793/1DflameConfined/isochoric/field/*.*
 # rm /local/data/public/af793/1DflameConfined/isochoric/particle/*.*
+
+rm -r /local/data/public/af793/1DflameConfined/fft1024/*
+
+mkdir /local/data/public/af793/1DflameConfined/fft1024/field
+mkdir /local/data/public/af793/1DflameConfined/fft1024/particle
+
 
 sed -i 's/Lx = 0.00768/Lx = 0.01024/g' setupScripts/setup1D_concClosed.py
 python3 setupScripts/setup1D_concClosed.py
