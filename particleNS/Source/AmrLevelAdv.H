@@ -29,6 +29,7 @@ struct RealData
         LFe,
         LFeO,
         LFe3O4,
+        Da,
         ncomps
     };
 };

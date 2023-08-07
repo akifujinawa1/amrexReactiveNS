@@ -152,6 +152,7 @@ AmrLevelAdv::initParticles (const MultiFab& S_new, const double& xDisc, const do
             p.rdata(RealData::LFe)    = 0.0;       // Store the Fe melt progress variable here
             p.rdata(RealData::LFeO)   = 0.0;       // Store the FeO melt progress variable here
             p.rdata(RealData::LFe3O4) = 0.0;       // Store the Fe3O4 melt progress variable here
+            p.rdata(RealData::Da) = 0.0;       // Store the Fe3O4 melt progress variable here
 
             p.idata(IntData::Fe)     = 0;         // Store the Fe melt flag variable here
             p.idata(IntData::FeO)    = 0;         // Store the FeO melt flag variable here
@@ -303,6 +304,7 @@ AmrLevelAdv::updateParticleInfo(MultiFab& Sborder, const double& mFe0, const dou
         p.idata(IntData::FeO)     = pInt[IntData::FeO];
         p.idata(IntData::Fe3O4)   = pInt[IntData::Fe3O4];
         p.idata(IntData::regime)  = pInt[IntData::regime];
+        p.rdata(RealData::Da)     = pReal[RealData::Da];
 
         // update particle position
         p.pos(0) = p.pos(0) + dt*p.rdata(RealData::u);
@@ -614,6 +616,7 @@ void getSource(Vector<double>& qSource, Vector<double>& pSource, const Vector<do
                 dmO2dt = -O2rate;
                 dmFeOformdt   = O2rate/nO2FeO;
                 dmFe3O4formdt = 0;
+                pReal[RealData::Da] = XO2pKB;
             }
             else{   // if fully in liquid-phase, reaction is diffusion controlled, proceed without k-beta analysis
                 pSource[RealData::mFeO]   = mdotO2d/nO2FeO - mdotFeOevap;
@@ -623,6 +626,7 @@ void getSource(Vector<double>& qSource, Vector<double>& pSource, const Vector<do
                 dmO2dt = -mdotO2d;
                 dmFeOformdt   = mdotO2d/nO2FeO;
                 dmFe3O4formdt = 0;
+                pReal[RealData::Da] = 1.0;
             }
         }
     }
