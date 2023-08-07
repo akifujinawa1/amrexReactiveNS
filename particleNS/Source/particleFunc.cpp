@@ -605,7 +605,7 @@ void getSource(Vector<double>& qSource, Vector<double>& pSource, const Vector<do
                 // calculate rFe, aFe
                 rFe = pow((mFe/rhoFe)*(3.0/(4.0*pi)),(1.0/3.0));
                 AFe = 4*pi*rFe*rFe;
-                kTH = AFe*k0TH*exp(-TaTH/Tp)*rhoPS;
+                kTH = AFe*k0TH*exp(-TaTH/Tp)*rhoPS*(M_O2/M_N2);
                 XO2pKB = XO2*beta/(beta + kTH);
                 O2rate = XO2pKB*kTH;
                 // assign values to variables needed
@@ -626,7 +626,7 @@ void getSource(Vector<double>& qSource, Vector<double>& pSource, const Vector<do
                 dmO2dt = -mdotO2d;
                 dmFeOformdt   = mdotO2d/nO2FeO;
                 dmFe3O4formdt = 0;
-                pReal[RealData::Da] = 1.0;
+                pReal[RealData::Da] = 0.0;
             }
         }
     }
