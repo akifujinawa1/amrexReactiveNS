@@ -15,7 +15,27 @@ import sys
 # import publish 
 
 yratio = 1/1.618
+M_O2  = 31.9988*1e-3;       # molecular mass of O2 in kg/mol
+M_N2  = 28.0134*1e-3;       # molecular mass of N2 in kg/mol
+rhoFe     = 7874.0;         # kg/m^3                  Solid-phase iron(Fe) density
+rhoFeO    = 5745.0;         # kg/m^3                  Solid-phase FeO density
+rhoFe3O4  = 5170.0;         # kg/m^3                  Solid-phase Fe3O4 density
+M_Fe      = 55.845*1e-3;    # kg/mol                  Molar mass of iron (Fe)
+M_FeO     = 71.844*1e-3;    # kg/mol                  Molar mass of wustite (FeO)
+M_Fe3O4   = 231.533*1e-3;   # kg/mol                  Molar mass of wustite (FeO)
 
+TpHi = 1270;
+TpLo = 300;
+X_O2  = 0.21;               #// mole fraction of O2
+X_N2  = 0.79;               #// mole fraction of N2
+YO2  = M_O2*X_O2/(M_O2*X_O2 + M_N2*X_N2);   #// mass fraction of O2
+YN2  = M_N2*X_N2/(M_O2*X_O2 + M_N2*X_N2);   #// mass fraction of N2
+Mavg  = 1/(YO2/M_O2+YN2/M_N2);             #// average molecular weight of gas mixture
+p     = 101325;
+R     = 8.31446261815324;   #// J/K/mol
+
+rhoHi = p*Mavg/(R*TpHi);
+rhoLo = p*Mavg/(R*TpLo);
 
 plt.close('all')
 mpl.rcParams['pdf.fonttype'] = 42
@@ -49,23 +69,24 @@ plt.subplots_adjust(left=0.14, bottom=0.15, right=0.90, top=0.94, wspace=0.20, h
 condition = 1;
 yIndex = 4
 
-if condition == 1:
-    folder = '1Dflame'
-else:
-    folder = '1DflameConfined'
-directory = '900/field'
+# 0 1  2  3 4  5
+# x T yO2 p u rho
 
-# data0 = np.loadtxt('output/txt/'+folder+'/'+directory+'/00.txt')
-# data1 = np.loadtxt('output/txt/'+folder+'/'+directory+'/7600.txt')
-# data2 = np.loadtxt('output/txt/'+folder+'/'+directory+'/16000.txt')
-# data3 = np.loadtxt('output/txt/'+folder+'/'+directory+'/22600.txt')
-# data4 = np.loadtxt('output/txt/'+folder+'/'+directory+'/30000.txt')
 
-data0 = np.loadtxt('output/txt/'+folder+'/'+directory+'/00.txt')
-data1 = np.loadtxt('output/txt/'+folder+'/'+directory+'/15000.txt')
-data2 = np.loadtxt('output/txt/'+folder+'/'+directory+'/30000.txt')
-data3 = np.loadtxt('output/txt/'+folder+'/'+directory+'/45000.txt')
-data4 = np.loadtxt('output/txt/'+folder+'/'+directory+'/59900.txt')
+directory = 'output/txt/1Dflame/900/field'
+
+# times = [15000,30000,45000,60000,75000]
+times = [10000,20000,30000,40000,50000]
+# times = [1000,3000,5000,7000,9000]
+# times = [1000000,2000000,3000000,4000000,5000000]
+
+
+
+data0 = np.loadtxt(directory+'/'+str(times[0])+'.txt')
+data1 = np.loadtxt(directory+'/'+str(times[1])+'.txt')
+data2 = np.loadtxt(directory+'/'+str(times[2])+'.txt')
+data3 = np.loadtxt(directory+'/'+str(times[3])+'.txt')
+data4 = np.loadtxt(directory+'/'+str(times[4])+'.txt')
 
 # data5 = np.loadtxt('output/txt/'+folder+'/'+directory+'/37600.txt')
 # data5 = np.loadtxt('output/txt/1Dflame/'+directory+'/45000.txt')
@@ -75,6 +96,20 @@ data1 = data1[data1[:, 0].argsort()]
 data2 = data2[data2[:, 0].argsort()]
 data3 = data3[data3[:, 0].argsort()]
 data4 = data4[data4[:, 0].argsort()]
+
+data0[:,0] = data0[:,0]-0.00256
+data1[:,0] = data1[:,0]-0.00256
+data2[:,0] = data2[:,0]-0.00256
+data3[:,0] = data3[:,0]-0.00256
+data4[:,0] = data4[:,0]-0.00256
+
+ax[0].set_xlim(0,0.00512)
+ax[1].set_xlim(0,0.00512)
+ax[2].set_xlim(0,0.00512)
+ax[3].set_xlim(0,0.00512)
+ax[4].set_xlim(0,0.00512)
+
+
 # data5 = data5[data5[:, 0].argsort()]
 
 for i in range(768):
@@ -86,41 +121,36 @@ for i in range(768):
     else:
         data0[i,1] = 300
 
-# plotting either temperature or mass fraction
 
 if yIndex == 1:
-    ax[0].plot(data0[256:307,0]-0.00256,data0[256:307,yIndex],c='black',linewidth=2,label='$t=t_0$') 
-    ax[0].plot(data0[308:767,0]-0.00256,data0[308:767,yIndex],c='black',linewidth=2) 
-    ax[0].plot(data0[256:767,0]-0.00256,data0[256:767,yIndex]*0+2331,c='red',linestyle='dashed',linewidth=2,label='$\mathrm{AFT,Fe}$-$\mathrm{to}$-$\mathrm{FeO}$') 
-    ax[0].plot(data0[256:767,0]-0.00256,data0[256:767,yIndex]*0+2230,c=colors[0],linestyle='dotted',linewidth=2,label='$\mathrm{AFT,equilibrium}$') 
+    ax[0].plot(data0[0:306,0],data0[0:306,yIndex],c='black',linewidth=2,label='$t='+str(times[0]/1e3)+'\;\mathrm{ms}$') 
+    ax[0].plot(data0[308:767,0],data0[308:767,yIndex],c='black',linewidth=2) 
+    ax[0].plot(data0[:,0],data0[:,yIndex]*0+2588,c='red',linestyle='dashed',linewidth=2,label='$\mathrm{AFT,Fe}$-$\mathrm{to}$-$\mathrm{FeO}$') 
+    ax[0].plot(data0[:,0],data0[:,yIndex]*0+300,c=colors[0],linestyle='dotted',linewidth=2)
+    # ax[0].plot(data0[:,0],data0[:,yIndex]*0+2230,c=colors[0],linestyle='dotted',linewidth=2,label='$\mathrm{AFT,equilibrium}$') 
 
-    ax[1].plot(data1[256:767,0]-0.00256,data1[256:767,yIndex],c='black',linewidth=2,label='$t=15.0\;\mathrm{ms}$') 
-    ax[1].plot(data0[256:767,0]-0.00256,data0[256:767,yIndex]*0+2331,c='red',linestyle='dashed',linewidth=2) 
-    ax[1].plot(data0[256:767,0]-0.00256,data0[256:767,yIndex]*0+2230,c=colors[0],linestyle='dotted',linewidth=2)
+    ax[1].plot(data1[:,0],data1[:,yIndex],c='black',linewidth=2,label='$t='+str(times[1]/1e3)+'\;\mathrm{ms}$') 
+    ax[1].plot(data0[:,0],data0[:,yIndex]*0+2588,c='red',linestyle='dashed',linewidth=2) 
+    ax[1].plot(data0[:,0],data0[:,yIndex]*0+300,c=colors[0],linestyle='dotted',linewidth=2)
 
-    ax[2].plot(data2[256:767,0]-0.00256,data2[256:767,yIndex],c='black',linewidth=2,label='$t=30.0\mathrm{ms}$') 
-    ax[2].plot(data0[256:767,0]-0.00256,data0[256:767,yIndex]*0+2331,c='red',linestyle='dashed',linewidth=2) 
-    ax[2].plot(data0[256:767,0]-0.00256,data0[256:767,yIndex]*0+2230,c=colors[0],linestyle='dotted',linewidth=2) 
+    ax[2].plot(data2[:,0],data2[:,yIndex],c='black',linewidth=2,label='$t='+str(times[2]/1e3)+'\;\mathrm{ms}$') 
+    ax[2].plot(data0[:,0],data0[:,yIndex]*0+2588,c='red',linestyle='dashed',linewidth=2) 
+    ax[2].plot(data0[:,0],data0[:,yIndex]*0+300,c=colors[0],linestyle='dotted',linewidth=2) 
     
-    ax[3].plot(data3[256:767,0]-0.00256,data3[256:767,yIndex],c='black',linewidth=2,label='$t=45.0\;\mathrm{ms}$') 
-    ax[3].plot(data0[256:767,0]-0.00256,data0[256:767,yIndex]*0+2331,c='red',linestyle='dashed',linewidth=2) 
-    ax[3].plot(data0[256:767,0]-0.00256,data0[256:767,yIndex]*0+2230,c=colors[0],linestyle='dotted',linewidth=2) 
+    ax[3].plot(data3[:,0],data3[:,yIndex],c='black',linewidth=2,label='$t='+str(times[3]/1e3)+'\;\mathrm{ms}$') 
+    ax[3].plot(data0[:,0],data0[:,yIndex]*0+2588,c='red',linestyle='dashed',linewidth=2) 
+    ax[3].plot(data0[:,0],data0[:,yIndex]*0+300,c=colors[0],linestyle='dotted',linewidth=2) 
     
-    ax[4].plot(data4[256:767,0]-0.00256,data4[256:767,yIndex],c='black',linewidth=2,label='$t=60.0\;\mathrm{ms}$') 
-    ax[4].plot(data0[256:767,0]-0.00256,data0[256:767,yIndex]*0+2331,c='red',linestyle='dashed',linewidth=2) 
-    ax[4].plot(data0[256:767,0]-0.00256,data0[256:767,yIndex]*0+2230,c=colors[0],linestyle='dotted',linewidth=2) 
+    ax[4].plot(data4[:,0],data4[:,yIndex],c='black',linewidth=2,label='$t='+str(times[4]/1e3)+'\;\mathrm{ms}$') 
+    ax[4].plot(data0[:,0],data0[:,yIndex]*0+2588,c='red',linestyle='dashed',linewidth=2) 
+    ax[4].plot(data0[:,0],data0[:,yIndex]*0+300,c=colors[0],linestyle='dotted',linewidth=2) 
     
     ax[0].set_ylim(0,2600)
     ax[1].set_ylim(0,2600)
     ax[2].set_ylim(0,2600)
     ax[3].set_ylim(0,2600)
     ax[4].set_ylim(0,2600)
-
-    ax[0].set_xlim(0,0.00512)
-    ax[1].set_xlim(0,0.00512)
-    ax[2].set_xlim(0,0.00512)
-    ax[3].set_xlim(0,0.00512)
-    ax[4].set_xlim(0,0.00512)
+    
 
     # ax.set_ylabel(r'$T_\mathrm{g}\;[\mathrm{K}]$', fontsize=20)
     # ax[4].set_xlabel(r'$\mathrm{x}\;[\mathrm{m}]$', fontsize=20)
@@ -128,36 +158,34 @@ if yIndex == 1:
     ax[4].set_xlabel(r'$x\;[\mathrm{m}]$', fontsize=20)
     # fig.suptitle('Figure')
     ax[0].legend(ncol=1, loc=(0.655, 0.125), fontsize = 14, frameon=False)
-    ax[1].legend(ncol=1, loc="lower left", fontsize = 14, frameon=False)
-    ax[2].legend(ncol=1, loc="lower left", fontsize = 14, frameon=False)
-    ax[3].legend(ncol=1, loc="lower left", fontsize = 14, frameon=False)
-    ax[4].legend(ncol=1, loc="lower left", fontsize = 14, frameon=False)
+    ax[1].legend(ncol=1, loc="best", fontsize = 14, frameon=False)
+    ax[2].legend(ncol=1, loc="best", fontsize = 14, frameon=False)
+    ax[3].legend(ncol=1, loc="best", fontsize = 14, frameon=False)
+    ax[4].legend(ncol=1, loc="best", fontsize = 14, frameon=False)
 
     ax[0].get_xaxis().set_visible(False)
     ax[1].get_xaxis().set_visible(False)
     ax[2].get_xaxis().set_visible(False)
     ax[3].get_xaxis().set_visible(False)
 
-    plt.show()
 
-    fig.savefig('output/plots/flame/thermalStructurePhi1.pdf')
+    fig.savefig('output/plots/flame/T_phi1_isobaric.pdf')
 
 elif yIndex == 2:
-    ax[0].plot(data0[256:307,0]-0.00256,data0[256:307,yIndex],c='black',linewidth=3,label='$t=t_0$') 
-    ax[0].plot(data0[308:767,0]-0.00256,data0[308:767,yIndex],c='black',linewidth=3) 
-    ax[0].plot(data0[256:767,0]-0.00256,data0[256:767,yIndex]*0+0.232917511457580,c='red',linestyle='dashed',linewidth=3,label='$Y_\mathrm{O_2,0}$') 
+    ax[0].plot(data0[:,0],data0[:,yIndex],c='black',linewidth=3,label='$t='+str(times[0]/1e3)+'\;\mathrm{ms}$') 
+    ax[0].plot(data0[:,0],data0[:,yIndex]*0+0.232917511457580,c='red',linestyle='dashed',linewidth=3,label='$Y_\mathrm{O_2,0}$') 
 
-    ax[1].plot(data1[256:767,0]-0.00256,data1[256:767,yIndex],c='black',linewidth=3,label='$t=15.0\;\mathrm{ms}$') 
-    ax[1].plot(data1[256:767,0]-0.00256,data1[256:767,yIndex]*0+0.232917511457580,c='red',linestyle='dashed',linewidth=3) 
+    ax[1].plot(data1[:,0],data1[:,yIndex],c='black',linewidth=3,label='$t='+str(times[1]/1e3)+'\;\mathrm{ms}$') 
+    ax[1].plot(data1[:,0],data1[:,yIndex]*0+0.232917511457580,c='red',linestyle='dashed',linewidth=3) 
 
-    ax[2].plot(data2[256:767,0]-0.00256,data2[256:767,yIndex],c='black',linewidth=3,label='$t=30.0\mathrm{ms}$') 
-    ax[2].plot(data2[256:767,0]-0.00256,data2[256:767,yIndex]*0+0.232917511457580,c='red',linestyle='dashed',linewidth=3) 
+    ax[2].plot(data2[:,0],data2[:,yIndex],c='black',linewidth=3,label='$t='+str(times[2]/1e3)+'\;\mathrm{ms}$') 
+    ax[2].plot(data2[:,0],data2[:,yIndex]*0+0.232917511457580,c='red',linestyle='dashed',linewidth=3) 
 
-    ax[3].plot(data3[256:767,0]-0.00256,data3[256:767,yIndex],c='black',linewidth=3,label='$t=45.0\;\mathrm{ms}$') 
-    ax[3].plot(data3[256:767,0]-0.00256,data3[256:767,yIndex]*0+0.232917511457580,c='red',linestyle='dashed',linewidth=3) 
+    ax[3].plot(data3[:,0],data3[:,yIndex],c='black',linewidth=3,label='$t='+str(times[3]/1e3)+'\;\mathrm{ms}$') 
+    ax[3].plot(data3[:,0],data3[:,yIndex]*0+0.232917511457580,c='red',linestyle='dashed',linewidth=3) 
 
-    ax[4].plot(data4[256:767,0]-0.00256,data4[256:767,yIndex],c='black',linewidth=3,label='$t=60.0\;\mathrm{ms}$') 
-    ax[4].plot(data4[256:767,0]-0.00256,data4[256:767,yIndex]*0+0.232917511457580,c='red',linestyle='dashed',linewidth=3) 
+    ax[4].plot(data4[:,0],data4[:,yIndex],c='black',linewidth=3,label='$t='+str(times[4]/1e3)+'\;\mathrm{ms}$') 
+    ax[4].plot(data4[:,0],data4[:,yIndex]*0+0.232917511457580,c='red',linestyle='dashed',linewidth=3) 
 
     ax[0].set_ylim(0,0.232917511457580)
     ax[1].set_ylim(0,0.232917511457580)
@@ -165,11 +193,7 @@ elif yIndex == 2:
     ax[3].set_ylim(0,0.232917511457580)
     ax[4].set_ylim(0,0.232917511457580)
 
-    ax[0].set_xlim(0,0.00512)
-    ax[1].set_xlim(0,0.00512)
-    ax[2].set_xlim(0,0.00512)
-    ax[3].set_xlim(0,0.00512)
-    ax[4].set_xlim(0,0.00512)
+
 
     # ax.set_ylabel(r'$T_\mathrm{g}\;[\mathrm{K}]$', fontsize=20)
     # ax[4].set_xlabel(r'$\mathrm{x}\;[\mathrm{m}]$', fontsize=20)
@@ -178,54 +202,89 @@ elif yIndex == 2:
     # fig.suptitle('Figure')
     ax[0].legend(ncol=1, loc="best", fontsize = 14, frameon=False)
     ax[1].legend(ncol=1, loc="best", fontsize = 14, frameon=False)
-    ax[2].legend(ncol=1, loc="upper left", fontsize = 14, frameon=False)
-    ax[3].legend(ncol=1, loc="upper left", fontsize = 14, frameon=False)
-    ax[4].legend(ncol=1, loc="upper left", fontsize = 14, frameon=False)
+    ax[2].legend(ncol=1, loc="best", fontsize = 14, frameon=False)
+    ax[3].legend(ncol=1, loc="best", fontsize = 14, frameon=False)
+    ax[4].legend(ncol=1, loc="best", fontsize = 14, frameon=False)
 
     ax[0].get_xaxis().set_visible(False)
     ax[1].get_xaxis().set_visible(False)
     ax[2].get_xaxis().set_visible(False)
     ax[3].get_xaxis().set_visible(False)
 
-    plt.show()
 
-    fig.savefig('output/plots/flame/O2massFracPhi1.pdf')
+    fig.savefig('output/plots/flame/yo2_phi1_isobaric.pdf')
+elif yIndex == 3:
+    ax[0].plot(data0[:,0],data0[:,yIndex],c='black',linewidth=3,label='$t='+str(times[0]/1e3)+'\;\mathrm{ms}$') 
+    # ax[0].plot(data0[:,0],data0[:,yIndex]*0+0.232917511457580,c='red',linestyle='dashed',linewidth=3,label='$Y_\mathrm{O_2,0}$') 
 
+    ax[1].plot(data1[:,0],data1[:,yIndex],c='black',linewidth=3,label='$t='+str(times[1]/1e3)+'\;\mathrm{ms}$') 
+    # ax[1].plot(data1[:,0],data1[:,yIndex]*0+0.232917511457580,c='red',linestyle='dashed',linewidth=3) 
+
+    ax[2].plot(data2[:,0],data2[:,yIndex],c='black',linewidth=3,label='$t='+str(times[2]/1e3)+'\;\mathrm{ms}$') 
+    # ax[2].plot(data2[:,0],data2[:,yIndex]*0+0.232917511457580,c='red',linestyle='dashed',linewidth=3) 
+
+    ax[3].plot(data3[:,0],data3[:,yIndex],c='black',linewidth=3,label='$t='+str(times[3]/1e3)+'\;\mathrm{ms}$') 
+    # ax[3].plot(data3[:,0],data3[:,yIndex]*0+0.232917511457580,c='red',linestyle='dashed',linewidth=3) 
+
+    ax[4].plot(data4[:,0],data4[:,yIndex],c='black',linewidth=3,label='$t='+str(times[4]/1e3)+'\;\mathrm{ms}$') 
+    # ax[4].plot(data4[:,0],data4[:,yIndex]*0+0.232917511457580,c='red',linestyle='dashed',linewidth=3) 
+
+    # ax[0].set_ylim(0,6e5)
+    # ax[1].set_ylim(0,6e5)
+    # ax[2].set_ylim(0,6e5)
+    # ax[3].set_ylim(0,6e5)
+    # ax[4].set_ylim(0,6e5)
+
+    
+
+    # ax.set_ylabel(r'$T_\mathrm{g}\;[\mathrm{K}]$', fontsize=20)
+    # ax[4].set_xlabel(r'$\mathrm{x}\;[\mathrm{m}]$', fontsize=20)
+    fig.supylabel(r'$p\;[\mathrm{Pa}]$', fontsize=20)
+    ax[4].set_xlabel(r'$x\;[\mathrm{m}]$', fontsize=20)
+    # fig.suptitle('Figure')
+    ax[0].legend(ncol=1, loc="best", fontsize = 14, frameon=False)
+    ax[1].legend(ncol=1, loc="best", fontsize = 14, frameon=False)
+    ax[2].legend(ncol=1, loc="best", fontsize = 14, frameon=False)
+    ax[3].legend(ncol=1, loc="best", fontsize = 14, frameon=False)
+    ax[4].legend(ncol=1, loc="best", fontsize = 14, frameon=False)
+
+    ax[0].get_xaxis().set_visible(False)
+    ax[1].get_xaxis().set_visible(False)
+    ax[2].get_xaxis().set_visible(False)
+    ax[3].get_xaxis().set_visible(False)
+
+    fig.savefig('output/plots/flame/p_phi1_isobaric.pdf')
 elif yIndex == 4:
-    ax[0].plot(data0[256:767,0]-0.00256,data0[256:767,yIndex],c='black',linewidth=3,label='$t=t_0$') 
-    # ax[0].plot(data0[256:767,0]-0.00256,data0[256:767,yIndex]*0+0.232917511457580,c='red',linestyle='dashed',linewidth=3,label='$Y_\mathrm{O_2,0}$') 
+    ax[0].plot(data0[:,0],data0[:,yIndex],c='black',linewidth=2,label='$t='+str(times[0]/1e3)+'\;\mathrm{ms}$') 
+    # ax[0].plot(data0[52:511,0],data0[52:511,yIndex],c='black',linewidth=2) 
+    # ax[0].plot(data0[:,0],data0[:,yIndex]*0+0.232917511457580,c='red',linestyle='dashed',linewidth=3,label='$Y_\mathrm{O_2,0}$') 
 
-    ax[1].plot(data1[256:767,0]-0.00256,data1[256:767,yIndex],c='black',linewidth=3,label='$t=15.0\;\mathrm{ms}$') 
-    # ax[1].plot(data1[256:767,0]-0.00256,data1[256:767,yIndex]*0+0.232917511457580,c='red',linestyle='dashed',linewidth=3) 
+    ax[1].plot(data1[:,0],data1[:,yIndex],c='black',linewidth=2,label='$t='+str(times[1]/1e3)+'\;\mathrm{ms}$') 
+    # ax[1].plot(data1[:,0],data1[:,yIndex]*0+0.232917511457580,c='red',linestyle='dashed',linewidth=3) 
 
-    ax[2].plot(data2[256:767,0]-0.00256,data2[256:767,yIndex],c='black',linewidth=3,label='$t=30.0\mathrm{ms}$') 
-    # ax[2].plot(data2[256:767,0]-0.00256,data2[256:767,yIndex]*0+0.232917511457580,c='red',linestyle='dashed',linewidth=3) 
+    ax[2].plot(data2[:,0],data2[:,yIndex],c='black',linewidth=2,label='$t='+str(times[2]/1e3)+'\;\mathrm{ms}$') 
+    # ax[2].plot(data2[:,0],data2[:,yIndex]*0+0.232917511457580,c='red',linestyle='dashed',linewidth=3) 
 
-    ax[3].plot(data3[256:767,0]-0.00256,data3[256:767,yIndex],c='black',linewidth=3,label='$t=45.0\;\mathrm{ms}$') 
-    # ax[3].plot(data3[256:767,0]-0.00256,data3[256:767,yIndex]*0+0.232917511457580,c='red',linestyle='dashed',linewidth=3) 
+    ax[3].plot(data3[:,0],data3[:,yIndex],c='black',linewidth=2,label='$t='+str(times[3]/1e3)+'\;\mathrm{ms}$') 
+    # ax[3].plot(data3[:,0],data3[:,yIndex]*0+0.232917511457580,c='red',linestyle='dashed',linewidth=3) 
 
-    ax[4].plot(data4[256:767,0]-0.00256,data4[256:767,yIndex],c='black',linewidth=3,label='$t=60.0\;\mathrm{ms}$') 
-    # ax[4].plot(data4[256:767,0]-0.00256,data4[256:767,yIndex]*0+0.232917511457580,c='red',linestyle='dashed',linewidth=3) 
+    ax[4].plot(data4[:,0],data4[:,yIndex],c='black',linewidth=2,label='$t='+str(times[4]/1e3)+'\;\mathrm{ms}$') 
+    # ax[4].plot(data4[:,0],data4[:,yIndex]*0+0.232917511457580,c='red',linestyle='dashed',linewidth=3) 
 
-    # ax[0].set_ylim(0,0.232917511457580)
-    # ax[1].set_ylim(0,0.232917511457580)
-    # ax[2].set_ylim(0,0.232917511457580)
-    # ax[3].set_ylim(0,0.232917511457580)
-    # ax[4].set_ylim(0,0.232917511457580)
+    ax[0].set_ylim(-0.4,0.01)
+    ax[1].set_ylim(-0.4,0.01)
+    ax[2].set_ylim(-0.4,0.01)
+    ax[3].set_ylim(-0.4,0.01)
+    ax[4].set_ylim(-0.4,0.01)
 
-    ax[0].set_xlim(0,0.00512)
-    ax[1].set_xlim(0,0.00512)
-    ax[2].set_xlim(0,0.00512)
-    ax[3].set_xlim(0,0.00512)
-    ax[4].set_xlim(0,0.00512)
 
     # ax.set_ylabel(r'$T_\mathrm{g}\;[\mathrm{K}]$', fontsize=20)
     # ax[4].set_xlabel(r'$\mathrm{x}\;[\mathrm{m}]$', fontsize=20)
     fig.supylabel(r'$u_\mathrm{g}\;[\mathrm{m/s}]$', fontsize=20)
     ax[4].set_xlabel(r'$x\;[\mathrm{m}]$', fontsize=20)
     # fig.suptitle('Figure')
-    ax[0].legend(ncol=1, loc="best", fontsize = 14, frameon=False)
-    ax[1].legend(ncol=1, loc="best", fontsize = 14, frameon=False)
+    ax[0].legend(ncol=1, loc="lower left", fontsize = 14, frameon=False)
+    ax[1].legend(ncol=1, loc="upper left", fontsize = 14, frameon=False)
     ax[2].legend(ncol=1, loc="upper left", fontsize = 14, frameon=False)
     ax[3].legend(ncol=1, loc="upper left", fontsize = 14, frameon=False)
     ax[4].legend(ncol=1, loc="upper left", fontsize = 14, frameon=False)
@@ -234,37 +293,32 @@ elif yIndex == 4:
     ax[1].get_xaxis().set_visible(False)
     ax[2].get_xaxis().set_visible(False)
     ax[3].get_xaxis().set_visible(False)
+    fig.savefig('output/plots/flame/u_phi1_isobaric.pdf')
 
-    plt.show()
-
-    fig.savefig('output/plots/flame/uGas_phi1.pdf')
 elif yIndex == 5:
-    ax[0].plot(data0[256:767,0]-0.00256,data0[256:767,yIndex],c='black',linewidth=3,label='$t=t_0$') 
-    # ax[0].plot(data0[256:767,0]-0.00256,data0[256:767,yIndex]*0+0.232917511457580,c='red',linestyle='dashed',linewidth=3,label='$Y_\mathrm{O_2,0}$') 
+    ax[0].plot(data0[:,0],data0[:,yIndex],c='black',linewidth=2,label='$t='+str(times[0]/1e3)+'\;\mathrm{ms}$') 
+    # ax[0].plot(data0[52:511,0],data0[52:511,yIndex],c='black',linewidth=2) 
+    ax[0].plot(data0[:,0],data0[:,yIndex]*0+rhoLo,c='red',linestyle='dashed',linewidth=3,label=r'$\rho _\mathrm{0}$') 
 
-    ax[1].plot(data1[256:767,0]-0.00256,data1[256:767,yIndex],c='black',linewidth=3,label='$t=15.0\;\mathrm{ms}$') 
-    # ax[1].plot(data1[256:767,0]-0.00256,data1[256:767,yIndex]*0+0.232917511457580,c='red',linestyle='dashed',linewidth=3) 
+    ax[1].plot(data1[:,0],data1[:,yIndex],c='black',linewidth=2,label='$t='+str(times[1]/1e3)+'\;\mathrm{ms}$') 
+    ax[1].plot(data1[:,0],data1[:,yIndex]*0+rhoLo,c='red',linestyle='dashed',linewidth=3) 
 
-    ax[2].plot(data2[256:767,0]-0.00256,data2[256:767,yIndex],c='black',linewidth=3,label='$t=30.0\mathrm{ms}$') 
-    # ax[2].plot(data2[256:767,0]-0.00256,data2[256:767,yIndex]*0+0.232917511457580,c='red',linestyle='dashed',linewidth=3) 
+    ax[2].plot(data2[:,0],data2[:,yIndex],c='black',linewidth=2,label='$t='+str(times[2]/1e3)+'\;\mathrm{ms}$') 
+    ax[2].plot(data2[:,0],data2[:,yIndex]*0+rhoLo,c='red',linestyle='dashed',linewidth=3) 
 
-    ax[3].plot(data3[256:767,0]-0.00256,data3[256:767,yIndex],c='black',linewidth=3,label='$t=45.0\;\mathrm{ms}$') 
-    # ax[3].plot(data3[256:767,0]-0.00256,data3[256:767,yIndex]*0+0.232917511457580,c='red',linestyle='dashed',linewidth=3) 
+    ax[3].plot(data3[:,0],data3[:,yIndex],c='black',linewidth=2,label='$t='+str(times[3]/1e3)+'\;\mathrm{ms}$') 
+    ax[3].plot(data3[:,0],data3[:,yIndex]*0+rhoLo,c='red',linestyle='dashed',linewidth=3) 
 
-    ax[4].plot(data4[256:767,0]-0.00256,data4[256:767,yIndex],c='black',linewidth=3,label='$t=60.0\;\mathrm{ms}$') 
-    # ax[4].plot(data4[256:767,0]-0.00256,data4[256:767,yIndex]*0+0.232917511457580,c='red',linestyle='dashed',linewidth=3) 
+    ax[4].plot(data4[:,0],data4[:,yIndex],c='black',linewidth=2,label='$t='+str(times[4]/1e3)+'\;\mathrm{ms}$') 
+    ax[4].plot(data4[:,0],data4[:,yIndex]*0+rhoLo,c='red',linestyle='dashed',linewidth=3) 
 
-    # ax[0].set_ylim(0,0.232917511457580)
-    # ax[1].set_ylim(0,0.232917511457580)
-    # ax[2].set_ylim(0,0.232917511457580)
-    # ax[3].set_ylim(0,0.232917511457580)
-    # ax[4].set_ylim(0,0.232917511457580)
+    # ax[0].set_ylim(0,6e5)
+    # ax[1].set_ylim(0,6e5)
+    # ax[2].set_ylim(0,6e5)
+    # ax[3].set_ylim(0,6e5)
+    # ax[4].set_ylim(0,6e5)
 
-    ax[0].set_xlim(0,0.00512)
-    ax[1].set_xlim(0,0.00512)
-    ax[2].set_xlim(0,0.00512)
-    ax[3].set_xlim(0,0.00512)
-    ax[4].set_xlim(0,0.00512)
+
 
     # ax.set_ylabel(r'$T_\mathrm{g}\;[\mathrm{K}]$', fontsize=20)
     # ax[4].set_xlabel(r'$\mathrm{x}\;[\mathrm{m}]$', fontsize=20)
@@ -273,21 +327,17 @@ elif yIndex == 5:
     # fig.suptitle('Figure')
     ax[0].legend(ncol=1, loc="best", fontsize = 14, frameon=False)
     ax[1].legend(ncol=1, loc="best", fontsize = 14, frameon=False)
-    ax[2].legend(ncol=1, loc="upper left", fontsize = 14, frameon=False)
-    ax[3].legend(ncol=1, loc="upper left", fontsize = 14, frameon=False)
-    ax[4].legend(ncol=1, loc="upper left", fontsize = 14, frameon=False)
+    ax[2].legend(ncol=1, loc="best", fontsize = 14, frameon=False)
+    ax[3].legend(ncol=1, loc="best", fontsize = 14, frameon=False)
+    ax[4].legend(ncol=1, loc="best", fontsize = 14, frameon=False)
 
     ax[0].get_xaxis().set_visible(False)
     ax[1].get_xaxis().set_visible(False)
     ax[2].get_xaxis().set_visible(False)
     ax[3].get_xaxis().set_visible(False)
+    fig.savefig('output/plots/flame/rho_phi1_isobaric.pdf')
 
-    plt.show()
 
-    fig.savefig('output/plots/flame/rho_phi1.pdf')
 
-add = sum(data4[456:656,1])
-avg = add/200
-print(avg)
 
-print(max(data1[:,1]))
+plt.show()

@@ -20,6 +20,7 @@ extern int enIC;
 extern int NUM_STATE;
 extern int particle;
 extern int n_cell;
+extern int model;
 extern const int spacedim;
 extern double R, pi, one_atm_Pa;
 extern double dp0;               // mu m                 Initial particle diameter
@@ -374,6 +375,11 @@ void getSource(Vector<double>& qSource, Vector<double>& pSource, const Vector<do
     Real mdotO2=0, mdotO2k=0, mdotO2d=0, ShSt=0, cpgas=0, phi=0, Bm=0, Bt=0, Le=0, psi=0;
     Vector<double> mixDiffCoeffs(gases::ncomps);
 
+    // Declare variables for k-beta rate
+    Real rFe=0, AFe=0, beta=0, kTH=0, XO2pKB=0, O2rate=0, rhoPS=0;
+    Real k0TH = 75.0*1e7*1e-2;   // m/s
+    Real TaTH = 14.4*1e3;        // K
+
     // Declare boundary-layer averaged quantities
     Real pfilm=0, Tfilm=0, YO2film=0, YN2film=0, YFefilm=0, YFeOfilm=0, rhofilm=0, Mfilm=0;
 
@@ -458,6 +464,7 @@ void getSource(Vector<double>& qSource, Vector<double>& pSource, const Vector<do
     YFeOfilm = filmAverage(YFeOp,0);
     Mfilm    = 1.0/(YO2film/M_O2+YN2film/M_N2+YFefilm/M_Fe+YFeOfilm/M_FeO);
     rhofilm  = pfilm*Mfilm/(R*Tfilm);
+    rhoPS    = pN2*M_N2/(R*Tp);
 
     // std::cout << "rhofilm " << rhofilm << std::endl;
 
@@ -540,7 +547,7 @@ void getSource(Vector<double>& qSource, Vector<double>& pSource, const Vector<do
     // Calculate change of Fe, FeO, and Fe3O4 mass based on temperature and oxide layer.
     // Compare the rate at which the kinetics predict a total consumption of oxygen, compare to the molecular diffusion
     // rate. Slower rate is limiting for the overall oxidation reaction.
-    dmdt = getOxidationRates(mFe,mFeO,mFe3O4,Tp,rp);
+    dmdt = getOxidationRates(mFe,mFeO,mFe3O4,Tp,rp);  // this gets the parabolic rate of oxidation
     mdotO2k = dmdt[1]*nO2FeO + dmdt[2]*nO2Fe3O4;     // total kinetic rate of O2 consumption, kg/s
 
     // std::cout << "kinetic rate: " << mdotO2k << ", diffusion rate: " << mdotO2d << std::endl;
@@ -552,31 +559,63 @@ void getSource(Vector<double>& qSource, Vector<double>& pSource, const Vector<do
     // in the gas cell where the particle resides. 
 
     if ((mFe/(4.1105e-12) > 0.001) && (YO2/(0.2329) > 0.001)){ 
-        if (mdotO2d > mdotO2k){ // if the molecular diffusion rate is FASTER than the kinetic rate of O2 consumption
-            // reaction is kinetically-controlled
-            pSource[RealData::mFe] = dmdt[0];
-            pSource[RealData::mFeO] = dmdt[1];
-            pSource[RealData::mFe3O4] = dmdt[2];
-            // std::cout << "kinetics-controlled" << std::endl;
-            epsilon = 0.88;
-            dmO2dt = -nO2FeO*pSource[RealData::mFeO]-nO2Fe3O4*pSource[RealData::mFe3O4];
-            dmFeOformdt   = pSource[RealData::mFeO];
-            dmFe3O4formdt = pSource[RealData::mFe3O4];
-            pInt[IntData::regime] = 0;  // set combustion regime to kinetic
-        }
-        else{ // if the kinetic rate of O2 consumption is FASTER than the molecular diffusion rate
-            // the particle can only consume the O2 supplied from the gas, hence, diffusion-controlled
-            if (Tp < 1870){ // if particle is still at least partially in solid-phase, partition the O2 as in Mi et al. (CnF, 2022)
-                pSource[RealData::mFeO]   = (mdotO2*dmdt[1]*nO2FeO/(dmdt[1]*nO2FeO+dmdt[2]*nO2Fe3O4))/nO2FeO;
-                pSource[RealData::mFe3O4] = (mdotO2*dmdt[2]*nO2Fe3O4/(dmdt[1]*nO2FeO+dmdt[2]*nO2Fe3O4))/nO2Fe3O4;
-                pSource[RealData::mFe]    = - pSource[RealData::mFeO]*nFeFeO - pSource[RealData::mFe3O4]*nFeFe3O4;
+        if (model == 1){  // if the parabolic oxidation model + switch type mechanism is used
+            if (mdotO2d > mdotO2k){ // if the molecular diffusion rate is FASTER than the kinetic rate of O2 consumption
+                // reaction is kinetically-controlled
+                pSource[RealData::mFe] = dmdt[0];
+                pSource[RealData::mFeO] = dmdt[1];
+                pSource[RealData::mFe3O4] = dmdt[2];
+                // std::cout << "kinetics-controlled" << std::endl;
                 epsilon = 0.88;
                 dmO2dt = -nO2FeO*pSource[RealData::mFeO]-nO2Fe3O4*pSource[RealData::mFe3O4];
-                Nu = Nu*log(1.0+Bt)/Bt;
                 dmFeOformdt   = pSource[RealData::mFeO];
                 dmFe3O4formdt = pSource[RealData::mFe3O4];
+                pInt[IntData::regime] = 0;  // set combustion regime to kinetic
             }
-            else{ // if particle is completely in liquid-phase, use all O2 to form FeO
+            else{ // if the kinetic rate of O2 consumption is FASTER than the molecular diffusion rate
+                // the particle can only consume the O2 supplied from the gas, hence, diffusion-controlled
+                if (Tp < 1870){ // if particle is still at least partially in solid-phase, partition the O2 as in Mi et al. (CnF, 2022)
+                    pSource[RealData::mFeO]   = (mdotO2*dmdt[1]*nO2FeO/(dmdt[1]*nO2FeO+dmdt[2]*nO2Fe3O4))/nO2FeO;
+                    pSource[RealData::mFe3O4] = (mdotO2*dmdt[2]*nO2Fe3O4/(dmdt[1]*nO2FeO+dmdt[2]*nO2Fe3O4))/nO2Fe3O4;
+                    pSource[RealData::mFe]    = - pSource[RealData::mFeO]*nFeFeO - pSource[RealData::mFe3O4]*nFeFe3O4;
+                    epsilon = 0.88;
+                    dmO2dt = -nO2FeO*pSource[RealData::mFeO]-nO2Fe3O4*pSource[RealData::mFe3O4];
+                    Nu = Nu*log(1.0+Bt)/Bt;
+                    dmFeOformdt   = pSource[RealData::mFeO];
+                    dmFe3O4formdt = pSource[RealData::mFe3O4];
+                }
+                else{ // if particle is completely in liquid-phase, use all O2 to form FeO
+                    pSource[RealData::mFeO]   = mdotO2d/nO2FeO - mdotFeOevap;
+                    pSource[RealData::mFe3O4] = 0.0;
+                    pSource[RealData::mFe]    = -mdotO2d/nO2FeO*nFeFeO;
+                    epsilon = 0.70;
+                    dmO2dt = -mdotO2d;
+                    dmFeOformdt   = mdotO2d/nO2FeO;
+                    dmFe3O4formdt = 0;
+                }
+                pInt[IntData::regime] = 1;  // set combustion regime to diffusive
+                // std::cout << "diffusion-controlled" << std::endl;
+            }
+        }
+        else if (model == 2){ // if the k-beta model is used, assuming a porous oxide shell
+            if (Tp < 1870){ // if not fully in liquid-phase, neglect evaporation
+                beta = 2*pi*rp*ShSt*rhoO2g*DO2;
+                // calculate rFe, aFe
+                rFe = pow((mFe/rhoFe)*(3.0/(4.0*pi)),(1.0/3.0));
+                AFe = 4*pi*rFe*rFe;
+                kTH = AFe*k0TH*exp(-TaTH/Tp)*rhoPS;
+                XO2pKB = XO2*beta/(beta + kTH);
+                O2rate = XO2pKB*kTH;
+                // assign values to variables needed
+                pSource[RealData::mFeO]   = O2rate/nO2FeO;
+                pSource[RealData::mFe3O4] = 0.0;
+                pSource[RealData::mFe]    = -O2rate/nO2FeO*nFeFeO;
+                epsilon = 0.88;
+                dmO2dt = -O2rate;
+                dmFeOformdt   = O2rate/nO2FeO;
+                dmFe3O4formdt = 0;
+            }
+            else{   // if fully in liquid-phase, reaction is diffusion controlled, proceed without k-beta analysis
                 pSource[RealData::mFeO]   = mdotO2d/nO2FeO - mdotFeOevap;
                 pSource[RealData::mFe3O4] = 0.0;
                 pSource[RealData::mFe]    = -mdotO2d/nO2FeO*nFeFeO;
@@ -585,8 +624,6 @@ void getSource(Vector<double>& qSource, Vector<double>& pSource, const Vector<do
                 dmFeOformdt   = mdotO2d/nO2FeO;
                 dmFe3O4formdt = 0;
             }
-            pInt[IntData::regime] = 1;  // set combustion regime to diffusive
-            // std::cout << "diffusion-controlled" << std::endl;
         }
     }
     else { // if there is insufficient Fe mass or O2 mass fraction for reaction (to preserve boundedness)

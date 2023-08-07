@@ -30,6 +30,7 @@ int Da;               // Damkohler number, ratio of chemical to flow timescale
 int particle;         // =0 if no particles, =1 if enabled
 int Nsub;
 int printRate;
+int model;
 double TpInitial;
 double TgInitial;
 double conc;
@@ -73,6 +74,7 @@ main (int   argc,
         pp.query("Nsub",Nsub);
         pp.query("conc",conc);
         pp.query("printRate",printRate);
+        pp.query("model",model);
 
         std::cout << "end time is: " << stop_time << std::endl;
     }

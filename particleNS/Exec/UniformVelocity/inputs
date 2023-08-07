@@ -29,6 +29,7 @@ Nsub               = 1       #subcycling frequency
 TgInitial          = 300
 TpInitial          = 300
 conc               = 600
+model              = 1       # 1 = parabolic rate law, 2 = k-beta (Hazenberg)
 
 
 # VERBOSITY - controls the number of messages output to screen

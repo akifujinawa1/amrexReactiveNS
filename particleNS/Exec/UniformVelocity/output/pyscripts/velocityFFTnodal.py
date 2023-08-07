@@ -92,7 +92,7 @@ plt.tight_layout()
 # ax1 = fig.add_subplot(121)
 # ax2 = fig.add_subplot(122)
 
-Nlengths = 2
+Nlengths = 3
 condition = 2
 yIndex = 4
 
@@ -210,14 +210,17 @@ sub_axes = plt.axes([.3, .18, .55, .10])
 sub_axes.plot(spfreq, velocityFFT.real,color=colors[0])
 if Nlengths == 1:
     sub_axes.set_xlim([0,120000])
+    sub_axes.set_ylim([-50,50])
 elif Nlengths == 2: 
     sub_axes.set_xlim([0,80000])
+    sub_axes.set_ylim([-150,150])
 else:
     sub_axes.set_xlim([0,60000])
-sub_axes.set_ylim([-50,50])
+    sub_axes.set_ylim([-450,450])
+
 sub_axes.ticklabel_format(axis='x', style='sci', scilimits=(3,4))
 
-ax[0].set_ylabel('$u_{\mathrm{g},x=L_x/4}}\;[\mathrm{m/s}]$', fontsize=16)
+ax[0].set_ylabel('$u_{\mathrm{g},x=L_x/4}*\;[\mathrm{m/s}]$', fontsize=16)
 ax[0].set_xlim([0,50])
 
 # ax[1].set_xlabel('$\mathrm{time}\;[\mathrm{ms}]$', fontsize=16)
