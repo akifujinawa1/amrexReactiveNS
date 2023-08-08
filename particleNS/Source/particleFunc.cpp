@@ -601,10 +601,10 @@ void getSource(Vector<double>& qSource, Vector<double>& pSource, const Vector<do
         }
         else if (model == 2){ // if the k-beta model is used, assuming a porous oxide shell
             if (Tp < 1870){ // if not fully in liquid-phase, neglect evaporation
-                beta = 2*pi*rp*ShSt*rhoO2g*DO2;
                 // calculate rFe, aFe
                 rFe = pow((mFe/rhoFe)*(3.0/(4.0*pi)),(1.0/3.0));
                 AFe = 4*pi*rFe*rFe;
+                beta = 2*pi*rFe*ShSt*rhoO2g*DO2;
                 kTH = AFe*k0TH*exp(-TaTH/Tp)*rhoPS*(M_O2/M_N2);
                 XO2pKB = XO2*beta/(beta + kTH);
                 O2rate = XO2pKB*kTH;
