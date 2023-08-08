@@ -92,7 +92,7 @@ plt.tight_layout()
 # ax1 = fig.add_subplot(121)
 # ax2 = fig.add_subplot(122)
 
-Nlengths = 3
+Nlengths = 1
 condition = 2
 yIndex = 4
 
@@ -101,7 +101,7 @@ dpdt = np.empty(1300)
 
 
 if Nlengths == 1:
-    directory =  '/../../../../mnt/D/codeBackup/flame_txt_/isochoric_Results/domainLength/fftResults/fft512/field/'
+    directory =  '/../../../../mnt/d/codeBackup/flame_txt_/isochoric_Results/domainLength/fftResults/fft512kb/field/'
     TotalNp = 0
     
     for path in os.scandir(directory):

@@ -5,9 +5,11 @@ import numpy as np
 import pandas as pd
 import matplotlib.ticker as ticker
 import numpy.matlib
+from thermo import *
 
 import os
 import sys
+from pathlib import Path
 
 # from moviepy.editor import *
 # from moviepy.video.io.bindings import mplfig_to_npimage
@@ -80,138 +82,132 @@ lss = ['-','--','-.']
  
 # matplot subplot
 fig, ax = plt.subplots(nrows=2,ncols=1,figsize=(8,12*yratio))  # ,dpi=100   fig2,ax2 = plt.subplots(nrows=2,ncols=1,figsize=(8,8*yratio))
-# fig2, ax2 = plt.subplots(nrows=2,ncols=1,figsize=(8,12*yratio))  # ,dpi=100   fig2,ax2 = plt.subplots(nrows=2,ncols=1,figsize=(8,8*yratio))
+# fig2, ax2 = plt.subplots(nrows=3,ncols=1,figsize=(8,12*yratio))  # ,dpi=100   fig2,ax2 = plt.subplots(nrows=2,ncols=1,figsize=(8,8*yratio))
 # fig3, ax3 = plt.subplots(nrows=2,ncols=1,figsize=(8,12*yratio))  # ,dpi=100   fig2,ax2 = plt.subplots(nrows=2,ncols=1,figsize=(8,8*yratio))
 
 plt.subplots_adjust(left=0.14, bottom=0.12, right=0.90, top=0.94, wspace=0.20, hspace=0.20)
-# fig = 
-# ax1 = fig.add_subplot(121)
-# ax2 = fig.add_subplot(122)
+plt.tight_layout()
 
-Nlengths = 3
+Nlengths = 1
 condition = 2
 yIndex = 4
+labelCount = 0
 
-dpdt = np.empty(1300)
+labels = ['$L_x=0.00512\;\mathrm{m},\;\mathrm{PRL,switch}$',
+          '$L_x=0.00512\;\mathrm{m},\;k$-'r'$\beta$',
+          '$L_x=0.00768\;\mathrm{m},\;\mathrm{PRL,switch}$',
+          '$L_x=0.00768\;\mathrm{m},\;k$-'r'$\beta$',
+          '$L_x=0.01024\;\mathrm{m},\;\mathrm{PRL,switch}$',
+          '$L_x=0.01024\;\mathrm{m},\;k$-'r'$\beta$']
+lsver  = ['-', '--','-.']
 
-pressure = np.empty((Nlengths,1300))
+for Nvar in range(2):
+    Nlengths = Nvar+1
+    for model in range(2):
+        if Nlengths == 1:
+            if model == 0:
+                directory =  '/../../../../mnt/d/codeBackup/flame_txt_/isochoric_Results/domainLength/fftResults/fft512/field/'
+            else:
+                directory =  '/../../../../mnt/d/codeBackup/flame_txt_/isochoric_Results/domainLength/fftResults/fft512kb/field/'
+            TotalNp = 0
+            
+            for path in os.scandir(directory):
+                if path.is_file():
+                    TotalNp += 1
+            times = np.empty(TotalNp)     # time values outputted in micros * 10
+            iter = 0
+            for path in os.scandir(directory):
+                if path.is_file():
+                    times[iter] = int(Path(path).stem)
+                    iter += 1
+            # time = np.linspace(0.1,59,590)
+            domain = '0.00512'
+            Lx = 512
+            xval = 0.001275
+
+        elif Nlengths == 2:
+            if model == 0:
+                directory =  '/../../../../mnt/d/codeBackup/flame_txt_/isochoric_Results/domainLength/fftResults/fft768/field/'
+            else:
+                directory =  '/../../../../mnt/d/codeBackup/flame_txt_/isochoric_Results/domainLength/fftResults/fft768kb/field/'
+            TotalNp = 0
+            for path in os.scandir(directory):
+                if path.is_file():
+                    TotalNp += 1
+            times = np.empty(TotalNp)     # time values outputted in micros * 10
+            iter = 0
+            for path in os.scandir(directory):
+                if path.is_file():
+                    times[iter] = int(Path(path).stem)
+                    iter += 1
+
+            domain = '0.00768'
+            Lx = 768
+            xval = 0.001915
+
+        elif Nlengths == 3:
+            if model == 0:
+                directory =  '/../../../../mnt/d/codeBackup/flame_txt_/isochoric_Results/domainLength/fftResults/fft1024/field/'
+            else:
+                directory =  '/../../../../mnt/d/codeBackup/flame_txt_/isochoric_Results/domainLength/fftResults/fft1024kb/field/'
+            TotalNp = 0
+            for path in os.scandir(directory):
+                if path.is_file():
+                    TotalNp += 1
+            times = np.empty(TotalNp)     # time values outputted in micros * 10
+            iter = 0
+            for path in os.scandir(directory):
+                if path.is_file():
+                    times[iter] = int(Path(path).stem)
+                    iter += 1
+
+            domain = '0.01024'
+            Lx = 1024
+            xval = 0.002555
 
 
+        NT = len(times)
+        times.sort()
+        timePlot = np.empty(int(NT/100)+1)
+        pressure = np.empty(int(NT/100)+1)
+        dpdt     = np.empty(int(NT/100))
+        # pressure = np.empty(NT)
+        # dpdt     = np.empty(NT-1)
+        i = 0
+        j = 0
+        while (j < NT):
+        # for j in range(NT):
+            timeval = str(int(times[j]))
+            timePlot[i] = timeval
+            data = np.loadtxt(directory+timeval+'.txt')
+            # data = data[data[:, 0].argsort()]
+            pressure[i] = np.mean(data[:,3])
+            # print(pressure[i])
+            # print(i)
+            if i > 0:
+                dpdt[i-1] = (pressure[i]-pressure[i-1])/(timePlot[i]-timePlot[i-1])
+            i+=1
+            j+=100
 
-for i in range(Nlengths):
-    if i == 0:
-        directory =  '900/field'
-        time = np.linspace(0.1,59,590)
-        domain = '0.00512'
-    elif i == 1:
-        directory = 'domain768/field'
-        time = np.linspace(0.1,89,890)
-        domain = '0.00758'
-    elif i == 2:
-        directory = 'domain1024/field'
-        time = np.linspace(0.1,119,1190)
-        domain = '0.01024'
 
-    NT = len(time)
+        # print(len(pressure))
+        
+        ax[0].plot(timePlot[0:len(timePlot)-1]/1e5, pressure[0:len(pressure)-1]*1e-6, color=colors[model*2],ls = lsver[Nvar], lw = 2,label=labels[labelCount])     #   label='$L_x='+domain+'\;\mathrm{m}$')
+        ax[1].plot(timePlot[0:len(timePlot)-1]/1e5, dpdt*1e-6,color=colors[model*2],ls = lsver[Nvar], lw = 2) 
+        labelCount+=1
 
-    for j in range(NT):
-        timeval = str((j+1)*100)
-        data = np.loadtxt('output/txt/1DflameConfined/'+directory+'/'+timeval+'.txt')
-        pressure[i,j] = np.mean(data[:,3])
-    pPlot = pressure[i,0:len(time)]
-    ax[0].plot(time, pPlot*1e-6,color=colors[i],ls = lss[i], lw = 3, label='$L_x='+domain+'\;\mathrm{m}$')
 
-for i in range(Nlengths):
-    if i == 0:
-        directory =  '900/field'
-        time = np.linspace(0.1,59,590)
-        time2 = time[0:589] + (time[2]-time[1])/2
-        domain = '0.00512'
-    elif i == 1:
-        directory = 'domain768/field'
-        time = np.linspace(0.1,89,890)
-        time2 = time[0:889] + (time[2]-time[1])/2
-        domain = '0.00758'
-    elif i == 2:
-        directory = 'domain1024/field'
-        time = np.linspace(0.1,119,1190)
-        time2 = time[0:1189] + (time[2]-time[1])/2
-        domain = '0.01024'
-    for j in range(NT-1):
-        dpdt[j] = (pressure[i,j+1] - pressure[i,j])/0.1e-3
-    gradPlot = dpdt[0:len(time)-1]
-    ax[1].plot(time2, gradPlot*1e-6,color=colors[i], lw = 2)
-
-ax[0].set_xlabel('$\mathrm{time}\;[\mathrm{ms}]$', fontsize=20)
 ax[0].set_ylabel('$\overline{p}\;[\mathrm{MPa}]$', fontsize=20)
-ax[0].legend(ncol=2, loc='best', fontsize = 14, frameon=False)
-ax[0].set_xlim([0,120])
+ax[0].legend(ncol=1, loc='lower right', fontsize = 14, frameon=False)
+# ax[0].set_xlim([0,120])
 
 ax[1].set_xlabel('$\mathrm{time}\;[\mathrm{ms}]$', fontsize=20)
 ax[1].set_ylabel('$ \mathrm{d}\overline{p}/\mathrm{d}t \;[\mathrm{MPa/s}]$', fontsize=20)
-ax[1].set_xlim([0,120])
-
-# maxPressure = np.empty(N)
-# maxdpdt = np.empty(N)
-
-# for i in range(N):
-#     conc = concentrations[i]
-#     directory = 'output/txt/'+folder+'/'+str(conc)+'/particle/'
-#     TotalNp = 0
-#     for path in os.scandir(directory):
-#         if path.is_file():
-#             TotalNp += 1
-#     interDist = (mTot0/865)**(1/3)
-#     mO2_all   = 512*dp0*interDist*interDist*Y_O2*(0.1*rhoHi+0.9*rhoLo)
-#     phiArray[i] = (TotalNp*mFe0/mO2_all)/(2*M_Fe/M_O2)
-#     directory =  str(conc)+'/field'
-#     maxPressure[i] = max(pressure[i,:])
-#     maxdpdt[i] = max(dpdt[i,200:588])
-
-# ax2[0].plot(phiArray, maxPressure*1e-6 ,color='black')
-# ax2[1].plot(phiArray, maxdpdt*1e-6 ,color='black')
-
-# ax2[0].set_xlabel('$\phi\;[\mathrm{-}]$', fontsize=20)
-# ax2[0].set_ylabel('$\overline{p}_\mathrm{max}\;[\mathrm{MPa}]$', fontsize=20)
-
-# ax2[1].set_xlabel('$\phi\;[\mathrm{-}]$', fontsize=20)
-# ax2[1].set_ylabel('$\mathrm{d}\overline{p}/\mathrm{d}t_\mathrm{max}\;[\mathrm{MPa}]$', fontsize=20)
-
-
-
-
-# # FFT on dpdt
-# conc = 1400
-# ival = int((conc - concentrations[0])/100)
-# start = 10
-# end = len(time)-200
-# dpdtPlot = dpdt[ival,start:end]
-# timePlot = time[start:end]
-
-# ax3[0].plot(timePlot, dpdtPlot*1e-6)
-# ax3[0].set_xlabel('$\mathrm{time}\;[\mathrm{s}]$', fontsize=20)
-# ax3[0].set_ylabel('$p\;[\mathrm{MPa}]$', fontsize=20)
-
-# pFFT = np.fft.rfft(dpdtPlot)
-# # print(type(velocityFFT))
-# spfreq = np.fft.rfftfreq(len(timePlot),(time[2]-time[1])*1e-3)
-# # print(x)
-# # print(spfreq)
-# ax3[1].plot(spfreq, pFFT.real)
-# ax3[1].set_xlabel('$\mathrm{Frequency}\;[\mathrm{1/s}]$', fontsize=20)
-# ax3[1].set_ylabel('$\mathrm{Amplitude}\;[\mathrm{-}]$', fontsize=20)
-# plt.ticklabel_format(style='sci', axis='x', scilimits=(0,0))
-
-
-ax[0].get_xaxis().set_visible(False)
-# ax2[0].get_xaxis().set_visible(False)
-# ax3[0].get_xaxis().set_visible(False)
+# ax[1].set_xlim([0,120])
 
 
 plt.show()
 
-
-fig.savefig('output/plots/flame/pressureTimedomain.pdf')
 
 
 # if yIndex == 1:
