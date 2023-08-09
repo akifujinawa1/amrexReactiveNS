@@ -274,16 +274,21 @@ void AmrLevelAdv::writePlotFile()
                     parOut.open("output/txt/1Dflame/isobaric/particle/" + id + "-" + cpu + ".txt", std::ofstream::app);
                 }
                 else if (enIC == 15){
-                    // parOut.open("output/txt/1DflameConfined/isochoric/particle/" + id + "-" + cpu + ".txt", std::ofstream::app);
-                    if ((NxCell - 512) < 10){
-                        parOut.open("/local/data/public/af793/1DflameConfined/fft512/particle/" + id + "-" + cpu + ".txt", std::ofstream::app);
+                    if (printRate == 0){
+                        parOut.open("output/txt/1DflameConfined/isochoric/particle/" + id + "-" + cpu + ".txt", std::ofstream::app);
                     }
-                    else if ((NxCell - 768) < 10){
-                        parOut.open("/local/data/public/af793/1DflameConfined/fft768/particle/" + id + "-" + cpu + ".txt", std::ofstream::app);
+                    else{
+                        if ((NxCell - 512) < 10){
+                            parOut.open("/local/data/public/af793/1DflameConfined/fft512/particle/" + id + "-" + cpu + ".txt", std::ofstream::app);
+                        }
+                        else if ((NxCell - 768) < 10){
+                            parOut.open("/local/data/public/af793/1DflameConfined/fft768/particle/" + id + "-" + cpu + ".txt", std::ofstream::app);
+                        }
+                        else {
+                            parOut.open("/local/data/public/af793/1DflameConfined/fft1024/particle/" + id + "-" + cpu + ".txt", std::ofstream::app);
+                        }
                     }
-                    else {
-                        parOut.open("/local/data/public/af793/1DflameConfined/fft1024/particle/" + id + "-" + cpu + ".txt", std::ofstream::app);
-                    }
+                    
                 }
                 else if (enIC == 16){
                     parOut.open("output/txt/1DflamecloseOpen/isobaric/particle/" + id + "-" + cpu + ".txt", std::ofstream::app);

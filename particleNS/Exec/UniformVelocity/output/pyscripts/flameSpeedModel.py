@@ -123,7 +123,7 @@ if condition == 2:
 if condition == 1:
     labels = ['$\mathrm{PRL\;(switch)}$',
               '$k$-'r'$\beta$']
-    directory = 'output/txt/1Dflame/1000/particle'
+    directory = 'output/txt/1Dflame/800/particle'
 
 
 
@@ -177,7 +177,7 @@ elif domainL == 2:
     directory = '/../../../../mnt/d/codeBackup/flame_txt_/isochoric_Results/domainLength/fftResults/fft1024kb/particle/'
 
 if condition == 1:
-    directory = 'output/txt/1Dflame/1000kb/particle'
+    directory = 'output/txt/1Dflame/800kb/particle'
 
 for i in range(Np):
     # print(files[Np].decode(encoding))
