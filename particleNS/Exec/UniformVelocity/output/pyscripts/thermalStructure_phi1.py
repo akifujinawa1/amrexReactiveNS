@@ -67,7 +67,7 @@ plt.subplots_adjust(left=0.14, bottom=0.15, right=0.90, top=0.94, wspace=0.20, h
 # ax2 = fig.add_subplot(122)
 
 condition = 1;
-yIndex = 4
+yIndex = 1
 
 # 0 1  2  3 4  5
 # x T yO2 p u rho

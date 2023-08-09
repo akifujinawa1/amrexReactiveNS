@@ -17,9 +17,10 @@ from moviepy.video.io.bindings import mplfig_to_npimage
 
 # CHOOSE PLOTTING PARAMETERS HERE
 
-condition = 2   # 1 for isobaric, 2 for isochoric
+condition = 1   # 1 for isobaric, 2 for isochoric
 plotVar = 1     # 1 for x-t, 2 for flame speed
-domainL = 0
+domainL = 2
+
 # if condition == 1:
 #     concentrations = [600,700,800,900,1000,1100,1200,1300,1400]
 # elif condition == 2:
@@ -105,18 +106,25 @@ stDevkb      = numpy.empty(3)
 errorkb        = numpy.empty((3,2))
 flameSpeedAvgkb = numpy.empty(3)
 
-if domainL == 0:
-    labels = ['$L_x=0.00512\;\mathrm{m},\;\mathrm{PRL\;(switch)}$',
-              '$L_x=0.00512\;\mathrm{m},\;k$-'r'$\beta$']
-    directory = '/../../../../mnt/d/codeBackup/flame_txt_/isochoric_Results/domainLength/fftResults/fft512/particle/'
-elif domainL == 1:
-    labels = ['$L_x=0.00768\;\mathrm{m},\;\mathrm{PRL\;(switch)}$',
-              '$L_x=0.00768\;\mathrm{m},\;k$-'r'$\beta$']
-    directory = '/../../../../mnt/d/codeBackup/flame_txt_/isochoric_Results/domainLength/fftResults/fft768/particle/'
-elif domainL == 2:
-    labels = ['$L_x=0.01024\;\mathrm{m},\;\mathrm{PRL\;(switch)}$',
-              '$L_x=0.01024\;\mathrm{m},\;k$-'r'$\beta$']
-    directory = '/../../../../mnt/d/codeBackup/flame_txt_/isochoric_Results/domainLength/fftResults/fft1024/particle/'
+if condition == 2:
+    if domainL == 0:
+        labels = ['$L_x=0.00512\;\mathrm{m},\;\mathrm{PRL\;(switch)}$',
+                '$L_x=0.00512\;\mathrm{m},\;k$-'r'$\beta$']
+        directory = '/../../../../mnt/d/codeBackup/flame_txt_/isochoric_Results/domainLength/fftResults/fft512/particle/'
+    elif domainL == 1:
+        labels = ['$L_x=0.00768\;\mathrm{m},\;\mathrm{PRL\;(switch)}$',
+                '$L_x=0.00768\;\mathrm{m},\;k$-'r'$\beta$']
+        directory = '/../../../../mnt/d/codeBackup/flame_txt_/isochoric_Results/domainLength/fftResults/fft768/particle/'
+    elif domainL == 2:
+        labels = ['$L_x=0.01024\;\mathrm{m},\;\mathrm{PRL\;(switch)}$',
+                '$L_x=0.01024\;\mathrm{m},\;k$-'r'$\beta$']
+        directory = '/../../../../mnt/d/codeBackup/flame_txt_/isochoric_Results/domainLength/fftResults/fft1024/particle/'
+
+if condition == 1:
+    labels = ['$\mathrm{PRL\;(switch)}$',
+              '$k$-'r'$\beta$']
+    directory = 'output/txt/1Dflame/1000/particle'
+
 
 
         
@@ -167,6 +175,9 @@ elif domainL == 1:
     directory = '/../../../../mnt/d/codeBackup/flame_txt_/isochoric_Results/domainLength/fftResults/fft768kb/particle/'
 elif domainL == 2:
     directory = '/../../../../mnt/d/codeBackup/flame_txt_/isochoric_Results/domainLength/fftResults/fft1024kb/particle/'
+
+if condition == 1:
+    directory = 'output/txt/1Dflame/1000kb/particle'
 
 for i in range(Np):
     # print(files[Np].decode(encoding))
@@ -282,11 +293,11 @@ print('Flame speed estimate for k-beta is ',flameSpeedkb[0],' cm/s')
 # ax.errorbar(phiArray[i],flameSpeed[i],yerr=error[:,i],fmt=markers[i],c=colors[i])
 
 if plotVar==1:
-    if condition == 1:
-        ax.scatter(time[:,i],100*location[:,i]-0.256,c=colors[i],s=15,marker=markers[i],label='$'+str(concentration)+'\;\mathrm{g/cm^3}$') #s=3
-    else:
-        ax.scatter(time,100*location,c=colors[0],lw=1,marker=markers[0],label=labels[0]) #s=3
-        ax.scatter(timekb,100*locationkb,c=colors[2],lw=1,marker=markers[2],label=labels[1]) #s=3
+    # if condition == 1:
+    #     ax.scatter(time[:,i],100*location[:,i]-0.256,c=colors[i],s=15,marker=markers[i],label='$'+str(concentration)+'\;\mathrm{g/cm^3}$') #s=3
+    # else:
+    ax.scatter(time,100*location,c=colors[0],lw=1,marker=markers[0],label=labels[0]) #s=3
+    ax.scatter(timekb,100*locationkb,c=colors[2],lw=1,marker=markers[2],label=labels[1]) #s=3
         
 
 # ax.plot(time[:,i],m*time[:,i]+c,c=colors[3],linewidth=4,label=str(concentration)) #s=3

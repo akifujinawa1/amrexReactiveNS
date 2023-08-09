@@ -4,6 +4,7 @@ import numpy as np
 import pandas as pd
 import matplotlib.ticker as ticker
 import numpy.matlib
+from thermo import *
 
 import os
 import sys
@@ -14,7 +15,52 @@ from moviepy.video.io.bindings import mplfig_to_npimage
 # sys.path.append(os.path.join('pyblish','plots'))
 # import publish 
 
+# CHOOSE PLOTTING PARAMETERS HERE
+
+condition = 2   # 1 for isobaric, 2 for isochoric
+domainL = 0
+particle = '25-0.txt'
+
+
 yratio = 1/1.618
+
+M_O2  = 31.9988*1e-3;       # molecular mass of O2 in kg/mol
+M_N2  = 28.0134*1e-3;       # molecular mass of N2 in kg/mol
+rhoFe     = 7874.0;         # kg/m^3                  Solid-phase iron(Fe) density
+rhoFeO    = 5745.0;         # kg/m^3                  Solid-phase FeO density
+rhoFe3O4  = 5170.0;         # kg/m^3                  Solid-phase Fe3O4 density
+M_Fe      = 55.845*1e-3;    # kg/mol                  Molar mass of iron (Fe)
+M_FeO     = 71.844*1e-3;    # kg/mol                  Molar mass of wustite (FeO)
+M_Fe3O4   = 231.533*1e-3;   # kg/mol                  Molar mass of wustite (FeO)
+
+TpHi = 1270;
+TpLo = 300;
+X_O2  = 0.21;               #// mole fraction of O2
+X_N2  = 0.79;               #// mole fraction of N2
+Y_O2  = M_O2*X_O2/(M_O2*X_O2 + M_N2*X_N2);   #// mass fraction of O2
+Y_N2  = M_N2*X_N2/(M_O2*X_O2 + M_N2*X_N2);   #// mass fraction of N2
+Mavg  = 1/(Y_O2/M_O2+Y_N2/M_N2);             #// average molecular weight of gas mixture
+p     = 101325;
+R     = 8.31446261815324;   #// J/K/mol
+
+rhoHi = p*Mavg/(R*TpHi);
+rhoLo = p*Mavg/(R*TpLo);
+
+dp0   = 10.0e-6;  # Initial particle diameter is 10 microns
+rp0   = dp0/2;
+delta0 = 1.0e-3;
+deltaFeO   = 0.95*delta0;
+deltaFe3O4 = 0.05*delta0;
+pi = 3.14159265358979
+
+rFeO0   = rp0*(1.0-deltaFe3O4);
+rFe0    = rp0*(1.0-delta0);                      # %m Initial Fe radius
+mFe0    = rhoFe*(4.0/3.0)*pi*rFe0**3                 #  %kg Initial Fe mass
+mFeO0   = rhoFeO*(4.0/3.0)*pi*(rFeO0**3 - rFe0**3)     #  %kg Initial FeO mass
+mFe3O40 = rhoFe3O4*(4.0/3.0)*pi*(rp0**3 - rFeO0**3)     #  %kg Initial FeO mass
+
+mTot0 = 1.0e3*(mFe0+mFeO0+mFe3O40)  # total initial particle mass in grams
+mFeTot = mFe0
 
 
 plt.close('all')
@@ -27,140 +73,66 @@ plt.rc('font', family='serif', size='14')
 mpl.rcParams['axes.spines.right'] = False
 mpl.rcParams['axes.spines.top'] = False
 
-colors = ['#9B0909', '#7E301E', '#B42E0F', '#FE3C0F', '#fe770f', '#F35D0D']
-color = colors
 
+colors = ['#000000', '#9B0909', '#7E301E', '#B42E0F', '#FE3C0F', '#fe770f', '#F35D0D', '#f3d00d', '#9b9765', '#000000', '#9B0909', '#000000']
+markers = ['o', 'v', '^', '<', '>', 's', 'p', '*', 'P', 'o', 'v', 'o']
 
 # matplot subplot
+
+
 fig, ax = plt.subplots(figsize=(8,8*yratio))  #fig2,ax2 = plt.subplots(nrows=2,ncols=1,figsize=(8,8*yratio))nrows=2,ncols=1,,dpi=100
-plt.subplots_adjust(left=0.14, bottom=0.15, right=0.90, top=0.94, wspace=0.20, hspace=0.20)
-time = [0]*30
-location = [0]*30
-Np = 0
-
-for i in range(14):
-    for j in range(2):
-        iVal = str(8+i)
-        jVal = str(j)
-        # print(iVal)
-        # print(jVal)
-        data = np.loadtxt('output/txt/1Dflame/phi1/particle/'+jVal+'-'+iVal+'.txt')
-        # 0=time, 1=x, 2=mFe, 3=mFeO, 4=mFe3O4, 5=Tp, 6=regime
-        # print(len(data[:,0]))s
-        for k in range(len(data[:,0])):
-            length = len(data[:,0])
-            if (data[length-(k+1),6]-data[length-(k+2),6] == 1):
-                time[Np] = data[length-k,0]
-                location[Np] = data[length-k,1]
-                Np += 1
-                break
-# for i in range(33):
-#     iVal = str(i)
-#     # print(iVal)
-#     # print(jVal)
-#     data = np.loadtxt('output/txt/1Dflame/1300/particle/'+iVal+'.txt')
-#     # 0=time, 1=x, 2=mFe, 3=mFeO, 4=mFe3O4, 5=Tp, 6=regime
-#     # print(len(data[:,0]))s
-#     for k in range(len(data[:,0])):
-#         length = len(data[:,0])
-#         if (data[length-(k+1),6]-data[length-(k+2),6] == 1):
-#             time[Np] = data[length-k,0]
-#             location[Np] = data[length-k,1]
-#             Np += 1
-#             break
-# print(time)
-# print(location)
-
-# time, location = zip(*sorted(zip(time,location)))
-time.sort()
-location.sort()
-LLSlocations = [0]*30
-
-print(time)
-print(location)
-
-A = np.vstack([time[11:len(time)], np.ones(len(time[11:len(time)]))]).T
-m, c = np.linalg.lstsq(A, location[11:len(time)], rcond=None)[0]
-
-for i in range(len(time)):
-    LLSlocations[i] = m*time[i] + c
-
-print('Flame speed estimate from slope of x-t graph: ',m*1e2,' cm/s')
-
-
-# plotting line
-ax.scatter(time,location,c='black',s=3,label='$\mathrm{Ignition\;points}$') 
-ax.plot(time[11:len(time)],LLSlocations[11:len(time)],c='red',linewidth=2,label='$\mathrm{Flame\;speed\;}='+str(round(m*1e2,3))+'\;\mathrm{cm/s}\;(\mathrm{LLS)}$') 
-# ax[0].plot(data[:,0],data[:,1]*0+2330,c=colors[1],linewidth=1,label='$\mathrm{Adiabatic\;flame\;temperature}$') 
-# ax[1].scatter(data[:,0],data[:,2],c='red',s=3,label='$t='+str(time_ms)+'\;\mathrm{ms}$') 
-# ax[0].set_ylim(0,2600)
-# ax[1].set_ylim(0,0.24)
-ax.set_ylabel(r'$x\;[\mathrm{m}]$', fontsize=20)
-ax.set_xlabel(r'$t\;[\mathrm{s}]$', fontsize=20)
-# ax.legend(ncol=1, loc="top right", fontsize = 12)
-     
-
-
-# data0  = np.loadtxt('output/txt/1Dflame/isobaric/field/00.txt')
-# data1  = np.loadtxt('output/txt/1Dflame/isobaric/field/1500.txt')
-# data2  = np.loadtxt('output/txt/1Dflame/isobaric/field/3000.txt')
-# data3  = np.loadtxt('output/txt/1Dflame/isobaric/field/4500.txt')
-# data4  = np.loadtxt('output/txt/1Dflame/isobaric/field/6000.txt')
-# data5  = np.loadtxt('output/txt/1Dflame/isobaric/field/7500.txt')
-# data6  = np.loadtxt('output/txt/1Dflame/isobaric/field/9000.txt')
-
-
-# ax2[0].scatter(data0[:,0],data0[:,1],c='black',s=5,label='$t=t_0\;\mathrm{ms}$') 
-# ax2[0].scatter(data1[:,0],data1[:,1],c=color[0],s=5,label='$t=1.5\mathrm{ms}$') 
-# ax2[0].scatter(data2[:,0],data2[:,1],c=color[1],s=5,label='$t=3.0\mathrm{ms}$') 
-# ax2[0].scatter(data3[:,0],data3[:,1],c=color[2],s=5,label='$t=4.5\mathrm{ms}$') 
-# ax2[0].scatter(data4[:,0],data4[:,1],c=color[3],s=5,label='$t=6.0\mathrm{ms}$') 
-# ax2[0].scatter(data5[:,0],data5[:,1],c=color[4],s=5,label='$t=7.5\mathrm{ms}$') 
-# ax2[0].scatter(data6[:,0],data6[:,1],c=color[5],s=5,label='$t=9.0\mathrm{ms}$') 
-
-# ax2[1].scatter(data0[:,0],data0[:,2],c='black',s=5,label='$t=t_0\;\mathrm{ms}$') 
-# ax2[1].scatter(data1[:,0],data1[:,2],c=color[0],s=5,label='$t=0.5\mathrm{ms}$') 
-# ax2[1].scatter(data2[:,0],data2[:,2],c=color[1],s=5,label='$t=1.0\mathrm{ms}$') 
-# ax2[1].scatter(data3[:,0],data3[:,2],c=color[2],s=5,label='$t=1.5\mathrm{ms}$') 
-# ax2[1].scatter(data4[:,0],data4[:,2],c=color[3],s=5,label='$t=2.0\mathrm{ms}$') 
-# ax2[1].scatter(data5[:,0],data5[:,2],c=color[4],s=5,label='$t=2.5\mathrm{ms}$') 
-# ax2[1].scatter(data6[:,0],data6[:,2],c=color[5],s=5,label='$t=3.0\mathrm{ms}$') 
-
-
-# ax2[0].set_ylabel(r'$T_\mathrm{g}\;[\mathrm{K}]$', fontsize=20)
-# ax2[1].set_ylabel(r'$Y_\mathrm{O_2}$', fontsize=20)
-
-# ax2[1].set_xlabel(r'$\mathrm{x}\;[\mathrm{m}]$', fontsize=20)
-
-# # ax2.set_ylim(1200,2750)
-# # ax2.set_xlim(0,0.035)
-
-# # # set axes limits
-# # ax2.set_xlim(0,0.01)
-# # ax[0,1].set_xlim(0,1)
-# # ax[1,0].set_xlim(0,1)
-# # ax[1,1].set_xlim(0,1)
-# # ax[0,0].set_ylim(0,1.01)
-# # ax[0,1].set_ylim(0,1.01)
-# # ax[1,0].set_ylim(0,1.01)
-# # ax[1,1].set_ylim(1.391,1.401)
-
-ax.legend(ncol=1, loc="best", fontsize = 16)
+plt.subplots_adjust(left=0.17, bottom=0.137, right=0.91, top=0.9, wspace=0.20, hspace=0.20)
 
 
 
-# plt.legend()
+
+if domainL == 0:
+    labels = ['$L_x=0.00512\;\mathrm{m},\;\mathrm{PRL\;(switch)}$',
+              '$L_x=0.00512\;\mathrm{m},\;k$-'r'$\beta$']
+    directory = '/../../../../mnt/d/codeBackup/flame_txt_/isochoric_Results/domainLength/fftResults/fft512/particle/'
+elif domainL == 1:
+    labels = ['$L_x=0.00768\;\mathrm{m},\;\mathrm{PRL\;(switch)}$',
+              '$L_x=0.00768\;\mathrm{m},\;k$-'r'$\beta$']
+    directory = '/../../../../mnt/d/codeBackup/flame_txt_/isochoric_Results/domainLength/fftResults/fft768/particle/'
+elif domainL == 2:
+    labels = ['$L_x=0.01024\;\mathrm{m},\;\mathrm{PRL\;(switch)}$',
+              '$L_x=0.01024\;\mathrm{m},\;k$-'r'$\beta$']
+    directory = '/../../../../mnt/d/codeBackup/flame_txt_/isochoric_Results/domainLength/fftResults/fft1024/particle/'
+
+
+
+data = np.loadtxt(directory+particle)
+
+# 0=time, 1=x, 2=mFe, 3=mFeO, 4=mFe3O4, 5=Tp, 6=regime
+
+ax.plot(data[:,0],data[:,5],c=colors[0],lw=2,label=r'$\mathrm{PRL\;(switch)}$') #s=3
+
+if domainL == 0:
+    directory = '/../../../../mnt/d/codeBackup/flame_txt_/isochoric_Results/domainLength/fftResults/fft512kb/particle/'
+elif domainL == 1:
+    directory = '/../../../../mnt/d/codeBackup/flame_txt_/isochoric_Results/domainLength/fftResults/fft768kb/particle/'
+elif domainL == 2:
+    directory = '/../../../../mnt/d/codeBackup/flame_txt_/isochoric_Results/domainLength/fftResults/fft1024kb/particle/'
+
+data = np.loadtxt(directory+particle)
+
+# 0=time, 1=x, 2=mFe, 3=mFeO, 4=mFe3O4, 5=Tp, 6=regime
+
+ax.plot(data[:,0],data[:,5],c=colors[2],lw=2,label=r'$k$-$\beta$') #s=3
+
+ax.set_xlabel(r'$\mathrm{time}\;[\mathrm{s}]$', fontsize=20)
+
+
+# if domainL == 0:
+#     ax.set_ylim([0,1.1*np.max(ignDelay)])
+#     ax.set_xlim([0,0.00512])
+# elif domainL == 1:
+#     # ax.set_ylim([0,0.768])
+#     # ax.set_xlim([0,0.07])
+# elif domainL == 2:
+#     # ax.set_ylim([0,1.024])
+#     # ax.set_xlim([0,0.09])
+
+ax.set_ylabel(r'$T_\mathrm{p}\;[\mathrm{K}]$', fontsize=20)
+ax.legend(ncol=1, loc="best", fontsize = 16, frameon = False )
 plt.show()
-
-# # plt2.legend()
-# # plt2.show()
-
-# # fig2.savefig('output/plots/particleCombustion/combustion.pdf')
-
-with open('output/txt/1Dflame/phi1/x-t.txt', 'w') as text_file:
-    for i in range(len(time)):
-        timeval = time[i]
-        locationval = location[i]
-        text_file.write(str(timeval)+' '+str(locationval)+'\n')
-
-text_file.close()
